@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import styles from "./Sidebar.module.css";
 import {
   DashboardIcon,
@@ -15,9 +15,15 @@ import {
 import { SIDEBAR_NAV_ITEMS, SIDEBAR_LOGOUT_ITEM } from "@/constants/navigation";
 import { APP_STRINGS } from "@/constants/strings";
 
-export const Sidebar: React.FC = () => {
-  const [activeId, setActiveId] = useState<string>("dashboard");
+interface SidebarProps {
+  activeId?: string;
+  onNavigate?: (id: string) => void;
+}
 
+export const Sidebar: React.FC<SidebarProps> = ({
+  activeId = "dashboard",
+  onNavigate,
+}) => {
   const renderNavIcon = (iconName: string, isActive: boolean) => {
     const color = isActive ? "#059669" : "#6B7280";
     switch (iconName) {
@@ -68,7 +74,7 @@ export const Sidebar: React.FC = () => {
                 key={item.id}
                 type="button"
                 className={`${styles.navButton} ${isActive ? styles.activeNavButton : ""}`}
-                onClick={() => setActiveId(item.id)}
+                onClick={() => onNavigate?.(item.id)}
                 aria-label={item.label}
                 title={item.label}
               >
