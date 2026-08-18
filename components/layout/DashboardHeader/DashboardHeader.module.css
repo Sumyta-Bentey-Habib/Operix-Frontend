@@ -1,0 +1,112 @@
+.headerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.welcomeTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.025em;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.actionGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.dateFilterButton {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.55rem 1rem;
+  background-color: #ffffff;
+  border: 1px solid #edf0f5;
+  border-radius: 12px;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+}
+
+.dateFilterButton:hover {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+  color: #111827;
+}
+
+.dateFilterButton:focus-visible {
+  outline: 2px solid #059669;
+  outline-offset: 2px;
+}
+
+.calendarIcon {
+  color: #059669;
+  display: flex;
+  align-items: center;
+}
+
+.chevronIcon {
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+}
+
+.addWalletButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.1rem;
+  background-color: #ffffff;
+  border: 1px solid #edf0f5;
+  border-radius: 12px;
+  color: #111827;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+}
+
+.addWalletButton:hover {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+}
+
+.addWalletButton:focus-visible {
+  outline: 2px solid #059669;
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .headerContainer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .welcomeTitle {
+    font-size: 1.5rem;
+  }
+
+  .actionGroup {
+    width: 100%;
+  }
+
+  .dateFilterButton,
+  .addWalletButton {
+    flex: 1;
+    justify-content: center;
+  }
+}

@@ -1,0 +1,207 @@
+.card {
+  background-color: #ffffff;
+  border-radius: 20px;
+  padding: 1.25rem;
+  border: 1px solid #edf0f5;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.card:hover {
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.titleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.subtitle {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin: 0;
+  font-weight: 500;
+}
+
+.headerAction {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 0.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.headerAction:hover {
+  color: #111827;
+  background-color: #f3f4f6;
+}
+
+.headerAction:focus-visible {
+  outline: 2px solid #059669;
+  outline-offset: 2px;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.tableHeadRow {
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.th {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #9ca3af;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.th:first-child {
+  padding-left: 0;
+}
+
+.th:last-child {
+  text-align: right;
+  padding-right: 0;
+}
+
+.tableBodyRow {
+  border-bottom: 1px solid #f9fafb;
+  transition: background-color 0.15s ease;
+}
+
+.tableBodyRow:last-child {
+  border-bottom: none;
+}
+
+.tableBodyRow:hover {
+  background-color: #fcfdfe;
+}
+
+.td {
+  padding: 0.875rem 0.75rem;
+  vertical-align: middle;
+  font-size: 0.8125rem;
+  color: #4b5563;
+}
+
+.td:first-child {
+  padding-left: 0;
+}
+
+.td:last-child {
+  text-align: right;
+  padding-right: 0;
+}
+
+.nameCell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brandIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 8px;
+}
+
+.nameDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.brandName {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.25;
+}
+
+.category {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.dateText,
+.timeText {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.statusSuccessful {
+  background-color: #e6f7f0;
+  color: #059669;
+}
+
+.statusPending {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.statusFailed {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.amountText {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .th,
+  .td {
+    padding: 0.5rem 0.35rem;
+  }
+}
