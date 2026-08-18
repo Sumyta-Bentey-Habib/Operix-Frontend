@@ -1,0 +1,639 @@
+.pageContainer {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #030403;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  padding: 32px 24px 24px;
+  font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+}
+
+/* Ambient glow & greenish bokeh orbs in background matching Apex Pharma & Operix */
+.ambientBackground {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.orbTopLeft {
+  position: absolute;
+  top: 8%;
+  left: 5%;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.08);
+  filter: blur(46px);
+  animation: floatOrb 12s ease-in-out infinite alternate;
+}
+
+.orbMiddleRight {
+  position: absolute;
+  top: 38%;
+  right: 8%;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: rgba(5, 150, 105, 0.07);
+  filter: blur(52px);
+  animation: floatOrb 16s ease-in-out infinite alternate-reverse;
+}
+
+.orbBottomLeft {
+  position: absolute;
+  bottom: 14%;
+  left: 10%;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.06);
+  filter: blur(56px);
+  animation: floatOrb 14s ease-in-out infinite alternate;
+}
+
+.orbCenterGlow {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 700px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, rgba(255, 255, 255, 0.02) 40%, rgba(0, 0, 0, 0) 70%);
+  filter: blur(65px);
+}
+
+@keyframes floatOrb {
+  0% {
+    transform: translateY(0px) scale(1);
+  }
+  100% {
+    transform: translateY(-24px) scale(1.08);
+  }
+}
+
+/* Header & Top Bar */
+.topNavHeader {
+  width: 100%;
+  max-width: 1120px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.brandLogoGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #ffffff;
+}
+
+.brandLogoIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  color: #10b981;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.15);
+}
+
+.brandNameContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.brandLogoText {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+.brandLogoSub {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: #10b981;
+  text-transform: uppercase;
+}
+
+.topQuickPills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topRoleIndicator {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #6ee7b7;
+  background: rgba(16, 185, 129, 0.08);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+/* Hero & Main Content */
+.mainHeroSection {
+  width: 100%;
+  max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  z-index: 10;
+  margin: auto 0;
+}
+
+.heroTitle {
+  font-size: 4.25rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  color: #ffffff;
+  margin-bottom: 8px;
+  text-shadow: 0 2px 24px rgba(16, 185, 129, 0.2);
+}
+
+.heroSubline {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #6ee7b7;
+  letter-spacing: 0.03em;
+  margin-bottom: 16px;
+}
+
+.dynamicWordWrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  margin-bottom: 22px;
+  min-height: 4.2rem;
+}
+
+.cursorBlink {
+  display: inline-block;
+  margin-left: 2px;
+  animation: blink 1s step-end infinite;
+  font-weight: 300;
+  color: #10b981;
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.heroDescription {
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: #9ca3af;
+  max-width: 540px;
+  margin-bottom: 28px;
+}
+
+/* Icon Row (Chat, Heart, Share) matching screenshot */
+.socialIconsRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  margin-bottom: 28px;
+}
+
+.socialIconBtn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 50%;
+  transition: transform 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+
+.socialIconBtn:hover {
+  transform: translateY(-2px) scale(1.1);
+  color: #10b981;
+  background-color: rgba(16, 185, 129, 0.12);
+}
+
+/* CTA Pill Button (Greenish & White) */
+.journeyPillBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: #ffffff;
+  color: #064e3b;
+  font-size: 1.02rem;
+  font-weight: 700;
+  padding: 14px 34px;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 4px 24px rgba(16, 185, 129, 0.25);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, background-color 0.2s ease;
+}
+
+.journeyPillBtn:hover {
+  transform: translateY(-2px) scale(1.02);
+  background-color: #f0fdf4;
+  box-shadow: 0 8px 32px rgba(16, 185, 129, 0.4);
+  color: #047857;
+}
+
+.journeyPillBtn:active {
+  transform: translateY(0) scale(0.99);
+}
+
+/* Standalone Sign In Form Main Area */
+.signInSection {
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  margin: auto 0;
+}
+
+.backButtonLink {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: #9ca3af;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 14px;
+  transition: color 0.2s ease;
+}
+
+.backButtonLink:hover {
+  color: #10b981;
+}
+
+/* Interactive Login Card - Clean Obsidian & Greenish Accent */
+.authCardContainer {
+  width: 100%;
+  background: rgba(12, 17, 14, 0.92);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(16, 185, 129, 0.24);
+  border-radius: 24px;
+  padding: 34px 28px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(16, 185, 129, 0.12);
+  text-align: left;
+  animation: slideUpFade 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.authCardHeader {
+  margin-bottom: 22px;
+}
+
+.authCardTitle {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+
+.authCardSubtitle {
+  font-size: 0.88rem;
+  color: #9ca3af;
+  line-height: 1.4;
+}
+
+/* Form Fields */
+.formGroup {
+  margin-bottom: 18px;
+}
+
+.fieldLabel {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #e5e7eb;
+  margin-bottom: 6px;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputIconLeft {
+  position: absolute;
+  left: 14px;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.textInput {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 13px 14px 13px 42px;
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  outline: none;
+}
+
+.textInputWithRightIcon {
+  padding-right: 42px;
+}
+
+.textInput:focus {
+  border-color: #10b981;
+  background-color: rgba(0, 0, 0, 0.75);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
+}
+
+.textInput::placeholder {
+  color: #6b7280;
+}
+
+.inputToggleRight {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 6px;
+  transition: color 0.2s ease;
+}
+
+.inputToggleRight:hover {
+  color: #10b981;
+}
+
+/* Form Helper Row */
+.formHelperRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+  font-size: 0.82rem;
+}
+
+.rememberMeLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #9ca3af;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkboxInput {
+  accent-color: #10b981;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+.forgotPasswordLink {
+  color: #9ca3af;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  transition: color 0.2s ease;
+}
+
+.forgotPasswordLink:hover {
+  color: #10b981;
+}
+
+/* Error Banner */
+.errorBanner {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* In-screen Info Banner (for Forgot Password / System Notices) */
+.infoBanner {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #6ee7b7;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  animation: bannerSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.1);
+}
+
+@keyframes bannerSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.infoBannerLeft {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.infoBannerIcon {
+  color: #10b981;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.infoBannerText {
+  color: #d1fae5;
+  font-weight: 400;
+}
+
+.infoBannerText strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.infoBannerCloseBtn {
+  background: transparent;
+  border: none;
+  color: #6ee7b7;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.infoBannerCloseBtn:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+
+/* Submit Button */
+.submitBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #ffffff;
+  color: #064e3b;
+  border: none;
+  border-radius: 12px;
+  padding: 13px;
+  font-size: 0.98rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 18px rgba(16, 185, 129, 0.2);
+}
+
+.submitBtn:hover:not(:disabled) {
+  background-color: #f0fdf4;
+  color: #047857;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(16, 185, 129, 0.35);
+}
+
+.submitBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(6, 78, 59, 0.3);
+  border-top-color: #064e3b;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Footer */
+.pageFooter {
+  width: 100%;
+  text-align: center;
+  font-size: 0.82rem;
+  color: #6b7280;
+  z-index: 10;
+}
+
+.footerLink {
+  color: #10b981;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footerLink:hover {
+  color: #34d399;
+  text-decoration: underline;
+}
+
+/* Responsive queries */
+@media (max-width: 640px) {
+  .heroTitle {
+    font-size: 2.75rem;
+  }
+
+  .dynamicWordWrapper {
+    font-size: 2.25rem;
+    min-height: 3rem;
+  }
+
+  .heroDescription {
+    font-size: 0.92rem;
+  }
+
+  .authCardContainer {
+    padding: 24px 18px;
+    border-radius: 18px;
+  }
+
+  .topRoleIndicator {
+    display: none;
+  }
+}

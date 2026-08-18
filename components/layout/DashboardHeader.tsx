@@ -5,12 +5,16 @@ import styles from "./DashboardHeader.module.css";
 import { CalendarIcon, ChevronDownIcon, PlusIcon } from "@/components/icons";
 import { USER_PROFILE_DATA, DATE_FILTER_DATA } from "@/data/dashboardData";
 import { APP_STRINGS } from "@/constants/strings";
+import { useAuth } from "@/context/AuthContext";
 
 export const DashboardHeader: React.FC = () => {
+  const { user } = useAuth();
+  const displayName = user?.name || USER_PROFILE_DATA.name;
+
   return (
     <div className={styles.headerContainer}>
       <h1 className={styles.welcomeTitle}>
-        {APP_STRINGS.welcomePrefix} {USER_PROFILE_DATA.name}
+        {APP_STRINGS.welcomePrefix} {displayName}
       </h1>
 
       <div className={styles.actionGroup}>
@@ -40,3 +44,4 @@ export const DashboardHeader: React.FC = () => {
     </div>
   );
 };
+

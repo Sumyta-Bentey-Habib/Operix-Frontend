@@ -1,12 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import styles from "./TopNavbar.module.css";
-import { LogoIcon, SearchIcon, BellIcon } from "@/components/icons";
+import { LogoIcon, SearchIcon, BellIcon, LogoutIcon } from "@/components/icons";
 import { TOP_NAV_TABS } from "@/constants/navigation";
-import { USER_PROFILE_DATA } from "@/data/dashboardData";
 import { APP_STRINGS } from "@/constants/strings";
+import { useAuth } from "@/context/AuthContext";
+import { USER_PROFILE_DATA } from "@/data/dashboardData";
 
 interface TopNavbarProps {
   activeTabId?: string;
@@ -17,6 +18,27 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
   activeTabId = "dashboard",
   onTabChange,
 }) => {
+  const { user, logout } = useAuth();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const currentUser = user || {
+    name: USER_PROFILE_DATA.name,
+    email: "superadmin@operix.io",
+    roleLabel: USER_PROFILE_DATA.role,
+    avatarUrl: USER_PROFILE_DATA.avatarUrl,
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <header className={styles.navbar}>
       <div className={styles.leftSection}>
@@ -67,19 +89,54 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
         </button>
 
         <div
+          ref={menuRef}
           className={styles.avatarWrapper}
+          onClick={() => setIsMenuOpen((prev) => !prev)}
           aria-label={APP_STRINGS.ariaLabels.userProfile}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") setIsMenuOpen((prev) => !prev);
+          }}
         >
+          <div className={styles.userBadgeGroup}>
+            <span className={styles.userNameLabel}>{currentUser.name}</span>
+            <span className={styles.userRoleBadge}>{currentUser.roleLabel}</span>
+          </div>
+
           <Image
-            src={USER_PROFILE_DATA.avatarUrl}
-            alt={USER_PROFILE_DATA.name}
+            src={currentUser.avatarUrl}
+            alt={currentUser.name}
             width={38}
             height={38}
             className={styles.avatarImage}
             unoptimized
           />
+
+          {isMenuOpen && (
+            <div className={styles.userDropdownMenu}>
+              <div className={styles.dropdownHeader}>
+                <div className={styles.dropdownName}>{currentUser.name}</div>
+                <div className={styles.dropdownEmail}>{currentUser.email}</div>
+                <span className={styles.dropdownRole}>{currentUser.roleLabel}</span>
+              </div>
+
+              <button
+                type="button"
+                className={`${styles.dropdownItem} ${styles.dropdownItemLogout}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  logout();
+                }}
+              >
+                <LogoutIcon size={16} />
+                <span>Log out</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>
   );
 };
+

@@ -6,6 +6,7 @@ import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { OverviewGrid } from "@/components/dashboard/OverviewGrid";
 import { ReportsHeader } from "@/components/reports/ReportsHeader";
 import { ReportsOverview } from "@/components/reports/ReportsOverview";
+import { AuthGuard } from "@/components/auth/AuthGuard";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<string>("reports");
@@ -31,12 +32,15 @@ export default function Home() {
   };
 
   return (
-    <DashboardShell
-      activeTab={activeTab}
-      onTabChange={setActiveTab}
-      header={renderHeader()}
-    >
-      {renderContent()}
-    </DashboardShell>
+    <AuthGuard>
+      <DashboardShell
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        header={renderHeader()}
+      >
+        {renderContent()}
+      </DashboardShell>
+    </AuthGuard>
   );
 }
+
