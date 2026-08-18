@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import styles from "./TopNavbar.module.css";
 import { LogoIcon, SearchIcon, BellIcon } from "@/components/icons";
@@ -8,9 +8,15 @@ import { TOP_NAV_TABS } from "@/constants/navigation";
 import { USER_PROFILE_DATA } from "@/data/dashboardData";
 import { APP_STRINGS } from "@/constants/strings";
 
-export const TopNavbar: React.FC = () => {
-  const [activeTabId, setActiveTabId] = useState<string>("dashboard");
+interface TopNavbarProps {
+  activeTabId?: string;
+  onTabChange?: (tabId: string) => void;
+}
 
+export const TopNavbar: React.FC<TopNavbarProps> = ({
+  activeTabId = "dashboard",
+  onTabChange,
+}) => {
   return (
     <header className={styles.navbar}>
       <div className={styles.leftSection}>
@@ -32,7 +38,7 @@ export const TopNavbar: React.FC = () => {
                 key={tab.id}
                 type="button"
                 className={`${styles.tabItem} ${isActive ? styles.activeTab : ""}`}
-                onClick={() => setActiveTabId(tab.id)}
+                onClick={() => onTabChange?.(tab.id)}
               >
                 {tab.label}
               </button>

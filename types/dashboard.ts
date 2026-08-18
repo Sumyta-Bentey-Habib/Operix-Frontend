@@ -1,4 +1,5 @@
 export type PaymentStatus = "Successful" | "Pending" | "Failed";
+export type ReportStatus = "Generated" | "Pending" | "Failed";
 
 export interface Transaction {
   id: string;
@@ -84,6 +85,7 @@ export interface NavItem {
   id: string;
   label: string;
   iconName: string;
+  href?: string;
   isActive?: boolean;
   badgeCount?: number;
   isLogout?: boolean;
@@ -94,4 +96,35 @@ export interface TopNavTab {
   label: string;
   href: string;
   isActive?: boolean;
+}
+
+/* Reports section types */
+export interface ReportSummaryMetric {
+  id: string;
+  label: string;
+  amount: number;
+  currencySymbol: string;
+  percentageChange: string;
+  isPositive: boolean;
+}
+
+export interface ChartDataPoint {
+  month: string;
+  revenue: number;
+  expenses: number;
+}
+
+export interface RevenueExpensesChartData {
+  title: string;
+  revenueLabel: string;
+  expensesLabel: string;
+  dataPoints: ChartDataPoint[];
+}
+
+export interface ReportItem {
+  id: string;
+  name: string;
+  type: string;
+  generatedDate: string;
+  status: ReportStatus;
 }

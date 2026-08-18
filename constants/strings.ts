@@ -4,6 +4,8 @@ export const APP_STRINGS = {
   welcomePrefix: "Welcome Back,",
   actions: {
     addNewWallet: "Add New Wallet",
+    exportReport: "Export Report",
+    last6Months: "Last 6 Months",
     send: "Send",
     receive: "Receive",
     viewAll: "View All",
@@ -14,8 +16,12 @@ export const APP_STRINGS = {
     openSettings: "Open Settings",
     expand: "Expand Details",
     logout: "Log out",
+    download: "Download",
+    moreOptions: "More Options",
   },
   headers: {
+    dashboard: "Dashboard",
+    reports: "Reports",
     paymentGoal: "Payment Goal",
     paymentGoalSubtitle: "Total amount goal",
     engagementRate: "Engagement Rate",
@@ -26,6 +32,8 @@ export const APP_STRINGS = {
     paymentHistorySubtitle: "Recent payment history",
     mandatoryPayments: "Mandatory Payments",
     mandatoryPaymentsSubtitle: "Upcoming payments",
+    revenueVsExpenses: "Revenue vs Expenses",
+    recentReports: "Recent Reports",
   },
   tableColumns: {
     name: "NAME",
@@ -33,6 +41,10 @@ export const APP_STRINGS = {
     time: "TIME",
     status: "STATUS",
     amount: "AMOUNT",
+    reportName: "REPORT NAME",
+    type: "TYPE",
+    generatedDate: "GENERATED DATE",
+    actions: "ACTIONS",
   },
   cardDetails: {
     creditCard: "Credit Card",
@@ -40,12 +52,17 @@ export const APP_STRINGS = {
     mastercard: "MASTERCARD",
     expPrefix: "Exp",
   },
+  chartLegends: {
+    revenue: "Revenue",
+    expenses: "Expenses",
+  },
   ariaLabels: {
     userProfile: "User Profile Menu",
     notifications: "View notifications",
     search: "Search dashboard",
     dateRangeSelector: "Select date range filter",
     addNewWallet: "Add new wallet",
+    exportReport: "Export report file",
     cardOptions: "Credit card options",
     engagementFilter: "Filter engagement rate by time period",
     sendMoney: "Send money",
@@ -55,5 +72,7 @@ export const APP_STRINGS = {
     addMandatoryPayee: "Add new mandatory payee",
     mainNavigation: "Main navigation sidebar",
     topNavigation: "Top navigation tabs",
+    downloadReport: "Download report document",
+    reportOptions: "Report item options",
   },
 } as const;
