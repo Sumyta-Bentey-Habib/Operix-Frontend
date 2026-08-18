@@ -104,9 +104,33 @@
 .avatarWrapper {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.6rem;
   position: relative;
   cursor: pointer;
+}
+
+.userBadgeGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.userNameLabel {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.userRoleBadge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #059669;
+  background-color: #e6f7f0;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  margin-top: 2px;
 }
 
 .avatarImage {
@@ -123,6 +147,90 @@
   transform: scale(1.06);
 }
 
+.userDropdownMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 220px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  z-index: 50;
+  animation: dropdownSlide 0.18s ease-out;
+}
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdownHeader {
+  padding: 8px 10px 10px;
+  border-bottom: 1px solid #f3f4f6;
+  margin-bottom: 4px;
+}
+
+.dropdownName {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.dropdownEmail {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.dropdownRole {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #059669;
+  background-color: #e6f7f0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-top: 4px;
+}
+
+.dropdownItem {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #374151;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.dropdownItem:hover {
+  background-color: #f3f4f6;
+  color: #111827;
+}
+
+.dropdownItemLogout {
+  color: #dc2626;
+}
+
+.dropdownItemLogout:hover {
+  background-color: #fef2f2;
+  color: #b91c1c;
+}
+
 @media (max-width: 900px) {
   .centerSection {
     display: none;
@@ -133,4 +241,8 @@
   .navbar {
     padding: 1rem;
   }
+  .userBadgeGroup {
+    display: none;
+  }
 }
+

@@ -14,6 +14,7 @@ import {
 } from "@/components/icons";
 import { SIDEBAR_NAV_ITEMS, SIDEBAR_LOGOUT_ITEM } from "@/constants/navigation";
 import { APP_STRINGS } from "@/constants/strings";
+import { useAuth } from "@/context/AuthContext";
 
 interface SidebarProps {
   activeId?: string;
@@ -24,6 +25,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   activeId = "dashboard",
   onNavigate,
 }) => {
+  const { logout } = useAuth();
+
   const renderNavIcon = (iconName: string, isActive: boolean) => {
     const color = isActive ? "#059669" : "#6B7280";
     switch (iconName) {
@@ -89,6 +92,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <button
           type="button"
           className={styles.logoutButton}
+          onClick={logout}
           aria-label={SIDEBAR_LOGOUT_ITEM.label}
           title={SIDEBAR_LOGOUT_ITEM.label}
         >
@@ -98,3 +102,4 @@ export const Sidebar: React.FC<SidebarProps> = ({
     </aside>
   );
 };
+
