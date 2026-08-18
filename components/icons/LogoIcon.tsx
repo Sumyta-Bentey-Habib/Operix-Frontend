@@ -1,10 +1,7 @@
 import React from "react";
+import { IconProps } from "./types";
 
-export interface IconProps {
-  className?: string;
-  size?: number;
-  color?: string;
-}
+export * from "./types";
 
 export const LogoIcon: React.FC<IconProps> = ({
   className = "",
