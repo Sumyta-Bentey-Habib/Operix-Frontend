@@ -1,0 +1,136 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 2rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #edf0f5;
+  user-select: none;
+}
+
+.leftSection {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logoIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.logoIcon:hover {
+  transform: scale(1.05);
+}
+
+.brandName {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.025em;
+}
+
+.centerSection {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navTabs {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background-color: transparent;
+}
+
+.tabItem {
+  padding: 0.45rem 1.1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+}
+
+.tabItem:hover {
+  color: #111827;
+  background-color: #f3f4f6;
+}
+
+.activeTab {
+  color: #059669;
+  background-color: #e6f7f0;
+  font-weight: 600;
+}
+
+.activeTab:hover {
+  background-color: #daf3e8;
+  color: #047857;
+}
+
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.iconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 9999px;
+  background-color: #f4f5f9;
+  border: 1px solid #e5e7eb;
+  color: #4b5563;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.iconButton:hover {
+  background-color: #e5e7eb;
+  color: #111827;
+  transform: translateY(-1px);
+}
+
+.avatarWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.avatarImage {
+  width: 38px;
+  height: 38px;
+  border-radius: 9999px;
+  object-fit: cover;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 1px #e5e7eb;
+  transition: transform 0.2s ease;
+}
+
+.avatarImage:hover {
+  transform: scale(1.06);
+}
+
+@media (max-width: 900px) {
+  .centerSection {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .navbar {
+    padding: 1rem;
+  }
+}

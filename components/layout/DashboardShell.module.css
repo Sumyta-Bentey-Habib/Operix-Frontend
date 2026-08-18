@@ -1,0 +1,46 @@
+.canvas {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #f4f5f9;
+  display: flex;
+  flex-direction: column;
+}
+
+.outerFrame {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f4f5f9;
+  display: flex;
+  flex-direction: column;
+}
+
+.bodyLayout {
+  display: flex;
+  flex: 1;
+  width: 100%;
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1.75rem 2.25rem 2.5rem 2.25rem;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1024px) {
+  .mainContent {
+    padding: 1.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .bodyLayout {
+    flex-direction: column;
+  }
+
+  .mainContent {
+    padding: 1rem;
+  }
+}
