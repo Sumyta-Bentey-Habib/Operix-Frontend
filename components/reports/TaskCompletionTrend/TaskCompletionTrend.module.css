@@ -1,0 +1,116 @@
+.card {
+  background-color: var(--bg-card);
+  border-radius: 20px;
+  padding: 1.5rem;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  transition: all 0.22s ease;
+  height: 100%;
+}
+
+.card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--card-hover-shadow);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.titleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+  font-weight: 500;
+}
+
+.legendPills {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.legendLine {
+  width: 16px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+.chartSvg {
+  width: 100%;
+  height: 160px;
+  overflow: visible;
+}
+
+.gridLine {
+  stroke: var(--border-subtle);
+  stroke-dasharray: 4 4;
+}
+
+.areaFill {
+  fill: url(#completionGradient);
+  opacity: 0.25;
+}
+
+.trendLine {
+  fill: none;
+  stroke: var(--primary-emerald);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.targetLine {
+  fill: none;
+  stroke: #94a3b8;
+  stroke-width: 1.8;
+  stroke-dasharray: 4 4;
+}
+
+.dataDot {
+  fill: var(--bg-card);
+  stroke: var(--primary-emerald);
+  stroke-width: 2.5;
+  transition: transform 0.2s ease, r 0.2s ease;
+  cursor: pointer;
+}
+
+.dataDot:hover {
+  r: 6;
+}
+
+.axisText {
+  font-size: 11px;
+  fill: var(--text-muted);
+  font-weight: 500;
+  text-anchor: middle;
+}
