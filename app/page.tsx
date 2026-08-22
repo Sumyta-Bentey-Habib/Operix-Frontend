@@ -12,8 +12,8 @@ import { KpiHeader } from "@/components/kpi/KpiHeader/KpiHeader";
 import { KpiOverview } from "@/components/kpi/KpiOverview/KpiOverview";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 
-export default function Home() {
-  const [activeTab, setActiveTab] = useState<string>("kpi");
+export default function HomePage() {
+  const [activeTab, setActiveTab] = useState<string>("dashboard");
 
   const renderContent = () => {
     switch (activeTab) {

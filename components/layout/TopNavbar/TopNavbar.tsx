@@ -2,6 +2,8 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import styles from "./TopNavbar.module.css";
 import { LogoIcon, SearchIcon, BellIcon, LogoutIcon } from "@/components/icons";
 import { ThemeToggle } from "../ThemeToggle";
@@ -19,7 +21,7 @@ export interface TopNavbarProps {
 }
 
 export const TopNavbar: React.FC<TopNavbarProps> = ({
-  activeTabId = "dashboard",
+  activeTabId,
   className,
   onTabChange,
   onSearchClick,
@@ -28,6 +30,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
   const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
 
   const currentUser = user || {
     name: USER_PROFILE_DATA.name,
@@ -35,6 +38,18 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
     roleLabel: USER_PROFILE_DATA.role,
     avatarUrl: USER_PROFILE_DATA.avatarUrl,
   };
+
+  // Determine active tab from pathname or activeTabId prop
+  const currentTabId = (() => {
+    if (activeTabId && activeTabId !== "dashboard") return activeTabId;
+    if (!pathname || pathname === "/") return "dashboard";
+    if (pathname.startsWith("/kpi")) return "kpi";
+    if (pathname.startsWith("/reports")) return "reports";
+    if (pathname.startsWith("/documents")) return "documents";
+    if (pathname.startsWith("/activity") || pathname.startsWith("/history")) return "history";
+    if (pathname.startsWith("/contacts")) return "contacts";
+    return activeTabId || "dashboard";
+  })();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -52,12 +67,12 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
 
   return (
     <header className={navbarClassName}>
-      <div className={styles.leftSection}>
+      <Link href="/" className={styles.leftSection} style={{ textDecoration: "none" }}>
         <div className={styles.logoIcon}>
           <LogoIcon size={32} />
         </div>
         <span className={styles.brandName}>{APP_STRINGS.appName}</span>
-      </div>
+      </Link>
 
       <nav
         className={styles.centerSection}
@@ -65,11 +80,11 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
       >
         <div className={styles.navTabs}>
           {TOP_NAV_TABS.map((tab) => {
-            const isActive = tab.id === activeTabId;
+            const isActive = tab.id === currentTabId;
             return (
-              <button
+              <Link
                 key={tab.id}
-                type="button"
+                href={tab.href}
                 className={`${styles.tabItem} ${
                   isActive ? styles.activeTab : ""
                 }`}
@@ -77,7 +92,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
                 aria-current={isActive ? "page" : undefined}
               >
                 {tab.label}
-              </button>
+              </Link>
             );
           })}
         </div>
