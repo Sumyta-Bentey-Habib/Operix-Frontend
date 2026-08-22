@@ -4,7 +4,7 @@ import React, {
   createContext,
   useContext,
   useState,
-  useEffect,
+  useSyncExternalStore,
   ReactNode,
 } from "react";
 import { useRouter } from "next/navigation";
@@ -20,29 +20,33 @@ const AUTH_STORAGE_KEY = "operix_auth_session";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const emptySubscribe = () => () => {};
+
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const router = useRouter();
+  const isMounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
 
-  // Initialize session from localStorage
-  useEffect(() => {
+  const [user, setUser] = useState<AuthUser | null>(() => {
+    if (typeof window === "undefined") return null;
     try {
       const stored = localStorage.getItem(AUTH_STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
         if (parsed && parsed.role && DEMO_USER_PRESETS[parsed.role as UserRole]) {
-          setUser(parsed);
+          return parsed;
         }
       }
-    } catch {
-      // ignore storage errors
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    } catch {}
+    return null;
+  });
+
+  const router = useRouter();
+  const isLoading = !isMounted;
 
   const login = async (
     email: string,
@@ -136,4 +140,3 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
-

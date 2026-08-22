@@ -49,6 +49,8 @@ export * from "./ShareNetworkIcon";
 export * from "./ShieldCheckIcon";
 export * from "./CheckCircleIcon";
 export * from "./SparklesIcon";
+export * from "./SunIcon";
+export * from "./MoonIcon";
 
 // Chart Elements
 export * from "./SparklineSvg";
