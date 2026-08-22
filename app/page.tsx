@@ -6,13 +6,18 @@ import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { OverviewGrid } from "@/components/dashboard/OverviewGrid";
 import { ReportsHeader } from "@/components/reports/ReportsHeader";
 import { ReportsOverview } from "@/components/reports/ReportsOverview";
+import { ActivityHeader } from "@/components/activity/ActivityHeader/ActivityHeader";
+import { ActivityOverview } from "@/components/activity/ActivityOverview/ActivityOverview";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<string>("reports");
+  const [activeTab, setActiveTab] = useState<string>("history");
 
   const renderContent = () => {
     switch (activeTab) {
+      case "history":
+      case "activity":
+        return <ActivityOverview />;
       case "reports":
         return <ReportsOverview />;
       case "dashboard":
@@ -23,6 +28,9 @@ export default function Home() {
 
   const renderHeader = () => {
     switch (activeTab) {
+      case "history":
+      case "activity":
+        return <ActivityHeader />;
       case "reports":
         return <ReportsHeader />;
       case "dashboard":
@@ -43,4 +51,3 @@ export default function Home() {
     </AuthGuard>
   );
 }
-
