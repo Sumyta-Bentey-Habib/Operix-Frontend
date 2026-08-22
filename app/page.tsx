@@ -8,13 +8,17 @@ import { ReportsHeader } from "@/components/reports/ReportsHeader";
 import { ReportsOverview } from "@/components/reports/ReportsOverview";
 import { ActivityHeader } from "@/components/activity/ActivityHeader/ActivityHeader";
 import { ActivityOverview } from "@/components/activity/ActivityOverview/ActivityOverview";
+import { KpiHeader } from "@/components/kpi/KpiHeader/KpiHeader";
+import { KpiOverview } from "@/components/kpi/KpiOverview/KpiOverview";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<string>("history");
+  const [activeTab, setActiveTab] = useState<string>("kpi");
 
   const renderContent = () => {
     switch (activeTab) {
+      case "kpi":
+        return <KpiOverview />;
       case "history":
       case "activity":
         return <ActivityOverview />;
@@ -28,6 +32,8 @@ export default function Home() {
 
   const renderHeader = () => {
     switch (activeTab) {
+      case "kpi":
+        return <KpiHeader />;
       case "history":
       case "activity":
         return <ActivityHeader />;
