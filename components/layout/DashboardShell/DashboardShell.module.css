@@ -1,17 +1,19 @@
 .canvas {
   min-height: 100vh;
   width: 100%;
-  background-color: #f4f5f9;
+  background-color: var(--bg-canvas);
   display: flex;
   flex-direction: column;
+  transition: background-color 0.25s ease;
 }
 
 .outerFrame {
   width: 100%;
   min-height: 100vh;
-  background-color: #f4f5f9;
+  background-color: var(--bg-canvas);
   display: flex;
   flex-direction: column;
+  transition: background-color 0.25s ease;
 }
 
 .bodyLayout {

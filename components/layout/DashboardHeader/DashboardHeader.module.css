@@ -10,10 +10,11 @@
 .welcomeTitle {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
   letter-spacing: -0.025em;
   margin: 0;
   line-height: 1.25;
+  transition: color 0.25s ease;
 }
 
 .actionGroup {
@@ -28,36 +29,36 @@
   align-items: center;
   gap: 0.625rem;
   padding: 0.55rem 1rem;
-  background-color: #ffffff;
-  border: 1px solid #edf0f5;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
   border-radius: 12px;
-  color: #374151;
+  color: var(--text-secondary);
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  box-shadow: var(--card-shadow);
   transition: all 0.2s ease;
 }
 
 .dateFilterButton:hover {
-  background-color: #f9fafb;
-  border-color: #d1d5db;
-  color: #111827;
+  background-color: var(--bg-card-hover);
+  border-color: var(--border-hover);
+  color: var(--text-primary);
 }
 
 .dateFilterButton:focus-visible {
-  outline: 2px solid #059669;
+  outline: 2px solid var(--primary-emerald);
   outline-offset: 2px;
 }
 
 .calendarIcon {
-  color: #059669;
+  color: var(--primary-emerald);
   display: flex;
   align-items: center;
 }
 
 .chevronIcon {
-  color: #9ca3af;
+  color: var(--text-muted);
   display: flex;
   align-items: center;
 }
@@ -67,26 +68,26 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.55rem 1.1rem;
-  background-color: #ffffff;
-  border: 1px solid #edf0f5;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
   border-radius: 12px;
-  color: #111827;
+  color: var(--text-primary);
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  box-shadow: var(--card-shadow);
   transition: all 0.2s ease;
 }
 
 .addWalletButton:hover {
-  background-color: #f9fafb;
-  border-color: #d1d5db;
+  background-color: var(--bg-card-hover);
+  border-color: var(--border-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--card-hover-shadow);
 }
 
 .addWalletButton:focus-visible {
-  outline: 2px solid #059669;
+  outline: 2px solid var(--primary-emerald);
   outline-offset: 2px;
 }
 

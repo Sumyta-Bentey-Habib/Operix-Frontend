@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import styles from "./TopNavbar.module.css";
 import { LogoIcon, SearchIcon, BellIcon, LogoutIcon } from "@/components/icons";
+import { ThemeToggle } from "../ThemeToggle";
 import { TOP_NAV_TABS } from "@/constants/navigation";
 import { APP_STRINGS } from "@/constants/strings";
 import { useAuth } from "@/context/AuthContext";
@@ -102,6 +103,8 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
         >
           <BellIcon size={18} />
         </button>
+
+        <ThemeToggle />
 
         <div
           ref={menuRef}

@@ -14,15 +14,15 @@ export const ShareNetworkIcon: React.FC<IconProps> = ({
     xmlns="http://www.w3.org/2000/svg"
     className={className}
   >
-    <circle cx="18" cy="5" r="3" fill="currentColor" />
-    <circle cx="6" cy="12" r="3" fill="currentColor" />
-    <circle cx="18" cy="19" r="3" fill="currentColor" />
+    <circle cx="18" cy="5" r="3" fill={color} />
+    <circle cx="6" cy="12" r="3" fill={color} />
+    <circle cx="18" cy="19" r="3" fill={color} />
     <line
       x1="8.59"
       y1="13.51"
       x2="15.42"
       y2="17.49"
-      stroke="currentColor"
+      stroke={color}
       strokeWidth="2"
       strokeLinecap="round"
     />
@@ -31,7 +31,7 @@ export const ShareNetworkIcon: React.FC<IconProps> = ({
       y1="6.51"
       x2="8.59"
       y2="10.49"
-      stroke="currentColor"
+      stroke={color}
       strokeWidth="2"
       strokeLinecap="round"
     />

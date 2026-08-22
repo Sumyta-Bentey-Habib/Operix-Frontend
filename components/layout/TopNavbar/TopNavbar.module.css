@@ -3,9 +3,10 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.25rem 2rem;
-  background-color: #ffffff;
-  border-bottom: 1px solid #edf0f5;
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
   user-select: none;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
 .leftSection {
@@ -28,8 +29,9 @@
 .brandName {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
   letter-spacing: -0.025em;
+  transition: color 0.25s ease;
 }
 
 .centerSection {
@@ -50,7 +52,7 @@
   border-radius: 9999px;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--text-secondary);
   background-color: transparent;
   border: none;
   cursor: pointer;
@@ -59,24 +61,24 @@
 }
 
 .tabItem:hover {
-  color: #111827;
-  background-color: #f3f4f6;
+  color: var(--text-primary);
+  background-color: var(--bg-card-hover);
 }
 
 .tabItem:focus-visible {
-  outline: 2px solid #059669;
+  outline: 2px solid var(--primary-emerald);
   outline-offset: 2px;
 }
 
 .activeTab {
-  color: #059669;
-  background-color: #e6f7f0;
+  color: var(--primary-emerald);
+  background-color: var(--primary-emerald-light);
   font-weight: 600;
 }
 
 .activeTab:hover {
-  background-color: #daf3e8;
-  color: #047857;
+  background-color: var(--primary-emerald-muted);
+  color: var(--primary-emerald-hover);
 }
 
 .rightSection {
@@ -92,22 +94,23 @@
   width: 38px;
   height: 38px;
   border-radius: 9999px;
-  background-color: #f4f5f9;
-  border: 1px solid #e5e7eb;
-  color: #4b5563;
+  background-color: var(--bg-canvas);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
 }
 
 .iconButton:hover {
-  background-color: #e5e7eb;
-  color: #111827;
+  background-color: var(--bg-card-hover);
+  border-color: var(--border-hover);
+  color: var(--text-primary);
   transform: translateY(-1px);
 }
 
 .iconButton:focus-visible {
-  outline: 2px solid #059669;
+  outline: 2px solid var(--primary-emerald);
   outline-offset: 2px;
 }
 
@@ -123,7 +126,7 @@
 }
 
 .avatarWrapper:focus-visible {
-  outline: 2px solid #059669;
+  outline: 2px solid var(--primary-emerald);
   outline-offset: 2px;
 }
 
@@ -137,15 +140,15 @@
 .userNameLabel {
   font-size: 0.82rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
   line-height: 1.2;
 }
 
 .userRoleBadge {
   font-size: 0.68rem;
   font-weight: 600;
-  color: #059669;
-  background-color: #e6f7f0;
+  color: var(--badge-positive-text);
+  background-color: var(--badge-positive-bg);
   padding: 1px 6px;
   border-radius: 9999px;
   margin-top: 2px;
@@ -156,8 +159,8 @@
   height: 38px;
   border-radius: 9999px;
   object-fit: cover;
-  border: 2px solid #ffffff;
-  box-shadow: 0 0 0 1px #e5e7eb;
+  border: 2px solid var(--bg-surface);
+  box-shadow: 0 0 0 1px var(--border-default);
   transition: transform 0.2s ease;
 }
 
@@ -170,10 +173,10 @@
   top: calc(100% + 8px);
   right: 0;
   width: 220px;
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
+  background-color: var(--bg-dropdown);
+  border: 1px solid var(--border-default);
   border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--dropdown-shadow);
   padding: 8px;
   z-index: 50;
   animation: dropdownSlide 0.18s ease-out;
@@ -192,27 +195,27 @@
 
 .dropdownHeader {
   padding: 8px 10px 10px;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--border-subtle);
   margin-bottom: 4px;
 }
 
 .dropdownName {
   font-size: 0.88rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .dropdownEmail {
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .dropdownRole {
   display: inline-block;
   font-size: 0.68rem;
   font-weight: 600;
-  color: #059669;
-  background-color: #e6f7f0;
+  color: var(--badge-positive-text);
+  background-color: var(--badge-positive-bg);
   padding: 2px 6px;
   border-radius: 4px;
   margin-top: 4px;
@@ -226,7 +229,7 @@
   padding: 8px 10px;
   font-size: 0.82rem;
   font-weight: 500;
-  color: #374151;
+  color: var(--text-secondary);
   background: transparent;
   border: none;
   border-radius: 6px;
@@ -236,17 +239,17 @@
 }
 
 .dropdownItem:hover {
-  background-color: #f3f4f6;
-  color: #111827;
+  background-color: var(--bg-card-hover);
+  color: var(--text-primary);
 }
 
 .dropdownItemLogout {
-  color: #dc2626;
+  color: var(--badge-negative-text);
 }
 
 .dropdownItemLogout:hover {
-  background-color: #fef2f2;
-  color: #b91c1c;
+  background-color: var(--badge-negative-bg);
+  color: var(--badge-negative-text);
 }
 
 @media (max-width: 900px) {
