@@ -14,6 +14,7 @@ import {
   getTaskStartErrorMessage,
 } from "../task-errors";
 import { TaskAssignmentDialog } from "../TaskAssignmentDialog";
+import { TaskAttachments } from "../TaskAttachments";
 import { TaskHistory } from "../TaskHistory";
 import { TaskPriorityBadge } from "../TaskPriorityBadge";
 import { TaskStartButton } from "../TaskStartButton";
@@ -173,6 +174,8 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
         <h2>Remarks</h2>
         <p>{formatOptionalText(task.remarks)}</p>
       </div>
+
+      <TaskAttachments task={task} onTaskRefresh={refresh} />
 
       <TaskHistory taskId={task.id} refreshKey={historyRefreshKey} />
 

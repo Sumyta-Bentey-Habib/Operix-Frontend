@@ -1,4 +1,5 @@
 import type { OperixViewer, UserRole } from "@/types/auth";
+import type { Task } from "@/features/tasks/types/task.types";
 
 const NAV_ROLES: Record<string, UserRole[]> = {
   dashboard: ["SUPER_ADMIN", "ADMIN", "MEMBER"],
@@ -57,6 +58,9 @@ export const canCreateTask = (viewer: OperixViewer | null): boolean => viewer?.r
 export const canAssignTask = (viewer: OperixViewer | null): boolean => viewer?.role === "ADMIN";
 
 export const canStartTask = (viewer: OperixViewer | null): boolean => viewer?.role === "MEMBER";
+
+export const canManageTaskAttachments = (viewer: OperixViewer | null, task: Task): boolean =>
+  viewer?.role === "ADMIN" && task.status === "PENDING";
 
 export const canFilterTasksByTeam = (viewer: OperixViewer | null): boolean =>
   viewer?.role === "SUPER_ADMIN";
