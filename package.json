@@ -10,8 +10,10 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "verify": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm build"
+    "verify": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test && pnpm build"
   },
   "dependencies": {
     "next": "16.3.1",
@@ -22,12 +24,16 @@
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
+    "@testing-library/jest-dom": "6.9.1",
+    "@testing-library/react": "^16.3.0",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.1",
+    "jsdom": "^27.0.0",
     "prettier": "^3.9.6",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.0.15"
   },
   "packageManager": "pnpm@11.21.0"
 }

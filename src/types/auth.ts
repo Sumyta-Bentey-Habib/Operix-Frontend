@@ -1,35 +1,48 @@
-export type UserRole = "superadmin" | "admin" | "member";
+import type { OperixApiError } from "@/lib/api";
 
-export interface AuthUser {
-  id: string;
-  name: string;
-  email: string;
+export type UserRole = "SUPER_ADMIN" | "ADMIN" | "MEMBER";
+
+export type UserStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED";
+
+export type OperixViewerScope =
+  | { type: "GLOBAL" }
+  | { type: "ADMIN"; teamIds: string[] }
+  | { type: "MEMBER"; teamId: string | null };
+
+export interface OperixViewer {
+  userId: string;
   role: UserRole;
-  roleLabel: string;
-  avatarUrl: string;
-  badge: string;
-  description: string;
-  permissions: string[];
+  status: UserStatus;
+  scope: OperixViewerScope;
 }
+
+export interface AuthProfile {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+}
+
+export type AuthHydrationStatus =
+  "IDLE" | "LOADING" | "AUTHENTICATED" | "UNAUTHENTICATED" | "ERROR";
 
 export interface LoginCredentials {
   email: string;
-  password?: string;
-  role?: UserRole;
-}
-
-export interface DemoUserPreset extends AuthUser {
   password: string;
-  titleBadge: string;
-  accentColor: string;
+  rememberMe?: boolean;
 }
 
 export interface AuthContextType {
-  user: AuthUser | null;
+  viewer: OperixViewer | null;
+  profile: AuthProfile | null;
+  role: UserRole | null;
+  status: UserStatus | null;
+  scope: OperixViewerScope | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  loginWithRole: (role: UserRole) => Promise<void>;
-  logout: () => void;
-  availableRoles: DemoUserPreset[];
+  hydrationStatus: AuthHydrationStatus;
+  hydrationError: OperixApiError | null;
+  signIn: (email: string, password: string, options?: { rememberMe?: boolean }) => Promise<void>;
+  signOut: () => Promise<void>;
+  retryHydration: () => Promise<void>;
 }

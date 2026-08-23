@@ -2,133 +2,185 @@
 
 import React, {
   createContext,
-  useContext,
-  useState,
-  useSyncExternalStore,
   ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from "react";
-import { useRouter } from "next/navigation";
-import { AuthContextType, AuthUser, UserRole } from "@/types/auth";
-import {
-  DEMO_USERS_LIST,
-  DEMO_USER_PRESETS,
-  findDemoUserByCredentials,
-  findDemoUserByRole,
-} from "@/data/authData";
-
-const AUTH_STORAGE_KEY = "operix_auth_session";
+import { authApi } from "@/features/auth/api/authApi";
+import { viewerApi } from "@/features/auth/api/viewerApi";
+import { isAuthRequiredError, isOperixApiError, OperixApiError } from "@/lib/api";
+import type { AuthContextType, AuthHydrationStatus, AuthProfile, OperixViewer } from "@/types/auth";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const emptySubscribe = () => () => {};
+const toOperixApiError = (error: unknown): OperixApiError => {
+  if (isOperixApiError(error)) {
+    return error;
+  }
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  const isMounted = useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false
-  );
+  return new OperixApiError("Authentication failed.", {
+    status: 0,
+    code: "AUTH_ERROR",
+    details: null,
+    cause: error,
+  });
+};
 
-  const [user, setUser] = useState<AuthUser | null>(() => {
-    if (typeof window === "undefined") return null;
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [viewer, setViewer] = useState<OperixViewer | null>(null);
+  const [profile, setProfile] = useState<AuthProfile | null>(null);
+  const [hydrationStatus, setHydrationStatus] = useState<AuthHydrationStatus>("IDLE");
+  const [hydrationError, setHydrationError] = useState<OperixApiError | null>(null);
+  const viewerRef = useRef<OperixViewer | null>(null);
+  const hasBootedRef = useRef(false);
+
+  const setViewerState = useCallback((nextViewer: OperixViewer | null) => {
+    viewerRef.current = nextViewer;
+    setViewer(nextViewer);
+  }, []);
+
+  const hydrateProfile = useCallback(async () => {
     try {
-      const stored = localStorage.getItem(AUTH_STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed && parsed.role && DEMO_USER_PRESETS[parsed.role as UserRole]) {
-          return parsed;
+      const nextProfile = await authApi.getSession();
+      setProfile(nextProfile);
+    } catch {
+      if (!viewerRef.current) {
+        setProfile(null);
+      }
+    }
+  }, []);
+
+  const hydrateViewer = useCallback(
+    async (options?: { throwOnFailure?: boolean }) => {
+      if (!viewerRef.current) {
+        setHydrationStatus("LOADING");
+      }
+
+      try {
+        const nextViewer = await viewerApi.getMe();
+        setViewerState(nextViewer);
+        setHydrationStatus("AUTHENTICATED");
+        setHydrationError(null);
+        await hydrateProfile();
+      } catch (error) {
+        if (isAuthRequiredError(error)) {
+          setViewerState(null);
+          setProfile(null);
+          setHydrationStatus("UNAUTHENTICATED");
+          setHydrationError(null);
+        } else {
+          const apiError = toOperixApiError(error);
+          setHydrationError(apiError);
+          setHydrationStatus(viewerRef.current ? "AUTHENTICATED" : "ERROR");
+        }
+
+        if (options?.throwOnFailure) {
+          throw error;
         }
       }
-    } catch {}
-    return null;
-  });
+    },
+    [hydrateProfile, setViewerState],
+  );
 
-  const router = useRouter();
-  const isLoading = !isMounted;
+  useEffect(() => {
+    if (hasBootedRef.current) return;
+    hasBootedRef.current = true;
+    void hydrateViewer();
+  }, [hydrateViewer]);
 
-  const login = async (
-    email: string,
-    password?: string
-  ): Promise<{ success: boolean; error?: string }> => {
-    // Artificial slight delay for realistic feedback
-    await new Promise((resolve) => setTimeout(resolve, 350));
+  const signIn = useCallback(
+    async (email: string, password: string, options?: { rememberMe?: boolean }) => {
+      setHydrationStatus("LOADING");
+      setHydrationError(null);
 
-    const matchedUser = findDemoUserByCredentials(email, password);
+      try {
+        await authApi.signIn({
+          email,
+          password,
+          rememberMe: options?.rememberMe,
+        });
+      } catch (error) {
+        const apiError = toOperixApiError(error);
+        setHydrationError(apiError);
+        setHydrationStatus(viewerRef.current ? "AUTHENTICATED" : "UNAUTHENTICATED");
+        throw error;
+      }
 
-    if (!matchedUser) {
-      return {
-        success: false,
-        error:
-          "Invalid email or password. Please verify your credentials.",
-      };
-    }
+      try {
+        await hydrateViewer({ throwOnFailure: true });
+      } catch (error) {
+        setViewerState(null);
+        setProfile(null);
 
-    const authUser: AuthUser = {
-      id: matchedUser.id,
-      name: matchedUser.name,
-      email: matchedUser.email,
-      role: matchedUser.role,
-      roleLabel: matchedUser.roleLabel,
-      avatarUrl: matchedUser.avatarUrl,
-      badge: matchedUser.badge,
-      description: matchedUser.description,
-      permissions: matchedUser.permissions,
-    };
+        if (isOperixApiError(error) && (error.status === 401 || error.status === 403)) {
+          try {
+            await authApi.signOut();
+          } catch {
+            // Best effort cleanup only.
+          }
+        }
 
-    setUser(authUser);
+        throw error;
+      }
+    },
+    [hydrateViewer, setViewerState],
+  );
+
+  const signOut = useCallback(async () => {
     try {
-      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authUser));
-    } catch {
-      // ignore storage error
+      await authApi.signOut();
+      setViewerState(null);
+      setProfile(null);
+      setHydrationStatus("UNAUTHENTICATED");
+      setHydrationError(null);
+    } catch (error) {
+      if (isAuthRequiredError(error)) {
+        setViewerState(null);
+        setProfile(null);
+        setHydrationStatus("UNAUTHENTICATED");
+        setHydrationError(null);
+        return;
+      }
+
+      const apiError = toOperixApiError(error);
+      setHydrationError(apiError);
+      setHydrationStatus(viewerRef.current ? "AUTHENTICATED" : "ERROR");
+      throw error;
     }
+  }, [setViewerState]);
 
-    return { success: true };
-  };
+  const isAuthenticated = hydrationStatus === "AUTHENTICATED" && viewer !== null;
 
-  const loginWithRole = async (role: UserRole): Promise<void> => {
-    await new Promise((resolve) => setTimeout(resolve, 200));
-    const preset = findDemoUserByRole(role);
-    const authUser: AuthUser = {
-      id: preset.id,
-      name: preset.name,
-      email: preset.email,
-      role: preset.role,
-      roleLabel: preset.roleLabel,
-      avatarUrl: preset.avatarUrl,
-      badge: preset.badge,
-      description: preset.description,
-      permissions: preset.permissions,
-    };
-
-    setUser(authUser);
-    try {
-      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authUser));
-    } catch {
-      // ignore storage error
-    }
-  };
-
-  const logout = () => {
-    setUser(null);
-    try {
-      localStorage.removeItem(AUTH_STORAGE_KEY);
-    } catch {
-      // ignore storage error
-    }
-    router.replace("/");
-  };
-
-  const value: AuthContextType = {
-    user,
-    isAuthenticated: !!user,
-    isLoading,
-    login,
-    loginWithRole,
-    logout,
-    availableRoles: DEMO_USERS_LIST,
-  };
+  const value: AuthContextType = useMemo(
+    () => ({
+      viewer,
+      profile,
+      role: viewer?.role ?? null,
+      status: viewer?.status ?? null,
+      scope: viewer?.scope ?? null,
+      isAuthenticated,
+      isLoading: hydrationStatus === "IDLE" || hydrationStatus === "LOADING",
+      hydrationStatus,
+      hydrationError,
+      signIn,
+      signOut,
+      retryHydration: hydrateViewer,
+    }),
+    [
+      viewer,
+      profile,
+      isAuthenticated,
+      hydrationStatus,
+      hydrationError,
+      signIn,
+      signOut,
+      hydrateViewer,
+    ],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import styles from "./TopNavbar.module.css";
 import { LogoIcon, SearchIcon, BellIcon, LogoutIcon } from "@/components/icons";
 import { ThemeToggle } from "../ThemeToggle";
@@ -11,6 +11,8 @@ import { TOP_NAV_TABS } from "@/constants/navigation";
 import { APP_STRINGS } from "@/constants/strings";
 import { useAuth } from "@/context/AuthContext";
 import { USER_PROFILE_DATA } from "@/data/dashboardData";
+import { canSeeNavigationItem } from "@/lib/auth/permissions";
+import { getRoleLabel } from "@/lib/auth/roles";
 
 export interface TopNavbarProps {
   activeTabId?: string;
@@ -27,17 +29,20 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
   onSearchClick,
   onNotificationClick,
 }) => {
-  const { user, logout } = useAuth();
+  const { viewer, profile, signOut } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [logoutError, setLogoutError] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const router = useRouter();
 
-  const currentUser = user || {
-    name: USER_PROFILE_DATA.name,
-    email: "superadmin@operix.io",
-    roleLabel: USER_PROFILE_DATA.role,
+  const currentUser = {
+    name: profile?.name || viewer?.userId || USER_PROFILE_DATA.name,
+    email: profile?.email || viewer?.userId || "Authenticated user",
+    roleLabel: getRoleLabel(viewer?.role ?? null),
     avatarUrl: USER_PROFILE_DATA.avatarUrl,
   };
+  const visibleTabs = TOP_NAV_TABS.filter((tab) => canSeeNavigationItem(viewer, tab.id));
 
   // Determine active tab from pathname or activeTabId prop
   const currentTabId = (() => {
@@ -74,7 +79,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
 
       <nav className={styles.centerSection} aria-label={APP_STRINGS.ariaLabels.topNavigation}>
         <div className={styles.navTabs}>
-          {TOP_NAV_TABS.map((tab) => {
+          {visibleTabs.map((tab) => {
             const isActive = tab.id === currentTabId;
             return (
               <Link
@@ -152,12 +157,28 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
                 className={`${styles.dropdownItem} ${styles.dropdownItemLogout}`}
                 onClick={(e) => {
                   e.stopPropagation();
-                  logout();
+                  setLogoutError(null);
+                  void signOut()
+                    .then(() => {
+                      router.replace("/");
+                    })
+                    .catch((error: unknown) => {
+                      setLogoutError(
+                        error instanceof Error
+                          ? error.message
+                          : "Unable to log out. Please try again.",
+                      );
+                    });
                 }}
               >
                 <LogoutIcon size={16} />
                 <span>Log out</span>
               </button>
+              {logoutError && (
+                <div className={styles.dropdownEmail} role="alert">
+                  {logoutError}
+                </div>
+              )}
             </div>
           )}
         </div>
