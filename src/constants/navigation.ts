@@ -1,7 +1,7 @@
 import { NavItem, TopNavTab } from "@/types/dashboard";
 
 export const TOP_NAV_TABS: TopNavTab[] = [
-  { id: "dashboard", label: "Dashboard", href: "/", isActive: true },
+  { id: "dashboard", label: "Dashboard", href: "/dashboard", isActive: true },
   { id: "kpi", label: "KPIs", href: "/kpi", isActive: false },
   { id: "reports", label: "Reports", href: "/reports", isActive: false },
   { id: "documents", label: "Documents", href: "/documents", isActive: false },
@@ -10,7 +10,13 @@ export const TOP_NAV_TABS: TopNavTab[] = [
 ];
 
 export const SIDEBAR_NAV_ITEMS: NavItem[] = [
-  { id: "dashboard", label: "Dashboard", href: "/", iconName: "dashboard", isActive: true },
+  {
+    id: "dashboard",
+    label: "Dashboard",
+    href: "/dashboard",
+    iconName: "dashboard",
+    isActive: true,
+  },
   { id: "kpi", label: "KPIs", href: "/kpi", iconName: "bar_chart", isActive: false },
   {
     id: "documents",

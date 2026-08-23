@@ -29,7 +29,7 @@ export const LoginPage: React.FC = () => {
   // If already authenticated, redirect to dashboard
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      router.replace("/");
+      router.replace("/dashboard");
     }
   }, [isLoading, isAuthenticated, router]);
 

@@ -22,7 +22,7 @@ export const SignInPage: React.FC = () => {
   // If already authenticated, redirect to dashboard
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      router.replace("/");
+      router.replace("/dashboard");
     }
   }, [isLoading, isAuthenticated, router]);
 
@@ -44,7 +44,7 @@ export const SignInPage: React.FC = () => {
     try {
       const res = await login(email, password);
       if (res.success) {
-        router.replace("/");
+        router.replace("/dashboard");
       } else {
         setErrorMessage(res.error || "Authentication failed. Please verify your credentials.");
       }
