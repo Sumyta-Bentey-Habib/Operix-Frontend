@@ -1,0 +1,68 @@
+.form {
+  display: grid;
+  gap: 16px;
+}
+
+.field {
+  display: grid;
+  gap: 7px;
+}
+
+.label {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.input {
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  background: var(--bg-card-subtle);
+  color: var(--text-primary);
+  font: inherit;
+  padding: 12px 14px;
+}
+
+.input:read-only {
+  color: var(--text-secondary);
+  cursor: not-allowed;
+}
+
+.error {
+  color: var(--danger);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.secondaryButton,
+.primaryButton {
+  border-radius: 11px;
+  cursor: pointer;
+  font-weight: 800;
+  padding: 10px 14px;
+}
+
+.secondaryButton {
+  border: 1px solid var(--border-default);
+  background: var(--bg-card-subtle);
+  color: var(--text-primary);
+}
+
+.primaryButton {
+  border: 0;
+  background: var(--primary-emerald);
+  color: var(--text-inverse);
+}
+
+.secondaryButton:disabled,
+.primaryButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

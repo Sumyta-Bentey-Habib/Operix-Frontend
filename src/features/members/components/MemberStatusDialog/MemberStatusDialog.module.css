@@ -1,0 +1,59 @@
+.field {
+  display: grid;
+  gap: 7px;
+}
+
+.label {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.select {
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  background: var(--bg-card-subtle);
+  color: var(--text-primary);
+  font: inherit;
+  padding: 12px 14px;
+}
+
+.error {
+  color: var(--danger);
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-top: 12px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.secondaryButton,
+.primaryButton {
+  border-radius: 11px;
+  cursor: pointer;
+  font-weight: 800;
+  padding: 10px 14px;
+}
+
+.secondaryButton {
+  border: 1px solid var(--border-default);
+  background: var(--bg-card-subtle);
+  color: var(--text-primary);
+}
+
+.primaryButton {
+  border: 0;
+  background: var(--primary-emerald);
+  color: var(--text-inverse);
+}
+
+.secondaryButton:disabled,
+.primaryButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

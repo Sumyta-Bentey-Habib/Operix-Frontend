@@ -6,10 +6,15 @@ import type { UserRole } from "@/types/auth";
 
 export interface PermissionGuardProps {
   allowedRoles: UserRole[];
+  message?: string;
   children: ReactNode;
 }
 
-export const PermissionGuard = ({ allowedRoles, children }: PermissionGuardProps) => {
+export const PermissionGuard = ({
+  allowedRoles,
+  message = "Your current role does not allow access to this management area.",
+  children,
+}: PermissionGuardProps) => {
   const { isLoading, viewer } = useAuth();
 
   if (isLoading) return null;
@@ -32,9 +37,7 @@ export const PermissionGuard = ({ allowedRoles, children }: PermissionGuardProps
           <h1 style={{ fontSize: "1.35rem", marginBottom: "8px" }}>
             You do not have permission to access this page.
           </h1>
-          <p style={{ color: "var(--text-secondary)" }}>
-            This management area is available to Super Admin users only.
-          </p>
+          <p style={{ color: "var(--text-secondary)" }}>{message}</p>
         </div>
       </div>
     );
