@@ -5,6 +5,7 @@ const NAV_ROLES: Record<string, UserRole[]> = {
   admins: ["SUPER_ADMIN"],
   members: ["SUPER_ADMIN", "ADMIN"],
   teams: ["SUPER_ADMIN", "ADMIN"],
+  tasks: ["SUPER_ADMIN", "ADMIN", "MEMBER"],
   kpi: ["SUPER_ADMIN", "ADMIN", "MEMBER"],
   documents: ["SUPER_ADMIN", "ADMIN", "MEMBER"],
   reports: ["SUPER_ADMIN", "ADMIN"],
@@ -47,3 +48,18 @@ export const canAssignMemberToTeam = (viewer: OperixViewer | null): boolean =>
 
 export const canTransferMember = (viewer: OperixViewer | null): boolean =>
   viewer?.role === "SUPER_ADMIN";
+
+export const canViewTaskCore = (viewer: OperixViewer | null): boolean =>
+  viewer?.role === "SUPER_ADMIN" || viewer?.role === "ADMIN" || viewer?.role === "MEMBER";
+
+export const canCreateTask = (viewer: OperixViewer | null): boolean => viewer?.role === "ADMIN";
+
+export const canAssignTask = (viewer: OperixViewer | null): boolean => viewer?.role === "ADMIN";
+
+export const canStartTask = (viewer: OperixViewer | null): boolean => viewer?.role === "MEMBER";
+
+export const canFilterTasksByTeam = (viewer: OperixViewer | null): boolean =>
+  viewer?.role === "SUPER_ADMIN";
+
+export const canFilterTasksByAssignedMember = (viewer: OperixViewer | null): boolean =>
+  viewer?.role === "SUPER_ADMIN" || viewer?.role === "ADMIN";

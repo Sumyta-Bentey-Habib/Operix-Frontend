@@ -5,6 +5,7 @@ export const TOP_NAV_TABS: TopNavTab[] = [
   { id: "admins", label: "Admins", href: "/admins", isActive: false },
   { id: "members", label: "Members", href: "/members", isActive: false },
   { id: "teams", label: "Teams", href: "/teams", isActive: false },
+  { id: "tasks", label: "Tasks", href: "/tasks", isActive: false },
   { id: "kpi", label: "KPIs", href: "/kpi", isActive: false },
   { id: "reports", label: "Reports", href: "/reports", isActive: false },
   { id: "documents", label: "Documents", href: "/documents", isActive: false },
@@ -21,6 +22,7 @@ export const SIDEBAR_NAV_ITEMS: NavItem[] = [
     isActive: true,
   },
   { id: "kpi", label: "KPIs", href: "/kpi", iconName: "bar_chart", isActive: false },
+  { id: "tasks", label: "Tasks", href: "/tasks", iconName: "documents", isActive: false },
   {
     id: "documents",
     label: "Documents",

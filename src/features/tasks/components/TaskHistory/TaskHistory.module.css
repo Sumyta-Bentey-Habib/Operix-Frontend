@@ -1,0 +1,56 @@
+.section {
+  display: grid;
+  gap: 16px;
+}
+
+.title {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+
+.description {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  margin-top: 4px;
+}
+
+.timeline {
+  display: grid;
+  gap: 12px;
+}
+
+.entry {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+}
+
+.transition {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+
+.meta {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+
+.meta dt {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.meta dd {
+  color: var(--text-primary);
+  font-family: monospace;
+  font-size: 0.82rem;
+  margin: 4px 0 0;
+}
