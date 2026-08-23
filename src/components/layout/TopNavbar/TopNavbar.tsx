@@ -42,7 +42,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
   // Determine active tab from pathname or activeTabId prop
   const currentTabId = (() => {
     if (activeTabId && activeTabId !== "dashboard") return activeTabId;
-    if (!pathname || pathname === "/") return "dashboard";
+    if (!pathname || pathname.startsWith("/dashboard")) return "dashboard";
     if (pathname.startsWith("/kpi")) return "kpi";
     if (pathname.startsWith("/reports")) return "reports";
     if (pathname.startsWith("/documents")) return "documents";
@@ -65,7 +65,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
 
   return (
     <header className={navbarClassName}>
-      <Link href="/" className={styles.leftSection} style={{ textDecoration: "none" }}>
+      <Link href="/dashboard" className={styles.leftSection} style={{ textDecoration: "none" }}>
         <div className={styles.logoIcon}>
           <LogoIcon size={32} />
         </div>
