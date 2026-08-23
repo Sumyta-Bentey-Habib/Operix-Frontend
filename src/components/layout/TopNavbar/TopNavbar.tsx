@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import styles from "./TopNavbar.module.css";
-import { LogoIcon, SearchIcon, BellIcon, LogoutIcon } from "@/components/icons";
+import { LogoIcon, SearchIcon, LogoutIcon } from "@/components/icons";
 import { ThemeToggle } from "../ThemeToggle";
 import { TOP_NAV_TABS } from "@/constants/navigation";
 import { APP_STRINGS } from "@/constants/strings";
@@ -13,6 +13,7 @@ import { useAuth } from "@/context/AuthContext";
 import { USER_PROFILE_DATA } from "@/data/dashboardData";
 import { canSeeNavigationItem } from "@/lib/auth/permissions";
 import { getRoleLabel } from "@/lib/auth/roles";
+import { NotificationBell } from "@/features/notifications";
 
 export interface TopNavbarProps {
   activeTabId?: string;
@@ -27,7 +28,6 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
   className,
   onTabChange,
   onSearchClick,
-  onNotificationClick,
 }) => {
   const { viewer, profile, signOut } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -107,15 +107,10 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
           <SearchIcon size={18} />
         </button>
 
-        <button
-          type="button"
-          className={styles.iconButton}
-          aria-label={APP_STRINGS.ariaLabels.notifications}
+        <NotificationBell
+          ariaLabel={APP_STRINGS.ariaLabels.notifications}
           title={APP_STRINGS.actions.notifications}
-          onClick={onNotificationClick}
-        >
-          <BellIcon size={18} />
-        </button>
+        />
 
         <ThemeToggle />
 

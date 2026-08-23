@@ -2,13 +2,13 @@
 
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { DashboardShell } from "@/components/layout/DashboardShell";
-import { ActivityFeed } from "@/features/activities";
+import { NotificationList } from "@/features/notifications";
 
-export default function HistoryPage() {
+export default function NotificationsPage() {
   return (
     <AuthGuard>
-      <DashboardShell activeTab="history">
-        <ActivityFeed />
+      <DashboardShell activeTab="dashboard">
+        <NotificationList />
       </DashboardShell>
     </AuthGuard>
   );

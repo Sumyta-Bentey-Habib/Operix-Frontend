@@ -1,0 +1,51 @@
+.popover {
+  background: var(--bg-dropdown);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  box-shadow: var(--dropdown-shadow);
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  width: min(380px, calc(100vw - 32px));
+  z-index: 60;
+}
+
+.header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.title {
+  color: var(--text-primary);
+  font-size: 0.98rem;
+  font-weight: 900;
+}
+
+.list {
+  display: grid;
+  gap: 10px;
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.message {
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.footer {
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 10px;
+}
+
+.link {
+  color: var(--primary-emerald);
+  font-size: 0.84rem;
+  font-weight: 900;
+  text-decoration: none;
+}

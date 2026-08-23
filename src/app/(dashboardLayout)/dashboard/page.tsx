@@ -6,11 +6,10 @@ import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { OverviewGrid } from "@/components/dashboard/OverviewGrid";
 import { ReportsHeader } from "@/components/reports/ReportsHeader";
 import { ReportsOverview } from "@/components/reports/ReportsOverview";
-import { ActivityHeader } from "@/components/activity/ActivityHeader/ActivityHeader";
-import { ActivityOverview } from "@/components/activity/ActivityOverview/ActivityOverview";
 import { KpiHeader } from "@/components/kpi/KpiHeader/KpiHeader";
 import { KpiOverview } from "@/components/kpi/KpiOverview/KpiOverview";
 import { AuthGuard } from "@/components/auth/AuthGuard";
+import { ActivityFeed } from "@/features/activities";
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<string>("dashboard");
@@ -21,7 +20,7 @@ export default function DashboardPage() {
         return <KpiOverview />;
       case "history":
       case "activity":
-        return <ActivityOverview />;
+        return <ActivityFeed />;
       case "reports":
         return <ReportsOverview />;
       case "dashboard":
@@ -36,7 +35,7 @@ export default function DashboardPage() {
         return <KpiHeader />;
       case "history":
       case "activity":
-        return <ActivityHeader />;
+        return <DashboardHeader />;
       case "reports":
         return <ReportsHeader />;
       case "dashboard":

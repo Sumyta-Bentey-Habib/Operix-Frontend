@@ -1,0 +1,31 @@
+.metadata {
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+}
+
+.row {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: 150px minmax(0, 1fr);
+}
+
+.key {
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.value {
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  overflow-wrap: anywhere;
+}
+
+.empty {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
