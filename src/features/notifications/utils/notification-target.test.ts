@@ -12,11 +12,14 @@ describe("resolveNotificationTargetHref", () => {
     expect(resolveNotificationTargetHref({ targetType: "TEAM", targetId: "team-1" })).toBe(
       "/teams/team-1",
     );
+    expect(resolveNotificationTargetHref({ targetType: "REPORT", targetId: "report-1" })).toBe(
+      "/reports/report-1",
+    );
   });
 
   it("does not invent unsupported or incomplete target links", () => {
     expect(
-      resolveNotificationTargetHref({ targetType: "REPORT", targetId: "report-1" }),
+      resolveNotificationTargetHref({ targetType: "INVENTORY", targetId: "item-1" }),
     ).toBeNull();
     expect(resolveNotificationTargetHref({ targetType: "TASK", targetId: null })).toBeNull();
     expect(resolveNotificationTargetHref({ targetType: null, targetId: "task-1" })).toBeNull();

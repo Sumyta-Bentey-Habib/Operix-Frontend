@@ -1,16 +1,19 @@
 "use client";
 
-import { DashboardShell } from "@/components/layout/DashboardShell";
+import { useParams } from "next/navigation";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { PermissionGuard } from "@/components/auth/PermissionGuard";
-import { ReportsPageContent } from "@/features/reports";
+import { DashboardShell } from "@/components/layout/DashboardShell";
+import { ReportDetails } from "@/features/reports";
 
-export default function ReportsPage() {
+export default function ReportDetailPage() {
+  const params = useParams<{ reportId: string }>();
+
   return (
     <AuthGuard>
       <DashboardShell activeTab="reports" header={<></>}>
         <PermissionGuard allowedRoles={["SUPER_ADMIN", "ADMIN"]}>
-          <ReportsPageContent />
+          <ReportDetails reportId={params.reportId} />
         </PermissionGuard>
       </DashboardShell>
     </AuthGuard>

@@ -10,6 +10,8 @@ export const resolveActivityTargetHref = (
       return `/tasks/${activity.entityId}`;
     case "TEAM":
       return `/teams/${activity.entityId}`;
+    case "REPORT":
+      return `/reports/${activity.entityId}`;
     default:
       return null;
   }

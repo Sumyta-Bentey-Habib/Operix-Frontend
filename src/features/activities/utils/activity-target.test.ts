@@ -9,8 +9,10 @@ describe("resolveActivityTargetHref", () => {
     expect(resolveActivityTargetHref({ entityType: "TEAM", entityId: "team-1" })).toBe(
       "/teams/team-1",
     );
+    expect(resolveActivityTargetHref({ entityType: "REPORT", entityId: "report-1" })).toBe(
+      "/reports/report-1",
+    );
     expect(resolveActivityTargetHref({ entityType: "USER", entityId: "user-1" })).toBeNull();
-    expect(resolveActivityTargetHref({ entityType: "REPORT", entityId: "report-1" })).toBeNull();
     expect(resolveActivityTargetHref({ entityType: "TASK", entityId: null })).toBeNull();
   });
 });
