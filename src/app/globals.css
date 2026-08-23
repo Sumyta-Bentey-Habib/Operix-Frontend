@@ -1,0 +1,137 @@
+@import "tailwindcss";
+
+:root {
+  --font-sans:
+    var(--font-plus-jakarta), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Light Theme Tokens */
+  --bg-canvas: #f4f5f9;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-subtle: #f9fafb;
+  --bg-card-hover: #f3f4f6;
+  --bg-dropdown: #ffffff;
+  --bg-input: #ffffff;
+
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+  --text-inverse: #ffffff;
+
+  --border-subtle: #edf0f5;
+  --border-default: #e5e7eb;
+  --border-hover: #d1d5db;
+
+  --primary-emerald: #059669;
+  --primary-emerald-hover: #047857;
+  --primary-emerald-light: #e6f7f0;
+  --primary-emerald-dark: #065f46;
+  --primary-emerald-muted: #d1fae5;
+  --primary-emerald-glow: rgba(5, 150, 105, 0.25);
+
+  --badge-positive-bg: #e6f7f0;
+  --badge-positive-text: #059669;
+  --badge-negative-bg: #fef2f2;
+  --badge-negative-text: #dc2626;
+  --badge-pending-bg: #fef3c7;
+  --badge-pending-text: #d97706;
+
+  --card-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  --card-hover-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  --dropdown-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  --grid-line-color: #f3f4f6;
+  --table-row-hover: #fcfdfe;
+  --scrollbar-thumb: #d1d5db;
+  --scrollbar-thumb-hover: #9ca3af;
+}
+
+[data-theme="dark"],
+.dark {
+  /* Dark Theme Tokens */
+  --bg-canvas: #0b0f17;
+  --bg-surface: #131b2e;
+  --bg-card: #131b2e;
+  --bg-card-subtle: #1a233a;
+  --bg-card-hover: #1e2942;
+  --bg-dropdown: #131b2e;
+  --bg-input: #1a233a;
+
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-inverse: #0b0f17;
+
+  --border-subtle: #1e293b;
+  --border-default: #2a374f;
+  --border-hover: #3b4b66;
+
+  --primary-emerald: #10b981;
+  --primary-emerald-hover: #059669;
+  --primary-emerald-light: rgba(16, 185, 129, 0.15);
+  --primary-emerald-dark: #047857;
+  --primary-emerald-muted: rgba(16, 185, 129, 0.2);
+  --primary-emerald-glow: rgba(16, 185, 129, 0.35);
+
+  --badge-positive-bg: rgba(16, 185, 129, 0.15);
+  --badge-positive-text: #34d399;
+  --badge-negative-bg: rgba(239, 68, 68, 0.15);
+  --badge-negative-text: #f87171;
+  --badge-pending-bg: rgba(245, 158, 11, 0.15);
+  --badge-pending-text: #fbbf24;
+
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+  --card-hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --dropdown-shadow: 0 12px 32px rgba(0, 0, 0, 0.65);
+  --grid-line-color: #1e293b;
+  --table-row-hover: rgba(255, 255, 255, 0.03);
+  --scrollbar-thumb: #334155;
+  --scrollbar-thumb-hover: #475569;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
+  color-scheme: light;
+}
+
+html[data-theme="dark"],
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  min-height: 100%;
+  font-family: var(--font-sans);
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+/* Custom modern scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
