@@ -1,15 +1,14 @@
 "use client";
 
-import { DashboardShell } from "@/components/layout/DashboardShell";
-import { KpiHeader } from "@/components/kpi/KpiHeader/KpiHeader";
-import { KpiOverview } from "@/components/kpi/KpiOverview/KpiOverview";
 import { AuthGuard } from "@/components/auth/AuthGuard";
+import { DashboardShell } from "@/components/layout/DashboardShell";
+import { PerformanceOverview } from "@/features/performance";
 
 export default function KpiPage() {
   return (
     <AuthGuard>
-      <DashboardShell activeTab="kpi" header={<KpiHeader />}>
-        <KpiOverview />
+      <DashboardShell activeTab="kpi">
+        <PerformanceOverview />
       </DashboardShell>
     </AuthGuard>
   );
