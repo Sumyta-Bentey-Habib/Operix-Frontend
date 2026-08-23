@@ -1,0 +1,27 @@
+.section {
+  display: grid;
+  gap: 20px;
+}
+
+.eyebrow {
+  color: var(--primary-emerald);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.title {
+  color: var(--text-primary);
+  font-size: 1.45rem;
+  font-weight: 900;
+}
+
+.description {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-top: 6px;
+  max-width: 760px;
+}

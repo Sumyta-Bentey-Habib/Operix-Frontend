@@ -1,0 +1,40 @@
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0 0;
+}
+
+.summary {
+  color: var(--text-secondary);
+  font-size: 0.86rem;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.button {
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-weight: 700;
+  padding: 9px 14px;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+@media (max-width: 640px) {
+  .pagination {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,25 @@
+.section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+}
+
+.title {
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.description {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  margin-top: 4px;
+}
+
+.error {
+  color: var(--destructive);
+  font-weight: 800;
+}

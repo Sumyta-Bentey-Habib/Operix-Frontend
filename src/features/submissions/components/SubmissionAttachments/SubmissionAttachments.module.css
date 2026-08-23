@@ -1,0 +1,26 @@
+.section {
+  display: grid;
+  gap: 14px;
+}
+
+.title {
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.description {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  margin-top: 4px;
+}
+
+.list {
+  display: grid;
+  gap: 12px;
+}
+
+.error {
+  color: var(--destructive);
+  font-weight: 800;
+}

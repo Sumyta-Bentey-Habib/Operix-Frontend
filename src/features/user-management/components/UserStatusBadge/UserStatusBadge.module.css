@@ -1,0 +1,27 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 88px;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.active {
+  color: var(--badge-positive-text);
+  background: var(--badge-positive-bg);
+}
+
+.inactive {
+  color: var(--badge-pending-text);
+  background: var(--badge-pending-bg);
+}
+
+.suspended {
+  color: var(--badge-negative-text);
+  background: var(--badge-negative-bg);
+}

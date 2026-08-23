@@ -1,0 +1,38 @@
+.error {
+  color: #dc2626;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin-top: 14px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.primaryButton,
+.secondaryButton {
+  border: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 800;
+  padding: 12px 18px;
+}
+
+.primaryButton {
+  color: var(--text-inverse);
+  background: var(--primary-emerald);
+}
+
+.secondaryButton {
+  color: var(--text-primary);
+  background: var(--bg-card-subtle);
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

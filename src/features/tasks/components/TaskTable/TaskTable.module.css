@@ -1,0 +1,55 @@
+.tableWrap {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow-x: auto;
+}
+
+.table {
+  border-collapse: collapse;
+  min-width: 980px;
+  width: 100%;
+}
+
+.table th,
+.table td {
+  border-bottom: 1px solid var(--border);
+  padding: 14px 16px;
+  text-align: left;
+}
+
+.table th {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.mono {
+  color: var(--text-secondary);
+  font-family: monospace;
+  font-size: 0.82rem;
+}
+
+.overdue {
+  color: var(--destructive);
+  font-weight: 900;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.button {
+  background: var(--bg-muted);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 8px 10px;
+  text-decoration: none;
+}

@@ -1,0 +1,19 @@
+.state {
+  border: 1px dashed var(--border-default);
+  border-radius: 18px;
+  padding: 36px 24px;
+  text-align: center;
+  background: var(--bg-card-subtle);
+}
+
+.title {
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.message {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+}

@@ -1,0 +1,68 @@
+.section {
+  display: grid;
+  gap: 20px;
+}
+
+.backLink {
+  color: var(--primary-emerald);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+}
+
+.eyebrow {
+  color: var(--primary-emerald);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.title {
+  color: var(--text-primary);
+  font-size: 1.45rem;
+  font-weight: 900;
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.grid dt {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.grid dd {
+  color: var(--text-primary);
+  margin: 6px 0 0;
+}
+
+.mono {
+  font-family: monospace;
+}
+
+.card h2 {
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.card p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}

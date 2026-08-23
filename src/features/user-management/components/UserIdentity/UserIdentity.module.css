@@ -1,0 +1,16 @@
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.name {
+  color: var(--text-primary);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.email {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}

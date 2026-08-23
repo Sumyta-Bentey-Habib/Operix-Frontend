@@ -1,0 +1,60 @@
+.picker {
+  display: grid;
+  gap: 12px;
+}
+
+.selected {
+  align-items: center;
+  background: var(--bg-muted);
+  border-radius: 12px;
+  color: var(--text-primary);
+  display: flex;
+  font-size: 0.85rem;
+  font-weight: 800;
+  justify-content: space-between;
+  padding: 10px 12px;
+}
+
+.selected button {
+  background: transparent;
+  border: 0;
+  color: var(--primary-emerald);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.options {
+  display: grid;
+  gap: 8px;
+  max-height: 300px;
+  overflow: auto;
+}
+
+.option,
+.activeOption {
+  align-items: start;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.option:disabled,
+.activeOption:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.activeOption {
+  border-color: var(--primary-emerald);
+}
+
+.meta {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}

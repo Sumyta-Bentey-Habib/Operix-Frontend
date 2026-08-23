@@ -2,7 +2,11 @@
 
 Modern Next.js interface for the Operix Pharmaceutical Workload and Operations Management Platform.
 
-Operix replaces spreadsheet-driven operational tracking with a structured workflow product for Super Admins, Admins, and Members. This frontend contains the approved visual implementation and the backend-connected authentication foundation. Business feature screens still use mock data until their integration slices are approved.
+Operix replaces spreadsheet-driven operational tracking with a structured workflow product for
+Super Admins, Admins, and Members. This frontend contains the approved visual implementation,
+backend-connected authentication foundation, Admin management, Member management, and Team
+management. Other business feature screens still use mock data until their integration slices are
+approved.
 
 ## Current Status
 
@@ -10,8 +14,8 @@ Operix replaces spreadsheet-driven operational tracking with a structured workfl
 | --------------------------- | -------------------------------------------- |
 | Visual UI                   | Implemented and frozen for this cleanup pass |
 | Routes and page composition | Implemented and frozen                       |
-| Mock data                   | Active for business feature screens          |
-| Backend integration         | Auth, viewer, and health only                |
+| Mock data                   | Active for non-management business screens   |
+| Backend integration         | Auth, viewer, health, Admins, Members, Teams |
 | Auth integration            | Connected through Better Auth cookies        |
 | Formatting contract         | Prettier plus ESLint                         |
 
@@ -39,7 +43,8 @@ Create a local `.env.local` file with the backend API base URL:
 NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api/v1
 ```
 
-The value must be an absolute `http` or `https` URL and must not end with a slash. Production builds must provide `NEXT_PUBLIC_API_BASE_URL`; the source code does not fall back to localhost.
+The value must be an absolute `http` or `https` URL and must not end with a slash. Production
+builds must provide `NEXT_PUBLIC_API_BASE_URL`; the source code does not fall back to localhost.
 
 The app runs at:
 
@@ -72,7 +77,7 @@ src/
 ├── constants/    # Navigation, theme, copy, and CSS variable constants
 ├── context/      # Current auth and theme context providers
 ├── data/         # Mock datasets used by the current UI
-├── features/     # Feature API adapters
+├── features/     # Feature API adapters, hooks, and domain components
 ├── lib/          # Shared API, config, and auth helpers
 ├── types/        # Shared view and domain types
 └── utils/        # Pure formatting helpers
@@ -103,14 +108,16 @@ Use explicit public exports from component boundaries:
 export { ComponentName } from "./ComponentName";
 ```
 
-Do not add barrels in every internal folder just for symmetry. A barrel should mark a real public boundary.
+Do not add barrels in every internal folder just for symmetry. A barrel should mark a real public
+boundary.
 
 ## Styling and Theme
 
 - `src/app/globals.css` owns global reset, theme variables, and global primitives.
 - Component styles stay colocated in `ComponentName.module.css`.
 - CSS variable values are the source of visual truth.
-- This cleanup must not change colors, spacing, typography, chart appearance, card dimensions, or responsive behavior.
+- This cleanup must not change colors, spacing, typography, chart appearance, card dimensions, or
+  responsive behavior.
 
 ## Authentication
 
@@ -123,50 +130,60 @@ GET  /auth/get-session
 POST /auth/sign-out
 ```
 
-`/viewer/me` is the sole authentication and authorization truth. `/auth/get-session` is optional profile presentation data only. Requests use cookie credentials.
+`/viewer/me` is the sole authentication and authorization truth. `/auth/get-session` is optional
+profile presentation data only. Requests use cookie credentials.
 
 ## Mock Data
 
-The current business feature UI is still mock-driven. Mock datasets stay under `src/data` until each feature integration phase.
+The current business feature UI is still mock-driven. Mock datasets stay under `src/data` until each
+feature integration phase.
 
-Do not remove or move business mock data during structure cleanup unless every consumer is safely updated and the visual output remains unchanged.
+Do not remove or move business mock data during structure cleanup unless every consumer is safely
+updated and the visual output remains unchanged.
 
 ## Backend Integration Status
 
-Backend integration is currently limited to auth, viewer, and health infrastructure. The next phase should connect the existing UI to the Operix backend in a controlled order:
+Backend integration is currently limited to auth, viewer, health infrastructure, Admin management,
+Member management, Team management, Member assignment, and Member transfer. Tasks, dashboard data,
+performance, reports, and inventory remain pending frontend slices.
+
+The controlled order remains:
 
 ```text
 Auth integration
-→ role-aware shell
-→ user/team/task workflows
+→ Admin management
+→ Member management
+→ Team management
+→ task workflows
 → dashboard and reports
 → inventory UI
 ```
 
-## Frozen Page Contract
+## Page Composition Contract
 
-During this cleanup pass, every `src/app/**/page.tsx` file is treated as read-only.
+Route files should stay thin and compose guards plus feature components. API calls, pagination, form
+state, mutation handling, and domain error mapping belong in feature modules.
 
-Do not change:
-
-- routes;
-- route groups;
-- page JSX composition;
-- page metadata;
-- approved visual hierarchy;
-- `DashboardShell` usage;
-- dashboard tab behavior.
-
-Validation:
-
-```bash
-git diff --name-only -- 'src/app/**/page.tsx'
-```
-
-Expected result:
+For Admin management:
 
 ```text
-no output
+src/app/(dashboardLayout)/admins/page.tsx
+src/app/(dashboardLayout)/admins/[adminId]/page.tsx
+src/app/(dashboardLayout)/members/page.tsx
+src/app/(dashboardLayout)/members/[memberId]/page.tsx
+src/app/(dashboardLayout)/teams/page.tsx
+src/app/(dashboardLayout)/teams/[teamId]/page.tsx
+```
+
+These routes compose:
+
+```text
+AuthGuard
+DashboardShell
+PermissionGuard
+AdminList / AdminDetails
+MemberList / MemberDetails
+TeamList / TeamDetails
 ```
 
 ## Quality Gate

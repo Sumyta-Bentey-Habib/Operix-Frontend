@@ -1,0 +1,28 @@
+.badge {
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 5px 10px;
+}
+
+.LOW,
+.fallback {
+  background: var(--bg-muted);
+  color: var(--text-secondary);
+}
+
+.MEDIUM {
+  background: rgba(59, 130, 246, 0.14);
+  color: var(--info);
+}
+
+.HIGH {
+  background: rgba(245, 158, 11, 0.16);
+  color: var(--warning);
+}
+
+.URGENT {
+  background: rgba(239, 68, 68, 0.14);
+  color: var(--destructive);
+}

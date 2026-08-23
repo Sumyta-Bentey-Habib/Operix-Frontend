@@ -1,0 +1,42 @@
+.badge {
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 5px 10px;
+  white-space: nowrap;
+}
+
+.PENDING,
+.CANCELLED,
+.fallback {
+  background: var(--bg-muted);
+  color: var(--text-secondary);
+}
+
+.ASSIGNED,
+.SUBMITTED,
+.RESUBMITTED {
+  background: rgba(59, 130, 246, 0.14);
+  color: var(--info);
+}
+
+.IN_PROGRESS {
+  background: rgba(16, 185, 129, 0.14);
+  color: var(--primary-emerald);
+}
+
+.UNDER_REVIEW {
+  background: rgba(245, 158, 11, 0.16);
+  color: var(--warning);
+}
+
+.REVISION_REQUIRED {
+  background: rgba(245, 158, 11, 0.18);
+  color: var(--warning);
+}
+
+.COMPLETED {
+  background: rgba(34, 197, 94, 0.14);
+  color: var(--success);
+}
