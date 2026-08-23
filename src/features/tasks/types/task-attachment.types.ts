@@ -1,10 +1,6 @@
-import type { FileAssetSummary } from "@/features/files";
+import type { FileAttachmentResponse } from "@/features/files";
 
-export interface AttachmentResponse {
-  id: string;
-  file: FileAssetSummary;
-  downloadUrl: string;
-}
+export type AttachmentResponse = FileAttachmentResponse;
 
 export interface SelectedAttachmentFile {
   file: File;

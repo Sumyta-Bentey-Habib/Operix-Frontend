@@ -6,3 +6,9 @@ export interface FileAssetSummary {
   uploadedById: string;
   createdAt: string;
 }
+
+export interface FileAttachmentResponse {
+  id: string;
+  file: FileAssetSummary;
+  downloadUrl: string;
+}

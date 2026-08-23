@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { useAuth } from "@/context/AuthContext";
+import { TaskSubmissions } from "@/features/submissions";
 import { canAssignTask, canStartTask } from "@/lib/auth/permissions";
 import { formatDisplayDate } from "@/utils/date";
 import { taskApi } from "../../api/task.api";
@@ -176,6 +177,8 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
       </div>
 
       <TaskAttachments task={task} onTaskRefresh={refresh} />
+
+      <TaskSubmissions task={task} onWorkflowRefresh={refreshTaskAndHistory} />
 
       <TaskHistory taskId={task.id} refreshKey={historyRefreshKey} />
 

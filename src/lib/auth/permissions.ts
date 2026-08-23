@@ -62,6 +62,15 @@ export const canStartTask = (viewer: OperixViewer | null): boolean => viewer?.ro
 export const canManageTaskAttachments = (viewer: OperixViewer | null, task: Task): boolean =>
   viewer?.role === "ADMIN" && task.status === "PENDING";
 
+export const canSubmitTask = (viewer: OperixViewer | null, task: Task): boolean =>
+  viewer?.role === "MEMBER" && task.status === "IN_PROGRESS";
+
+export const canResubmitTask = (viewer: OperixViewer | null, task: Task): boolean =>
+  viewer?.role === "MEMBER" && task.status === "REVISION_REQUIRED";
+
+export const canReviewTaskSubmission = (viewer: OperixViewer | null, task: Task): boolean =>
+  viewer?.role === "ADMIN" && (task.status === "SUBMITTED" || task.status === "RESUBMITTED");
+
 export const canFilterTasksByTeam = (viewer: OperixViewer | null): boolean =>
   viewer?.role === "SUPER_ADMIN";
 

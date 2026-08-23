@@ -29,14 +29,19 @@ vi.mock("../../api/task-attachment.api", () => ({
   },
 }));
 
-vi.mock("@/features/files", () => ({
-  fileApi: {
-    download: mocks.download,
-  },
-  triggerBrowserDownload: mocks.triggerBrowserDownload,
-  formatFileSize: (value: number) => `${value} B`,
-  formatFileType: () => "PDF",
-}));
+vi.mock("@/features/files", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/features/files")>();
+
+  return {
+    ...actual,
+    fileApi: {
+      download: mocks.download,
+    },
+    triggerBrowserDownload: mocks.triggerBrowserDownload,
+    formatFileSize: (value: number) => `${value} B`,
+    formatFileType: () => "PDF",
+  };
+});
 
 const task = (status: Task["status"]): Task => ({
   id: "task-1",
