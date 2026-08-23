@@ -1,0 +1,175 @@
+.chartCard {
+  background-color: var(--bg-card);
+  border-radius: 20px;
+  padding: 1.5rem;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  position: relative;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.25s ease;
+}
+
+.chartCard:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--card-hover-shadow);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.legendDotRevenue {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background-color: var(--primary-emerald);
+}
+
+.legendLineExpenses {
+  width: 16px;
+  height: 2px;
+  border-top: 2px dashed #34d399;
+}
+
+.svgContainer {
+  width: 100%;
+  height: 220px;
+  position: relative;
+}
+
+.svgGraph {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.gridLine {
+  stroke: var(--grid-line-color);
+  stroke-width: 1;
+}
+
+.revenuePath {
+  stroke: var(--primary-emerald);
+  stroke-width: 3;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 4px 10px var(--primary-emerald-glow));
+}
+
+.expensesPath {
+  stroke: #34d399;
+  stroke-width: 2.5;
+  fill: none;
+  stroke-linecap: round;
+  stroke-dasharray: 6 6;
+  filter: drop-shadow(0 2px 6px rgba(52, 211, 153, 0.2));
+}
+
+.dataDotRevenue {
+  fill: var(--primary-emerald);
+  stroke: var(--bg-card);
+  stroke-width: 2.5;
+  cursor: pointer;
+  transition:
+    r 0.2s ease,
+    fill 0.2s ease;
+}
+
+.dataDotRevenue:hover {
+  r: 6;
+  fill: var(--primary-emerald-hover);
+}
+
+.dataDotExpenses {
+  fill: #34d399;
+  stroke: var(--bg-card);
+  stroke-width: 2.5;
+  cursor: pointer;
+  transition:
+    r 0.2s ease,
+    fill 0.2s ease;
+}
+
+.dataDotExpenses:hover {
+  r: 6;
+  fill: var(--primary-emerald);
+}
+
+.monthLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  fill: var(--text-muted);
+  text-anchor: middle;
+}
+
+.tooltipBox {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  background-color: var(--text-primary);
+  color: var(--text-inverse);
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: var(--dropdown-shadow);
+  animation: fadeIn 0.2s ease;
+}
+
+.tooltipMonth {
+  font-weight: 700;
+  color: #10b981;
+}
+
+.tooltipMetric {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
