@@ -4,8 +4,9 @@ Modern Next.js interface for the Operix Pharmaceutical Workload and Operations M
 
 Operix replaces spreadsheet-driven operational tracking with a structured workflow product for
 Super Admins, Admins, and Members. This frontend contains the approved visual implementation,
-backend-connected authentication foundation, Admin management, and Member management. Other
-business feature screens still use mock data until their integration slices are approved.
+backend-connected authentication foundation, Admin management, Member management, and Team
+management. Other business feature screens still use mock data until their integration slices are
+approved.
 
 ## Current Status
 
@@ -14,7 +15,7 @@ business feature screens still use mock data until their integration slices are 
 | Visual UI                   | Implemented and frozen for this cleanup pass |
 | Routes and page composition | Implemented and frozen                       |
 | Mock data                   | Active for non-management business screens   |
-| Backend integration         | Auth, viewer, health, Admins, and Members    |
+| Backend integration         | Auth, viewer, health, Admins, Members, Teams |
 | Auth integration            | Connected through Better Auth cookies        |
 | Formatting contract         | Prettier plus ESLint                         |
 
@@ -143,8 +144,8 @@ updated and the visual output remains unchanged.
 ## Backend Integration Status
 
 Backend integration is currently limited to auth, viewer, health infrastructure, Admin management,
-and Member management. Teams, Member transfer, Tasks, dashboard data, performance, reports, and
-inventory remain pending frontend slices.
+Member management, Team management, Member assignment, and Member transfer. Tasks, dashboard data,
+performance, reports, and inventory remain pending frontend slices.
 
 The controlled order remains:
 
@@ -170,6 +171,8 @@ src/app/(dashboardLayout)/admins/page.tsx
 src/app/(dashboardLayout)/admins/[adminId]/page.tsx
 src/app/(dashboardLayout)/members/page.tsx
 src/app/(dashboardLayout)/members/[memberId]/page.tsx
+src/app/(dashboardLayout)/teams/page.tsx
+src/app/(dashboardLayout)/teams/[teamId]/page.tsx
 ```
 
 These routes compose:
@@ -180,6 +183,7 @@ DashboardShell
 PermissionGuard
 AdminList / AdminDetails
 MemberList / MemberDetails
+TeamList / TeamDetails
 ```
 
 ## Quality Gate

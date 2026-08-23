@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { OperixApiError } from "@/lib/api";
 import { MemberDetails } from "./MemberDetails";
 import type { Member } from "../../types/member.types";
@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   useMember: vi.fn(),
   update: vi.fn(),
   updateStatus: vi.fn(),
+  transferMember: vi.fn(),
 }));
 
 vi.mock("@/context/AuthContext", () => ({
@@ -24,6 +25,34 @@ vi.mock("../../api/member.api", () => ({
     update: mocks.update,
     updateStatus: mocks.updateStatus,
   },
+}));
+
+vi.mock("@/features/teams/api/team-membership.api", () => ({
+  teamMembershipApi: {
+    transferMember: mocks.transferMember,
+  },
+}));
+
+vi.mock("@/features/teams/components/TransferMemberDialog", () => ({
+  TransferMemberDialog: ({
+    member,
+    pending,
+    error,
+    onSubmit,
+  }: {
+    member: Member | null;
+    pending?: boolean;
+    error?: string | null;
+    onSubmit: (targetTeamId: string) => void;
+  }) =>
+    member ? (
+      <div role="dialog" aria-label="Transfer Member">
+        {error && <p role="alert">{error}</p>}
+        <button type="button" disabled={pending} onClick={() => onSubmit("team-2")}>
+          Confirm Transfer
+        </button>
+      </div>
+    ) : null,
 }));
 
 const member: Member = {
@@ -61,6 +90,10 @@ const defaultHook = {
 };
 
 describe("MemberDetails", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("renders loading state", () => {
     mocks.useAuth.mockReturnValue({ viewer: superAdminViewer });
     mocks.useMember.mockReturnValue({
@@ -107,6 +140,66 @@ describe("MemberDetails", () => {
     render(<MemberDetails memberId="member-1" />);
 
     expect(screen.queryByRole("button", { name: "Change Status" })).not.toBeInTheDocument();
+  });
+
+  it("shows transfer to SUPER_ADMIN even when Member is not active", async () => {
+    const inactiveMember = {
+      ...member,
+      status: "INACTIVE" as const,
+    };
+    mocks.transferMember.mockResolvedValueOnce({
+      id: "team-2",
+      name: "Team B",
+      adminId: "admin-2",
+      createdAt: "2026-08-23T00:00:00.000Z",
+      updatedAt: "2026-08-23T00:00:00.000Z",
+    });
+    mocks.useAuth.mockReturnValue({ viewer: superAdminViewer });
+    mocks.useMember.mockReturnValue({
+      ...defaultHook,
+      member: inactiveMember,
+    });
+
+    render(<MemberDetails memberId="member-1" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Transfer" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirm Transfer" }));
+
+    await waitFor(() =>
+      expect(mocks.transferMember).toHaveBeenCalledWith("member-1", {
+        targetTeamId: "team-2",
+      }),
+    );
+  });
+
+  it("hides transfer from ADMIN", () => {
+    mocks.useAuth.mockReturnValue({ viewer: adminViewer });
+    mocks.useMember.mockReturnValue(defaultHook);
+
+    render(<MemberDetails memberId="member-1" />);
+
+    expect(screen.queryByRole("button", { name: "Transfer" })).not.toBeInTheDocument();
+  });
+
+  it("shows transfer concurrency errors without retrying automatically", async () => {
+    mocks.transferMember.mockRejectedValueOnce(
+      new OperixApiError("Changed", {
+        status: 409,
+        code: "MEMBER_ASSIGNMENT_CHANGED",
+      }),
+    );
+    mocks.useAuth.mockReturnValue({ viewer: superAdminViewer });
+    mocks.useMember.mockReturnValue(defaultHook);
+
+    render(<MemberDetails memberId="member-1" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Transfer" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirm Transfer" }));
+
+    await waitFor(() =>
+      expect(screen.getByRole("alert")).toHaveTextContent("Refresh and try again"),
+    );
+    expect(mocks.transferMember).toHaveBeenCalledTimes(1);
   });
 
   it("ADMIN update excludes employeeId", async () => {

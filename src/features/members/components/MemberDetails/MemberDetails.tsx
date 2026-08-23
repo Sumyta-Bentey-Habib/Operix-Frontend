@@ -8,9 +8,12 @@ import { Modal } from "@/components/ui/Modal";
 import { useAuth } from "@/context/AuthContext";
 import { UserStatusBadge } from "@/features/user-management";
 import { isOperixApiError } from "@/lib/api";
-import { canChangeMemberStatus } from "@/lib/auth/permissions";
+import { canChangeMemberStatus, canTransferMember } from "@/lib/auth/permissions";
 import type { UserStatus } from "@/types/auth";
 import { formatDisplayDate } from "@/utils/date";
+import { teamMembershipApi } from "@/features/teams/api/team-membership.api";
+import { getTeamErrorView } from "@/features/teams/components/team-errors";
+import { TransferMemberDialog } from "@/features/teams/components/TransferMemberDialog";
 import { memberApi } from "../../api/member.api";
 import { useMember } from "../../hooks/use-member";
 import type { CreateMemberInput, UpdateMemberInput } from "../../types/member.types";
@@ -31,9 +34,12 @@ export const MemberDetails = ({ memberId }: MemberDetailsProps) => {
   const [editing, setEditing] = useState(false);
   const [updatePending, setUpdatePending] = useState(false);
   const [statusPending, setStatusPending] = useState(false);
+  const [transferPending, setTransferPending] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
+  const [transferOpen, setTransferOpen] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [statusError, setStatusError] = useState<string | null>(null);
+  const [transferError, setTransferError] = useState<string | null>(null);
 
   if (!viewer) return null;
 
@@ -69,6 +75,21 @@ export const MemberDetails = ({ memberId }: MemberDetailsProps) => {
       setStatusError(getMemberErrorView(statusUpdateError).message);
     } finally {
       setStatusPending(false);
+    }
+  };
+
+  const handleTransfer = async (targetTeamId: string) => {
+    if (!member || transferPending || !canTransferMember(viewer)) return;
+    setTransferPending(true);
+    setTransferError(null);
+
+    try {
+      await teamMembershipApi.transferMember(member.id, { targetTeamId });
+      setTransferOpen(false);
+    } catch (transferUpdateError) {
+      setTransferError(getTeamErrorView(transferUpdateError).message);
+    } finally {
+      setTransferPending(false);
     }
   };
 
@@ -122,6 +143,18 @@ export const MemberDetails = ({ memberId }: MemberDetailsProps) => {
                 Change Status
               </button>
             )}
+            {canTransferMember(viewer) && (
+              <button
+                type="button"
+                className={styles.button}
+                onClick={() => {
+                  setTransferError(null);
+                  setTransferOpen(true);
+                }}
+              >
+                Transfer
+              </button>
+            )}
           </div>
         </header>
         <div className={styles.details}>
@@ -164,6 +197,14 @@ export const MemberDetails = ({ memberId }: MemberDetailsProps) => {
         error={statusError}
         onSubmit={handleStatus}
         onClose={() => !statusPending && setStatusOpen(false)}
+      />
+
+      <TransferMemberDialog
+        member={transferOpen && canTransferMember(viewer) ? member : null}
+        pending={transferPending}
+        error={transferError}
+        onSubmit={handleTransfer}
+        onClose={() => !transferPending && setTransferOpen(false)}
       />
     </section>
   );
