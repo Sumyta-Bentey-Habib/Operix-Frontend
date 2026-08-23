@@ -1,0 +1,67 @@
+.filters {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 16px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.label {
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.input {
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  color: var(--text-primary);
+  padding: 10px 12px;
+}
+
+.actions {
+  align-items: end;
+  display: flex;
+  gap: 8px;
+}
+
+.button,
+.secondaryButton {
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 800;
+  padding: 10px 12px;
+}
+
+.button {
+  background: var(--primary-emerald);
+  border: 1px solid var(--primary-emerald);
+  color: var(--text-inverse);
+}
+
+.secondaryButton {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+}
+
+.error {
+  color: var(--destructive);
+  font-size: 0.82rem;
+  font-weight: 800;
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 900px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+}

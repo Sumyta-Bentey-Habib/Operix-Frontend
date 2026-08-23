@@ -1,0 +1,228 @@
+.layout {
+  display: grid;
+  gap: 24px;
+}
+
+.hero,
+.card,
+.contextCard {
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 28px;
+}
+
+.hero h1,
+.sectionHeader h2,
+.breakdown h3 {
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.hero p,
+.sectionHeader p,
+.muted {
+  margin: 6px 0 0;
+  color: var(--color-text-secondary);
+}
+
+.card {
+  padding: 24px;
+}
+
+.contextCard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 18px;
+  color: var(--color-text-secondary);
+}
+
+.sectionHeader {
+  margin-bottom: 18px;
+}
+
+.metricGrid,
+.summaryGrid,
+.breakdownGrid,
+.pickerRows {
+  display: grid;
+  gap: 12px;
+}
+
+.metricGrid {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.summaryGrid {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.metric,
+.summaryTile,
+.breakdownRow,
+.pickerRow {
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: var(--color-background);
+  padding: 14px;
+}
+
+.metric,
+.summaryTile {
+  display: grid;
+  gap: 6px;
+}
+
+.metric span,
+.summaryTile span,
+.breakdownRow span {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+}
+
+.metric strong,
+.summaryTile strong,
+.breakdownRow strong {
+  color: var(--color-text-primary);
+  font-size: 1.15rem;
+}
+
+.breakdown {
+  margin-top: 22px;
+}
+
+.breakdownGrid {
+  margin-top: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.breakdownRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.filter {
+  display: grid;
+  gap: 8px;
+  min-width: min(100%, 280px);
+}
+
+.filter label {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+}
+
+.select {
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 980px;
+}
+
+.table th,
+.table td {
+  border-bottom: 1px solid var(--color-border);
+  padding: 14px 12px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.table th {
+  color: var(--color-text-secondary);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.link,
+.button,
+.secondaryButton,
+.pickerRow {
+  cursor: pointer;
+}
+
+.link {
+  color: var(--color-primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.button,
+.secondaryButton {
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 700;
+}
+
+.button {
+  background: var(--color-primary);
+  color: var(--color-surface);
+}
+
+.secondaryButton {
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+
+.pickerRow {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  text-align: left;
+}
+
+.pickerRow:hover,
+.selected {
+  border-color: var(--color-primary);
+}
+
+.identityGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.identityItem {
+  display: grid;
+  gap: 4px;
+}
+
+.identityItem span {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+}
+
+.identityItem strong {
+  color: var(--color-text-primary);
+}

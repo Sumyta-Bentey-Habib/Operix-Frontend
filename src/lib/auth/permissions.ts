@@ -10,6 +10,7 @@ const NAV_ROLES: Record<string, UserRole[]> = {
   kpi: ["SUPER_ADMIN", "ADMIN", "MEMBER"],
   documents: ["SUPER_ADMIN", "ADMIN", "MEMBER"],
   reports: ["SUPER_ADMIN", "ADMIN"],
+  inventory: ["SUPER_ADMIN", "ADMIN", "MEMBER"],
   history: ["SUPER_ADMIN", "ADMIN", "MEMBER"],
   contacts: ["SUPER_ADMIN", "ADMIN"],
   workspace: ["SUPER_ADMIN", "ADMIN", "MEMBER"],

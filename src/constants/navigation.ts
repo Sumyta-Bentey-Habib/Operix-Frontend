@@ -8,6 +8,7 @@ export const TOP_NAV_TABS: TopNavTab[] = [
   { id: "tasks", label: "Tasks", href: "/tasks", isActive: false },
   { id: "kpi", label: "KPIs", href: "/kpi", isActive: false },
   { id: "reports", label: "Reports", href: "/reports", isActive: false },
+  { id: "inventory", label: "Inventory", href: "/inventory", isActive: false },
   { id: "documents", label: "Documents", href: "/documents", isActive: false },
   { id: "history", label: "Activity Feed", href: "/activity", isActive: false },
   { id: "contacts", label: "Contacts", href: "/contacts", isActive: false },
@@ -31,6 +32,13 @@ export const SIDEBAR_NAV_ITEMS: NavItem[] = [
     isActive: false,
   },
   { id: "reports", label: "Reports", href: "/reports", iconName: "reports", isActive: false },
+  {
+    id: "inventory",
+    label: "Inventory",
+    href: "/inventory",
+    iconName: "documents",
+    isActive: false,
+  },
   {
     id: "workspace",
     label: "Workspace Layout",

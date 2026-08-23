@@ -1,15 +1,14 @@
 "use client";
 
-import { DashboardShell } from "@/components/layout/DashboardShell";
-import { ActivityHeader } from "@/components/activity/ActivityHeader/ActivityHeader";
-import { ActivityOverview } from "@/components/activity/ActivityOverview/ActivityOverview";
 import { AuthGuard } from "@/components/auth/AuthGuard";
+import { DashboardShell } from "@/components/layout/DashboardShell";
+import { ActivityFeed } from "@/features/activities";
 
 export default function HistoryPage() {
   return (
     <AuthGuard>
-      <DashboardShell activeTab="history" header={<ActivityHeader />}>
-        <ActivityOverview />
+      <DashboardShell activeTab="history">
+        <ActivityFeed />
       </DashboardShell>
     </AuthGuard>
   );
