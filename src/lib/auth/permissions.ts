@@ -2,6 +2,7 @@ import type { OperixViewer, UserRole } from "@/types/auth";
 
 const NAV_ROLES: Record<string, UserRole[]> = {
   dashboard: ["SUPER_ADMIN", "ADMIN", "MEMBER"],
+  admins: ["SUPER_ADMIN"],
   kpi: ["SUPER_ADMIN", "ADMIN", "MEMBER"],
   documents: ["SUPER_ADMIN", "ADMIN", "MEMBER"],
   reports: ["SUPER_ADMIN", "ADMIN"],

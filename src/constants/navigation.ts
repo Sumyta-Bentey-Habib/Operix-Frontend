@@ -2,6 +2,7 @@ import { NavItem, TopNavTab } from "@/types/dashboard";
 
 export const TOP_NAV_TABS: TopNavTab[] = [
   { id: "dashboard", label: "Dashboard", href: "/dashboard", isActive: true },
+  { id: "admins", label: "Admins", href: "/admins", isActive: false },
   { id: "kpi", label: "KPIs", href: "/kpi", isActive: false },
   { id: "reports", label: "Reports", href: "/reports", isActive: false },
   { id: "documents", label: "Documents", href: "/documents", isActive: false },

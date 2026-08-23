@@ -2,18 +2,18 @@
 
 Modern Next.js interface for the Operix Pharmaceutical Workload and Operations Management Platform.
 
-Operix replaces spreadsheet-driven operational tracking with a structured workflow product for Super Admins, Admins, and Members. This frontend contains the approved visual implementation and the backend-connected authentication foundation. Business feature screens still use mock data until their integration slices are approved.
+Operix replaces spreadsheet-driven operational tracking with a structured workflow product for Super Admins, Admins, and Members. This frontend contains the approved visual implementation, backend-connected authentication foundation, and Super Admin Admin management. Other business feature screens still use mock data until their integration slices are approved.
 
 ## Current Status
 
-| Area                        | Status                                       |
-| --------------------------- | -------------------------------------------- |
-| Visual UI                   | Implemented and frozen for this cleanup pass |
-| Routes and page composition | Implemented and frozen                       |
-| Mock data                   | Active for business feature screens          |
-| Backend integration         | Auth, viewer, and health only                |
-| Auth integration            | Connected through Better Auth cookies        |
-| Formatting contract         | Prettier plus ESLint                         |
+| Area                        | Status                                        |
+| --------------------------- | --------------------------------------------- |
+| Visual UI                   | Implemented and frozen for this cleanup pass  |
+| Routes and page composition | Implemented and frozen                        |
+| Mock data                   | Active for non-Admin business feature screens |
+| Backend integration         | Auth, viewer, health, and Admin management    |
+| Auth integration            | Connected through Better Auth cookies         |
+| Formatting contract         | Prettier plus ESLint                          |
 
 ## Tech Stack
 
@@ -72,7 +72,7 @@ src/
 ├── constants/    # Navigation, theme, copy, and CSS variable constants
 ├── context/      # Current auth and theme context providers
 ├── data/         # Mock datasets used by the current UI
-├── features/     # Feature API adapters
+├── features/     # Feature API adapters, hooks, and domain components
 ├── lib/          # Shared API, config, and auth helpers
 ├── types/        # Shared view and domain types
 └── utils/        # Pure formatting helpers
@@ -133,40 +133,38 @@ Do not remove or move business mock data during structure cleanup unless every c
 
 ## Backend Integration Status
 
-Backend integration is currently limited to auth, viewer, and health infrastructure. The next phase should connect the existing UI to the Operix backend in a controlled order:
+Backend integration is currently limited to auth, viewer, health infrastructure, and Super Admin Admin management. Members, Teams, Tasks, dashboard data, performance, reports, and inventory remain pending frontend slices.
+
+The controlled order remains:
 
 ```text
 Auth integration
-→ role-aware shell
-→ user/team/task workflows
+→ Admin management
+→ Member management
+→ Team management
+→ task workflows
 → dashboard and reports
 → inventory UI
 ```
 
-## Frozen Page Contract
+## Page Composition Contract
 
-During this cleanup pass, every `src/app/**/page.tsx` file is treated as read-only.
+Route files should stay thin and compose guards plus feature components. API calls, pagination, form state, mutation handling, and domain error mapping belong in feature modules.
 
-Do not change:
-
-- routes;
-- route groups;
-- page JSX composition;
-- page metadata;
-- approved visual hierarchy;
-- `DashboardShell` usage;
-- dashboard tab behavior.
-
-Validation:
-
-```bash
-git diff --name-only -- 'src/app/**/page.tsx'
-```
-
-Expected result:
+For Admin management:
 
 ```text
-no output
+src/app/(dashboardLayout)/admins/page.tsx
+src/app/(dashboardLayout)/admins/[adminId]/page.tsx
+```
+
+These routes compose:
+
+```text
+AuthGuard
+DashboardShell
+PermissionGuard
+AdminList / AdminDetails
 ```
 
 ## Quality Gate

@@ -1,0 +1,51 @@
+.section {
+  display: grid;
+  gap: 20px;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.eyebrow {
+  color: var(--primary-emerald);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.title {
+  color: var(--text-primary);
+  font-size: 1.45rem;
+  font-weight: 900;
+}
+
+.description {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-top: 6px;
+  max-width: 680px;
+}
+
+.primaryButton {
+  border: 0;
+  border-radius: 12px;
+  background: var(--primary-emerald);
+  color: var(--text-inverse);
+  cursor: pointer;
+  font-weight: 800;
+  padding: 12px 18px;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .header {
+    flex-direction: column;
+  }
+}
