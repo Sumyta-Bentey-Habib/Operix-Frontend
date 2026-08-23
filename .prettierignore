@@ -6,3 +6,4 @@ coverage
 pnpm-lock.yaml
 
 src/app/**/page.tsx
+resource/

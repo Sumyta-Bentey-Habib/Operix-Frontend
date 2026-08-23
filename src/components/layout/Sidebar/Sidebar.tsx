@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import styles from "./Sidebar.module.css";
 import {
   DashboardIcon,
@@ -15,6 +16,7 @@ import {
 import { SIDEBAR_NAV_ITEMS, SIDEBAR_LOGOUT_ITEM } from "@/constants/navigation";
 import { APP_STRINGS } from "@/constants/strings";
 import { useAuth } from "@/context/AuthContext";
+import { canSeeNavigationItem } from "@/lib/auth/permissions";
 
 export interface SidebarProps {
   activeId?: string;
@@ -27,7 +29,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   className,
   onNavigate,
 }) => {
-  const { logout } = useAuth();
+  const { viewer, signOut } = useAuth();
+  const router = useRouter();
+  const visibleNavItems = SIDEBAR_NAV_ITEMS.filter((item) => canSeeNavigationItem(viewer, item.id));
 
   const renderNavIcon = (iconName: string, isActive: boolean) => {
     const color = isActive ? "#059669" : "#6B7280";
@@ -71,7 +75,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
 
         <nav className={styles.navList}>
-          {SIDEBAR_NAV_ITEMS.map((item) => {
+          {visibleNavItems.map((item) => {
             const isActive = item.id === activeId;
             return (
               <button
@@ -94,7 +98,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <button
           type="button"
           className={styles.logoutButton}
-          onClick={logout}
+          onClick={() => {
+            void signOut()
+              .then(() => {
+                router.replace("/");
+              })
+              .catch(() => {
+                // AuthContext retains the viewer when backend sign out fails.
+              });
+          }}
           aria-label={SIDEBAR_LOGOUT_ITEM.label}
           title={SIDEBAR_LOGOUT_ITEM.label}
         >

@@ -76,7 +76,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const systemScheme = useSyncExternalStore(
     subscribeSystemScheme,
     getSystemSchemeSnapshot,
-    getSystemSchemeServerSnapshot
+    getSystemSchemeServerSnapshot,
   );
 
   const resolvedTheme: ResolvedTheme = theme === "system" ? systemScheme : theme;

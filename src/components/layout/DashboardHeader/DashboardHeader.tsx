@@ -18,8 +18,8 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   onDateFilterClick,
   onAddWalletClick,
 }) => {
-  const { user } = useAuth();
-  const displayName = user?.name || USER_PROFILE_DATA.name;
+  const { profile, viewer } = useAuth();
+  const displayName = profile?.name || viewer?.userId || USER_PROFILE_DATA.name;
   const containerClassName = className
     ? `${styles.headerContainer} ${className}`
     : styles.headerContainer;

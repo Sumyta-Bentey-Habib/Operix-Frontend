@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./LoginPage.module.css";
 import { useAuth } from "@/context/AuthContext";
+import { isOperixApiError } from "@/lib/api";
 import {
   LogoIcon,
   MailIcon,
@@ -16,7 +17,7 @@ import {
 } from "@/components/icons";
 
 export const SignInPage: React.FC = () => {
-  const { login, isAuthenticated, isLoading } = useAuth();
+  const { signIn, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
   // If already authenticated, redirect to dashboard
@@ -27,8 +28,8 @@ export const SignInPage: React.FC = () => {
   }, [isLoading, isAuthenticated, router]);
 
   // Form State
-  const [email, setEmail] = useState("superadmin@apexpharmabd.com");
-  const [password, setPassword] = useState("superadmin123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,14 +43,14 @@ export const SignInPage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const res = await login(email, password);
-      if (res.success) {
-        router.replace("/dashboard");
-      } else {
-        setErrorMessage(res.error || "Authentication failed. Please verify your credentials.");
-      }
-    } catch {
-      setErrorMessage("An unexpected error occurred. Please try again.");
+      await signIn(email, password, { rememberMe });
+      router.replace("/dashboard");
+    } catch (error) {
+      setErrorMessage(
+        isOperixApiError(error)
+          ? error.message
+          : "Authentication failed. Please verify your credentials.",
+      );
     } finally {
       setIsSubmitting(false);
     }
