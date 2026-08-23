@@ -12,6 +12,12 @@ export const resolveActivityTargetHref = (
       return `/teams/${activity.entityId}`;
     case "REPORT":
       return `/reports/${activity.entityId}`;
+    case "INVENTORY_CATEGORY":
+      return `/inventory/categories/${activity.entityId}`;
+    case "INVENTORY_ITEM":
+      return `/inventory/items/${activity.entityId}`;
+    case "INVENTORY_ASSIGNMENT":
+      return `/inventory/assignments/${activity.entityId}`;
     default:
       return null;
   }

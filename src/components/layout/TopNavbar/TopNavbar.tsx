@@ -50,6 +50,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
     if (!pathname || pathname.startsWith("/dashboard")) return "dashboard";
     if (pathname.startsWith("/kpi")) return "kpi";
     if (pathname.startsWith("/reports")) return "reports";
+    if (pathname.startsWith("/inventory")) return "inventory";
     if (pathname.startsWith("/documents")) return "documents";
     if (pathname.startsWith("/activity") || pathname.startsWith("/history")) return "history";
     if (pathname.startsWith("/contacts")) return "contacts";

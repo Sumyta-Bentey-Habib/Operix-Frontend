@@ -12,6 +12,15 @@ describe("resolveActivityTargetHref", () => {
     expect(resolveActivityTargetHref({ entityType: "REPORT", entityId: "report-1" })).toBe(
       "/reports/report-1",
     );
+    expect(resolveActivityTargetHref({ entityType: "INVENTORY_CATEGORY", entityId: "cat-1" })).toBe(
+      "/inventory/categories/cat-1",
+    );
+    expect(resolveActivityTargetHref({ entityType: "INVENTORY_ITEM", entityId: "item-1" })).toBe(
+      "/inventory/items/item-1",
+    );
+    expect(
+      resolveActivityTargetHref({ entityType: "INVENTORY_ASSIGNMENT", entityId: "assignment-1" }),
+    ).toBe("/inventory/assignments/assignment-1");
     expect(resolveActivityTargetHref({ entityType: "USER", entityId: "user-1" })).toBeNull();
     expect(resolveActivityTargetHref({ entityType: "TASK", entityId: null })).toBeNull();
   });

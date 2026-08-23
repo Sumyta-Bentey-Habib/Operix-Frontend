@@ -16,6 +16,8 @@ export const resolveNotificationTargetHref = (
       return `/teams/${notification.targetId}`;
     case "REPORT":
       return `/reports/${notification.targetId}`;
+    case "INVENTORY_ASSIGNMENT":
+      return `/inventory/assignments/${notification.targetId}`;
     default:
       return null;
   }

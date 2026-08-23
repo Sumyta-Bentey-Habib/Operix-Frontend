@@ -15,6 +15,12 @@ describe("resolveNotificationTargetHref", () => {
     expect(resolveNotificationTargetHref({ targetType: "REPORT", targetId: "report-1" })).toBe(
       "/reports/report-1",
     );
+    expect(
+      resolveNotificationTargetHref({
+        targetType: "INVENTORY_ASSIGNMENT",
+        targetId: "assignment-1",
+      }),
+    ).toBe("/inventory/assignments/assignment-1");
   });
 
   it("does not invent unsupported or incomplete target links", () => {
