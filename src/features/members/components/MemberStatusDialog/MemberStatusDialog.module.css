@@ -4,56 +4,105 @@
 }
 
 .label {
-  color: var(--text-secondary);
-  font-size: 0.78rem;
-  font-weight: 800;
+  color: var(--text-primary);
+  font-size: 0.84rem;
+  font-weight: 700;
 }
 
 .select {
   border: 1px solid var(--border-default);
   border-radius: 12px;
-  background: var(--bg-card-subtle);
+  background: var(--bg-input);
   color: var(--text-primary);
   font: inherit;
+  font-size: 0.9rem;
   padding: 12px 14px;
+  min-height: 44px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.select:focus {
+  border-color: var(--primary-emerald);
+  box-shadow: 0 0 0 3px var(--primary-emerald-glow);
 }
 
 .error {
-  color: var(--danger);
-  font-size: 0.82rem;
-  font-weight: 700;
+  color: var(--badge-negative-text);
+  font-size: 0.84rem;
+  font-weight: 500;
   margin-top: 12px;
 }
 
 .actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  margin-top: 18px;
+  gap: 12px;
+  margin-top: 20px;
 }
 
 .secondaryButton,
 .primaryButton {
-  border-radius: 11px;
+  border: 1px solid transparent;
+  border-radius: 12px;
   cursor: pointer;
-  font-weight: 800;
-  padding: 10px 14px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  padding: 11px 20px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
 }
 
 .secondaryButton {
-  border: 1px solid var(--border-default);
+  border-color: var(--border-default);
   background: var(--bg-card-subtle);
   color: var(--text-primary);
 }
 
+.secondaryButton:hover:not(:disabled) {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+}
+
 .primaryButton {
-  border: 0;
   background: var(--primary-emerald);
   color: var(--text-inverse);
+  box-shadow: 0 2px 8px var(--primary-emerald-glow);
+}
+
+.primaryButton:hover:not(:disabled) {
+  background: var(--primary-emerald-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--primary-emerald-glow);
+}
+
+.primaryButton:focus-visible {
+  outline: 2px solid var(--primary-emerald);
+  outline-offset: 2px;
+}
+
+.secondaryButton:focus-visible {
+  outline: 2px solid var(--primary-emerald);
+  outline-offset: 2px;
 }
 
 .secondaryButton:disabled,
 .primaryButton:disabled {
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+@media (max-width: 480px) {
+  .actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
 }

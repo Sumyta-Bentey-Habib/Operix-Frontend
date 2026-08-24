@@ -41,12 +41,12 @@ export const TaskCompletionTrend: React.FC = () => {
           <div className={styles.legendItem}>
             <span
               className={styles.legendLine}
-              style={{ backgroundColor: "var(--primary-emerald, #10b981)" }}
+              style={{ backgroundColor: "var(--primary-emerald)" }}
             />
             <span>Completed Tasks</span>
           </div>
           <div className={styles.legendItem}>
-            <span className={styles.legendLine} style={{ backgroundColor: "#94a3b8" }} />
+            <span className={styles.legendLine} style={{ backgroundColor: "var(--text-muted)" }} />
             <span>Target Benchmark</span>
           </div>
         </div>
@@ -55,8 +55,8 @@ export const TaskCompletionTrend: React.FC = () => {
       <svg className={styles.chartSvg} viewBox={`0 0 ${width} ${height}`}>
         <defs>
           <linearGradient id="completionGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--primary-emerald, #10b981)" stopOpacity="0.6" />
-            <stop offset="100%" stopColor="var(--primary-emerald, #10b981)" stopOpacity="0.0" />
+            <stop offset="0%" stopColor="var(--primary-emerald)" stopOpacity="0.5" />
+            <stop offset="100%" stopColor="var(--primary-emerald)" stopOpacity="0.0" />
           </linearGradient>
         </defs>
 

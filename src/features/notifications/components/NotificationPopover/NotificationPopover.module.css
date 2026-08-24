@@ -1,16 +1,30 @@
 .popover {
   background: var(--bg-dropdown);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-default);
-  border-radius: 16px;
+  border-radius: 18px;
   box-shadow: var(--dropdown-shadow);
   display: grid;
   gap: 12px;
-  padding: 14px;
+  padding: 16px;
   position: absolute;
   right: 0;
   top: calc(100% + 10px);
   width: min(380px, calc(100vw - 32px));
   z-index: 60;
+  animation: popoverFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes popoverFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .header {
@@ -22,7 +36,7 @@
 .title {
   color: var(--text-primary);
   font-size: 0.98rem;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .list {
@@ -30,6 +44,7 @@
   gap: 10px;
   max-height: 420px;
   overflow-y: auto;
+  scrollbar-width: thin;
 }
 
 .message {
@@ -46,6 +61,13 @@
 .link {
   color: var(--primary-emerald);
   font-size: 0.84rem;
-  font-weight: 900;
+  font-weight: 700;
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.link:hover {
+  text-decoration: underline;
 }

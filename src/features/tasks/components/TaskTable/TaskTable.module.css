@@ -1,8 +1,11 @@
 .tableWrap {
-  background: var(--card);
-  border: 1px solid var(--border);
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
   border-radius: 18px;
+  box-shadow: var(--card-shadow);
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
 }
 
 .table {
@@ -13,27 +16,38 @@
 
 .table th,
 .table td {
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-subtle);
   padding: 14px 16px;
   text-align: left;
+  vertical-align: middle;
 }
 
 .table th {
-  color: var(--text-secondary);
+  color: var(--text-muted);
   font-size: 0.75rem;
-  letter-spacing: 0.06em;
+  font-weight: 700;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
+  background: var(--bg-card);
+}
+
+.table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.table tbody tr:hover {
+  background-color: var(--table-row-hover);
 }
 
 .mono {
   color: var(--text-secondary);
-  font-family: monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.82rem;
 }
 
 .overdue {
-  color: var(--destructive);
-  font-weight: 900;
+  color: var(--badge-negative-text);
+  font-weight: 800;
 }
 
 .actions {
@@ -43,13 +57,29 @@
 }
 
 .button {
-  background: var(--bg-muted);
-  border: 1px solid var(--border);
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-default);
   border-radius: 10px;
   color: var(--text-primary);
   cursor: pointer;
-  font-size: 0.8rem;
-  font-weight: 800;
-  padding: 8px 10px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  padding: 8px 12px;
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.button:hover {
+  border-color: var(--primary-emerald);
+  color: var(--primary-emerald);
+  background: var(--primary-emerald-light);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--primary-emerald);
+  outline-offset: 2px;
 }

@@ -82,7 +82,7 @@ export const OverdueTrendChart: React.FC = () => {
                   x={cx}
                   y={cy - 10}
                   className={styles.axisText}
-                  style={{ fill: "#ef4444", fontWeight: 700 }}
+                  style={{ fill: "var(--badge-negative-text)", fontWeight: 700 }}
                 >
                   {d.overdueCount} Overdue
                 </text>

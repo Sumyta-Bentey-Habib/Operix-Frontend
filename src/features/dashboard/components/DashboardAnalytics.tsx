@@ -1,5 +1,4 @@
-"use client";
-
+import { useState } from "react";
 import Link from "next/link";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -67,6 +66,156 @@ const REPORT_STATUSES: DashboardManagementReportStatus[] = [
   "REVISION_REQUIRED",
   "APPROVED",
 ];
+
+const STATUS_COLOR_MAP: Record<string, string> = {
+  PENDING: "#9CA3AF",
+  ASSIGNED: "#6366F1",
+  IN_PROGRESS: "#3B82F6",
+  SUBMITTED: "#06B6D4",
+  UNDER_REVIEW: "#8B5CF6",
+  COMPLETED: "#10B981",
+  REVISION_REQUIRED: "#F59E0B",
+  RESUBMITTED: "#EC4899",
+  CANCELLED: "#EF4444",
+  DRAFT: "#9CA3AF",
+  APPROVED: "#10B981",
+  REJECTED: "#EF4444",
+};
+
+interface PieSliceData {
+  key: string;
+  label: string;
+  count: number;
+  color: string;
+}
+
+function computePieSlices(
+  items: PieSliceData[],
+  total: number,
+  cx: number,
+  cy: number,
+  outerR: number,
+  innerR: number,
+) {
+  if (total === 0) return [];
+  const activeItems = items.filter((item) => item.count > 0);
+  let currentAngle = -Math.PI / 2;
+
+  return activeItems.map((item) => {
+    const sliceAngle = (item.count / total) * 2 * Math.PI;
+    const startAngle = currentAngle;
+    const endAngle = currentAngle + sliceAngle;
+    currentAngle = endAngle;
+
+    const isSingleSlice = total === item.count;
+
+    if (isSingleSlice) {
+      return {
+        ...item,
+        pathD: `M ${cx} ${cy - outerR} A ${outerR} ${outerR} 0 1 1 ${cx - 0.001} ${cy - outerR} L ${cx - 0.001} ${cy - innerR} A ${innerR} ${innerR} 0 1 0 ${cx} ${cy - innerR} Z`,
+        percentage: 100,
+      };
+    }
+
+    const x1 = cx + outerR * Math.cos(startAngle);
+    const y1 = cy + outerR * Math.sin(startAngle);
+    const x2 = cx + outerR * Math.cos(endAngle);
+    const y2 = cy + outerR * Math.sin(endAngle);
+
+    const ix1 = cx + innerR * Math.cos(endAngle);
+    const iy1 = cy + innerR * Math.sin(endAngle);
+    const ix2 = cx + innerR * Math.cos(startAngle);
+    const iy2 = cy + innerR * Math.sin(startAngle);
+
+    const largeArc = sliceAngle > Math.PI ? 1 : 0;
+
+    const pathD = `M ${x1} ${y1} A ${outerR} ${outerR} 0 ${largeArc} 1 ${x2} ${y2} L ${ix1} ${iy1} A ${innerR} ${innerR} 0 ${largeArc} 0 ${ix2} ${iy2} Z`;
+    const percentage = Math.round((item.count / total) * 100);
+
+    return {
+      ...item,
+      pathD,
+      percentage,
+    };
+  });
+}
+
+const StatusPieChart = ({ items }: { items: PieSliceData[] }) => {
+  const [hoveredKey, setHoveredKey] = useState<string | null>(null);
+  const total = items.reduce((sum, item) => sum + item.count, 0);
+
+  const cx = 110;
+  const cy = 110;
+  const outerR = 90;
+  const innerR = 56;
+
+  const slices = computePieSlices(items, total, cx, cy, outerR, innerR);
+
+  const activeSlice = slices.find((s) => s.key === hoveredKey);
+
+  return (
+    <div className={styles.pieContainer}>
+      <div className={styles.pieWrapper}>
+        <svg viewBox="0 0 220 220" className={styles.pieSvg}>
+          {total === 0 ? (
+            <circle
+              cx={cx}
+              cy={cy}
+              r={(outerR + innerR) / 2}
+              fill="none"
+              stroke="var(--border-default)"
+              strokeWidth={outerR - innerR}
+              strokeDasharray="4 4"
+            />
+          ) : (
+            slices.map((slice) => {
+              const isHovered = hoveredKey === slice.key;
+              return (
+                <path
+                  key={slice.key}
+                  d={slice.pathD}
+                  fill={slice.color}
+                  opacity={hoveredKey && !isHovered ? 0.4 : 1}
+                  className={styles.pieSlice}
+                  style={{
+                    transform: isHovered ? "scale(1.04)" : "scale(1)",
+                    transformOrigin: `${cx}px ${cy}px`,
+                    transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                  }}
+                  onMouseEnter={() => setHoveredKey(slice.key)}
+                  onMouseLeave={() => setHoveredKey(null)}
+                />
+              );
+            })
+          )}
+          <text x={cx} y={cy - 4} textAnchor="middle" className={styles.pieCenterNumber}>
+            {activeSlice ? activeSlice.count : total}
+          </text>
+          <text x={cx} y={cy + 18} textAnchor="middle" className={styles.pieCenterLabel}>
+            {activeSlice ? activeSlice.label : "Total Items"}
+          </text>
+        </svg>
+      </div>
+
+      <div className={styles.pieLegend}>
+        {items.map((item) => (
+          <div
+            key={item.key}
+            className={`${styles.pieLegendItem} ${hoveredKey === item.key ? styles.pieLegendItemActive : ""}`}
+            onMouseEnter={() => setHoveredKey(item.key)}
+            onMouseLeave={() => setHoveredKey(null)}
+          >
+            <div className={styles.pieLegendLeft}>
+              <span className={styles.pieLegendDot} style={{ backgroundColor: item.color }} />
+              <span className={styles.pieLegendText}>{item.label}</span>
+            </div>
+            <strong className={styles.pieLegendValue}>{item.count}</strong>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 type DashboardWorkloadLike = Partial<MemberWorkloadRow["workload"]> | null | undefined;
 type DashboardMemberLike = Partial<MemberWorkloadRow["member"]> | null | undefined;
@@ -163,33 +312,63 @@ const SectionShell = ({
   </section>
 );
 
-const TaskStatusBreakdown = ({ counts }: { counts: Record<TaskStatus, number> }) => (
-  <div className={styles.breakdown}>
-    <h3>Task Status Breakdown</h3>
-    <div className={styles.breakdownGrid}>
-      {TASK_STATUSES.map((status) => (
-        <div key={status} className={styles.breakdownRow}>
-          <span>{formatDashboardStatusLabel(status)}</span>
-          <strong>{formatDashboardNumber(counts[status] ?? 0)}</strong>
-        </div>
-      ))}
-    </div>
-  </div>
-);
+const TaskStatusBreakdown = ({ counts }: { counts: Record<TaskStatus, number> }) => {
+  const pieItems: PieSliceData[] = TASK_STATUSES.map((status) => ({
+    key: status,
+    label: formatDashboardStatusLabel(status),
+    count: counts[status] ?? 0,
+    color: STATUS_COLOR_MAP[status] ?? "#10B981",
+  }));
 
-const ManagementReportStatusBreakdown = ({ counts }: { counts: ReportStatusCounts }) => (
-  <div className={styles.breakdown}>
-    <h3>Management Report Status Breakdown</h3>
-    <div className={styles.breakdownGrid}>
-      {REPORT_STATUSES.map((status) => (
-        <div key={status} className={styles.breakdownRow}>
-          <span>{formatDashboardStatusLabel(status)}</span>
-          <strong>{formatDashboardNumber(counts[status] ?? 0)}</strong>
-        </div>
-      ))}
+  return (
+    <div className={styles.breakdown}>
+      <div className={styles.breakdownTitleRow}>
+        <h3>Task Status Breakdown</h3>
+        <span className={styles.breakdownSub}>Visual Pie Chart & Distribution</span>
+      </div>
+
+      <StatusPieChart items={pieItems} />
+
+      <div className={styles.breakdownGrid}>
+        {TASK_STATUSES.map((status) => (
+          <div key={status} className={styles.breakdownRow}>
+            <span>{formatDashboardStatusLabel(status)}</span>
+            <strong>{formatDashboardNumber(counts[status] ?? 0)}</strong>
+          </div>
+        ))}
+      </div>
     </div>
-  </div>
-);
+  );
+};
+
+const ManagementReportStatusBreakdown = ({ counts }: { counts: ReportStatusCounts }) => {
+  const pieItems: PieSliceData[] = REPORT_STATUSES.map((status) => ({
+    key: status,
+    label: formatDashboardStatusLabel(status),
+    count: counts[status] ?? 0,
+    color: STATUS_COLOR_MAP[status] ?? "#10B981",
+  }));
+
+  return (
+    <div className={styles.breakdown}>
+      <div className={styles.breakdownTitleRow}>
+        <h3>Management Report Status Breakdown</h3>
+        <span className={styles.breakdownSub}>Visual Pie Chart & Distribution</span>
+      </div>
+
+      <StatusPieChart items={pieItems} />
+
+      <div className={styles.breakdownGrid}>
+        {REPORT_STATUSES.map((status) => (
+          <div key={status} className={styles.breakdownRow}>
+            <span>{formatDashboardStatusLabel(status)}</span>
+            <strong>{formatDashboardNumber(counts[status] ?? 0)}</strong>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const ActivePriorityBreakdown = ({ counts }: { counts: Record<TaskPriority, number> }) => (
   <div className={styles.breakdownCompact}>
@@ -205,116 +384,227 @@ const ActivePriorityBreakdown = ({ counts }: { counts: Record<TaskPriority, numb
   </div>
 );
 
-const SuperAdminDashboard = ({ overview }: { overview: SuperAdminDashboardOverview }) => (
-  <div className={styles.stack}>
-    <DashboardKpiGrid
-      cards={[
-        { label: "Admins", value: formatDashboardNumber(overview.kpis.totalAdmins) },
-        { label: "Members", value: formatDashboardNumber(overview.kpis.totalMembers) },
-        { label: "Teams", value: formatDashboardNumber(overview.kpis.totalTeams) },
-        { label: "Total Tasks", value: formatDashboardNumber(overview.kpis.totalTasks) },
-        { label: "Active Tasks", value: formatDashboardNumber(overview.kpis.activeTasks) },
-        { label: "Completed Tasks", value: formatDashboardNumber(overview.kpis.completedTasks) },
-        { label: "Cancelled Tasks", value: formatDashboardNumber(overview.kpis.cancelledTasks) },
-        { label: "Overdue Tasks", value: formatDashboardNumber(overview.kpis.overdueTasks) },
-        { label: "Due Soon", value: formatDashboardNumber(overview.kpis.dueSoonTasks) },
-        { label: "Review Queue", value: formatDashboardNumber(overview.kpis.taskReviewQueue) },
-        {
-          label: "Revision Required",
-          value: formatDashboardNumber(overview.kpis.revisionRequiredTasks),
-        },
-        { label: "Completion Rate", value: formatDashboardRate(overview.kpis.completionRate) },
-        { label: "On Time Rate", value: formatDashboardRate(overview.kpis.onTimeRate) },
-        {
-          label: "Average Completion",
-          value: formatDashboardAverageMinutes(overview.kpis.averageCompletionMinutes),
-        },
-        {
-          label: "Pending Reports",
-          value: formatDashboardNumber(overview.kpis.pendingManagementReports),
-        },
-        {
-          label: "Reports Needing Revision",
-          value: formatDashboardNumber(overview.kpis.revisionRequiredManagementReports),
-        },
-      ]}
-    />
-    <TaskStatusBreakdown counts={overview.taskStatusCounts} />
-    <ManagementReportStatusBreakdown counts={overview.managementReportStatusCounts} />
-    <DashboardRecentActivity activities={overview.recentActivity} />
+const OverviewVisualSummary = ({ items }: { items: PieSliceData[] }) => (
+  <div className={styles.overviewPieSection}>
+    <div className={styles.breakdownTitleRow}>
+      <h4 className={styles.overviewPieHeading}>Overview KPI Distribution</h4>
+      <span className={styles.breakdownSub}>Visual Pie Chart & Proportion</span>
+    </div>
+    <StatusPieChart items={items} />
   </div>
 );
 
-const AdminDashboard = ({ overview }: { overview: AdminDashboardOverview }) => (
-  <div className={styles.stack}>
-    <DashboardKpiGrid
-      cards={[
-        { label: "Scoped Teams", value: formatDashboardNumber(overview.kpis.scopedTeams) },
-        { label: "Scoped Members", value: formatDashboardNumber(overview.kpis.scopedMembers) },
-        { label: "Total Tasks", value: formatDashboardNumber(overview.kpis.totalTasks) },
-        { label: "Active Tasks", value: formatDashboardNumber(overview.kpis.activeTasks) },
-        { label: "Completed Tasks", value: formatDashboardNumber(overview.kpis.completedTasks) },
-        { label: "Overdue Tasks", value: formatDashboardNumber(overview.kpis.overdueTasks) },
-        { label: "Due Soon", value: formatDashboardNumber(overview.kpis.dueSoonTasks) },
-        { label: "Review Queue", value: formatDashboardNumber(overview.kpis.taskReviewQueue) },
-        {
-          label: "Revision Required",
-          value: formatDashboardNumber(overview.kpis.revisionRequiredTasks),
-        },
-        { label: "Completion Rate", value: formatDashboardRate(overview.kpis.completionRate) },
-        { label: "On Time Rate", value: formatDashboardRate(overview.kpis.onTimeRate) },
-        {
-          label: "Average Completion",
-          value: formatDashboardAverageMinutes(overview.kpis.averageCompletionMinutes),
-        },
-        { label: "My Draft Reports", value: formatDashboardNumber(overview.kpis.myDraftReports) },
-        {
-          label: "My Submitted Reports",
-          value: formatDashboardNumber(overview.kpis.mySubmittedReports),
-        },
-        {
-          label: "My Reports Needing Revision",
-          value: formatDashboardNumber(overview.kpis.myRevisionRequiredReports),
-        },
-      ]}
-    />
-    <TaskStatusBreakdown counts={overview.taskStatusCounts} />
-    <DashboardRecentActivity activities={overview.recentActivity} />
-  </div>
-);
+const SuperAdminDashboard = ({ overview }: { overview: SuperAdminDashboardOverview }) => {
+  const overviewPieItems: PieSliceData[] = [
+    { key: "active", label: "Active Tasks", count: overview.kpis.activeTasks, color: "#3B82F6" },
+    {
+      key: "completed",
+      label: "Completed Tasks",
+      count: overview.kpis.completedTasks,
+      color: "#10B981",
+    },
+    { key: "overdue", label: "Overdue Tasks", count: overview.kpis.overdueTasks, color: "#EF4444" },
+    {
+      key: "review",
+      label: "Review Queue",
+      count: overview.kpis.taskReviewQueue,
+      color: "#8B5CF6",
+    },
+    {
+      key: "revision",
+      label: "Revision Required",
+      count: overview.kpis.revisionRequiredTasks,
+      color: "#F59E0B",
+    },
+    {
+      key: "cancelled",
+      label: "Cancelled Tasks",
+      count: overview.kpis.cancelledTasks,
+      color: "#6B7280",
+    },
+    {
+      key: "pendingReports",
+      label: "Pending Reports",
+      count: overview.kpis.pendingManagementReports,
+      color: "#06B6D4",
+    },
+  ];
 
-const MemberDashboard = ({ overview }: { overview: MemberDashboardOverview }) => (
-  <div className={styles.stack}>
-    <DashboardKpiGrid
-      cards={[
-        { label: "My Tasks", value: formatDashboardNumber(overview.kpis.myTotalTasks) },
-        { label: "My Active Tasks", value: formatDashboardNumber(overview.kpis.myActiveTasks) },
-        {
-          label: "My Completed Tasks",
-          value: formatDashboardNumber(overview.kpis.myCompletedTasks),
-        },
-        { label: "My Overdue Tasks", value: formatDashboardNumber(overview.kpis.myOverdueTasks) },
-        { label: "My Due Soon", value: formatDashboardNumber(overview.kpis.myDueSoonTasks) },
-        {
-          label: "My Revision Required",
-          value: formatDashboardNumber(overview.kpis.myRevisionRequiredTasks),
-        },
-        { label: "Completion Rate", value: formatDashboardRate(overview.kpis.completionRate) },
-        { label: "On Time Rate", value: formatDashboardRate(overview.kpis.onTimeRate) },
-        {
-          label: "Average Completion",
-          value: formatDashboardAverageMinutes(overview.kpis.averageCompletionMinutes),
-        },
-        {
-          label: "Unread Notifications",
-          value: formatDashboardNumber(overview.kpis.unreadNotificationCount),
-        },
-      ]}
-    />
-    <TaskStatusBreakdown counts={overview.taskStatusCounts} />
-    <DashboardRecentNotifications notifications={overview.recentNotifications} />
-  </div>
-);
+  return (
+    <div className={styles.stack}>
+      <OverviewVisualSummary items={overviewPieItems} />
+      <DashboardKpiGrid
+        cards={[
+          { label: "Admins", value: formatDashboardNumber(overview.kpis.totalAdmins) },
+          { label: "Members", value: formatDashboardNumber(overview.kpis.totalMembers) },
+          { label: "Teams", value: formatDashboardNumber(overview.kpis.totalTeams) },
+          { label: "Total Tasks", value: formatDashboardNumber(overview.kpis.totalTasks) },
+          { label: "Active Tasks", value: formatDashboardNumber(overview.kpis.activeTasks) },
+          { label: "Completed Tasks", value: formatDashboardNumber(overview.kpis.completedTasks) },
+          { label: "Cancelled Tasks", value: formatDashboardNumber(overview.kpis.cancelledTasks) },
+          { label: "Overdue Tasks", value: formatDashboardNumber(overview.kpis.overdueTasks) },
+          { label: "Due Soon", value: formatDashboardNumber(overview.kpis.dueSoonTasks) },
+          { label: "Review Queue", value: formatDashboardNumber(overview.kpis.taskReviewQueue) },
+          {
+            label: "Revision Required",
+            value: formatDashboardNumber(overview.kpis.revisionRequiredTasks),
+          },
+          { label: "Completion Rate", value: formatDashboardRate(overview.kpis.completionRate) },
+          { label: "On Time Rate", value: formatDashboardRate(overview.kpis.onTimeRate) },
+          {
+            label: "Average Completion",
+            value: formatDashboardAverageMinutes(overview.kpis.averageCompletionMinutes),
+          },
+          {
+            label: "Pending Reports",
+            value: formatDashboardNumber(overview.kpis.pendingManagementReports),
+          },
+          {
+            label: "Reports Needing Revision",
+            value: formatDashboardNumber(overview.kpis.revisionRequiredManagementReports),
+          },
+        ]}
+      />
+      <TaskStatusBreakdown counts={overview.taskStatusCounts} />
+      <ManagementReportStatusBreakdown counts={overview.managementReportStatusCounts} />
+      <DashboardRecentActivity activities={overview.recentActivity} />
+    </div>
+  );
+};
+
+const AdminDashboard = ({ overview }: { overview: AdminDashboardOverview }) => {
+  const overviewPieItems: PieSliceData[] = [
+    { key: "active", label: "Active Tasks", count: overview.kpis.activeTasks, color: "#3B82F6" },
+    {
+      key: "completed",
+      label: "Completed Tasks",
+      count: overview.kpis.completedTasks,
+      color: "#10B981",
+    },
+    { key: "overdue", label: "Overdue Tasks", count: overview.kpis.overdueTasks, color: "#EF4444" },
+    {
+      key: "review",
+      label: "Review Queue",
+      count: overview.kpis.taskReviewQueue,
+      color: "#8B5CF6",
+    },
+    {
+      key: "revision",
+      label: "Revision Required",
+      count: overview.kpis.revisionRequiredTasks,
+      color: "#F59E0B",
+    },
+    {
+      key: "submittedReports",
+      label: "Submitted Reports",
+      count: overview.kpis.mySubmittedReports,
+      color: "#06B6D4",
+    },
+  ];
+
+  return (
+    <div className={styles.stack}>
+      <OverviewVisualSummary items={overviewPieItems} />
+      <DashboardKpiGrid
+        cards={[
+          { label: "Scoped Teams", value: formatDashboardNumber(overview.kpis.scopedTeams) },
+          { label: "Scoped Members", value: formatDashboardNumber(overview.kpis.scopedMembers) },
+          { label: "Total Tasks", value: formatDashboardNumber(overview.kpis.totalTasks) },
+          { label: "Active Tasks", value: formatDashboardNumber(overview.kpis.activeTasks) },
+          { label: "Completed Tasks", value: formatDashboardNumber(overview.kpis.completedTasks) },
+          { label: "Overdue Tasks", value: formatDashboardNumber(overview.kpis.overdueTasks) },
+          { label: "Due Soon", value: formatDashboardNumber(overview.kpis.dueSoonTasks) },
+          { label: "Review Queue", value: formatDashboardNumber(overview.kpis.taskReviewQueue) },
+          {
+            label: "Revision Required",
+            value: formatDashboardNumber(overview.kpis.revisionRequiredTasks),
+          },
+          { label: "Completion Rate", value: formatDashboardRate(overview.kpis.completionRate) },
+          { label: "On Time Rate", value: formatDashboardRate(overview.kpis.onTimeRate) },
+          {
+            label: "Average Completion",
+            value: formatDashboardAverageMinutes(overview.kpis.averageCompletionMinutes),
+          },
+          { label: "My Draft Reports", value: formatDashboardNumber(overview.kpis.myDraftReports) },
+          {
+            label: "My Submitted Reports",
+            value: formatDashboardNumber(overview.kpis.mySubmittedReports),
+          },
+          {
+            label: "My Reports Needing Revision",
+            value: formatDashboardNumber(overview.kpis.myRevisionRequiredReports),
+          },
+        ]}
+      />
+      <TaskStatusBreakdown counts={overview.taskStatusCounts} />
+      <DashboardRecentActivity activities={overview.recentActivity} />
+    </div>
+  );
+};
+
+const MemberDashboard = ({ overview }: { overview: MemberDashboardOverview }) => {
+  const overviewPieItems: PieSliceData[] = [
+    { key: "active", label: "Active Tasks", count: overview.kpis.myActiveTasks, color: "#3B82F6" },
+    {
+      key: "completed",
+      label: "Completed Tasks",
+      count: overview.kpis.myCompletedTasks,
+      color: "#10B981",
+    },
+    {
+      key: "overdue",
+      label: "Overdue Tasks",
+      count: overview.kpis.myOverdueTasks,
+      color: "#EF4444",
+    },
+    {
+      key: "revision",
+      label: "Revision Required",
+      count: overview.kpis.myRevisionRequiredTasks,
+      color: "#F59E0B",
+    },
+    {
+      key: "unread",
+      label: "Unread Notifications",
+      count: overview.kpis.unreadNotificationCount,
+      color: "#8B5CF6",
+    },
+  ];
+
+  return (
+    <div className={styles.stack}>
+      <OverviewVisualSummary items={overviewPieItems} />
+      <DashboardKpiGrid
+        cards={[
+          { label: "My Tasks", value: formatDashboardNumber(overview.kpis.myTotalTasks) },
+          { label: "My Active Tasks", value: formatDashboardNumber(overview.kpis.myActiveTasks) },
+          {
+            label: "My Completed Tasks",
+            value: formatDashboardNumber(overview.kpis.myCompletedTasks),
+          },
+          { label: "My Overdue Tasks", value: formatDashboardNumber(overview.kpis.myOverdueTasks) },
+          { label: "My Due Soon", value: formatDashboardNumber(overview.kpis.myDueSoonTasks) },
+          {
+            label: "My Revision Required",
+            value: formatDashboardNumber(overview.kpis.myRevisionRequiredTasks),
+          },
+          { label: "Completion Rate", value: formatDashboardRate(overview.kpis.completionRate) },
+          { label: "On Time Rate", value: formatDashboardRate(overview.kpis.onTimeRate) },
+          {
+            label: "Average Completion",
+            value: formatDashboardAverageMinutes(overview.kpis.averageCompletionMinutes),
+          },
+          {
+            label: "Unread Notifications",
+            value: formatDashboardNumber(overview.kpis.unreadNotificationCount),
+          },
+        ]}
+      />
+      <TaskStatusBreakdown counts={overview.taskStatusCounts} />
+      <DashboardRecentNotifications notifications={overview.recentNotifications} />
+    </div>
+  );
+};
 
 const DashboardOverviewContent = ({ overview }: { overview: DashboardOverviewResponse }) => {
   switch (overview.role) {

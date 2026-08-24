@@ -1,19 +1,50 @@
 .state {
   border: 1px dashed var(--border-default);
-  border-radius: 18px;
-  padding: 36px 24px;
+  border-radius: 20px;
+  padding: 48px 24px;
   text-align: center;
   background: var(--bg-card-subtle);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.iconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--primary-emerald-light);
+  color: var(--primary-emerald);
+  margin-bottom: 8px;
+}
+
+.defaultIcon {
+  width: 28px;
+  height: 28px;
 }
 
 .title {
   color: var(--text-primary);
-  font-size: 1rem;
+  font-size: 1.125rem;
   font-weight: 800;
-  margin-bottom: 6px;
+  margin: 0;
+  line-height: 1.3;
 }
 
 .message {
   color: var(--text-secondary);
-  font-size: 0.88rem;
+  font-size: 0.9rem;
+  max-width: 440px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.actionWrap {
+  margin-top: 12px;
 }

@@ -1,56 +1,107 @@
 .form {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: 20px;
+  box-shadow: var(--card-shadow);
   display: grid;
-  gap: 16px;
+  gap: 18px;
   max-width: 900px;
-  padding: 20px;
+  padding: 24px;
 }
 
 .grid {
   display: grid;
-  gap: 14px;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
 .field {
-  color: var(--text-secondary);
+  color: var(--text-primary);
   display: grid;
-  font-size: 0.84rem;
-  font-weight: 800;
+  font-size: 0.85rem;
+  font-weight: 700;
   gap: 8px;
 }
 
 .field input,
 .field select,
 .field textarea {
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-default);
   border-radius: 12px;
+  background: var(--bg-input);
   color: var(--text-primary);
-  padding: 10px 12px;
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 12px 14px;
+  min-height: 44px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--primary-emerald);
+  box-shadow: 0 0 0 3px var(--primary-emerald-glow);
 }
 
 .field textarea {
-  min-height: 110px;
+  min-height: 120px;
+  resize: vertical;
 }
 
 .error {
-  color: var(--destructive);
-  font-weight: 800;
+  color: var(--badge-negative-text);
+  font-size: 0.84rem;
+  font-weight: 600;
 }
 
 .actions {
   display: flex;
   justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
 }
 
 .primaryButton {
   background: var(--primary-emerald);
-  border: 0;
+  border: 1px solid var(--primary-emerald);
   border-radius: 12px;
   color: var(--text-inverse);
   cursor: pointer;
-  font-weight: 800;
-  padding: 12px 18px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  padding: 11px 22px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px var(--primary-emerald-glow);
+  transition: all 0.2s ease;
+}
+
+.primaryButton:hover:not(:disabled) {
+  background: var(--primary-emerald-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--primary-emerald-glow);
+}
+
+.primaryButton:focus-visible {
+  outline: 2px solid var(--primary-emerald);
+  outline-offset: 2px;
+}
+
+.primaryButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+@media (max-width: 480px) {
+  .form {
+    padding: 16px;
+  }
+
+  .primaryButton {
+    width: 100%;
+  }
 }

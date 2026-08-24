@@ -34,7 +34,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const visibleNavItems = SIDEBAR_NAV_ITEMS.filter((item) => canSeeNavigationItem(viewer, item.id));
 
   const renderNavIcon = (iconName: string, isActive: boolean) => {
-    const color = isActive ? "#059669" : "#6B7280";
+    const color = isActive ? "var(--primary-emerald)" : "var(--text-secondary)";
     switch (iconName) {
       case "dashboard":
         return <DashboardIcon size={20} color={color} />;

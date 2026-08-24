@@ -1,5 +1,5 @@
 .error {
-  color: #dc2626;
+  color: var(--badge-negative-text);
   font-size: 0.84rem;
   line-height: 1.5;
   margin-top: 14px;
@@ -14,25 +14,66 @@
 
 .primaryButton,
 .secondaryButton {
-  border: 0;
+  border: 1px solid transparent;
   border-radius: 12px;
   cursor: pointer;
-  font-weight: 800;
-  padding: 12px 18px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  padding: 11px 20px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
 }
 
 .primaryButton {
   color: var(--text-inverse);
   background: var(--primary-emerald);
+  box-shadow: 0 2px 8px var(--primary-emerald-glow);
+}
+
+.primaryButton:hover:not(:disabled) {
+  background: var(--primary-emerald-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--primary-emerald-glow);
 }
 
 .secondaryButton {
   color: var(--text-primary);
   background: var(--bg-card-subtle);
+  border-color: var(--border-default);
+}
+
+.secondaryButton:hover:not(:disabled) {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+}
+
+.primaryButton:focus-visible {
+  outline: 2px solid var(--primary-emerald);
+  outline-offset: 2px;
+}
+
+.secondaryButton:focus-visible {
+  outline: 2px solid var(--primary-emerald);
+  outline-offset: 2px;
 }
 
 .primaryButton:disabled,
 .secondaryButton:disabled {
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+@media (max-width: 480px) {
+  .actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
 }

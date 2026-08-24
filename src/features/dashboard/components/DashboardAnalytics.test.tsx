@@ -70,8 +70,8 @@ describe("DashboardAnalytics components", () => {
 
     expect(screen.getByText("47.25%")).toBeInTheDocument();
     expect(screen.queryByText("10%")).not.toBeInTheDocument();
-    expect(screen.getByText("17")).toBeInTheDocument();
-    expect(screen.getByText("11")).toBeInTheDocument();
+    expect(screen.getAllByText("17")[0]).toBeInTheDocument();
+    expect(screen.getAllByText("11")[0]).toBeInTheDocument();
     expect(screen.getAllByText("—")).toHaveLength(2);
   });
 

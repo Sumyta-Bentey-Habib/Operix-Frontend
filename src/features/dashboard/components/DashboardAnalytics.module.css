@@ -8,17 +8,18 @@
 .metricCard,
 .preview,
 .identityCard {
-  border: 1px solid var(--color-border);
-  border-radius: 24px;
-  background: var(--color-surface);
-  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-default);
+  border-radius: 20px;
+  background: var(--bg-card);
+  box-shadow: var(--card-shadow);
 }
 
 .hero {
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  padding: 28px;
+  padding: 24px;
+  background: var(--bg-card);
 }
 
 .hero h1,
@@ -27,7 +28,8 @@
 .breakdown h3,
 .trendHeader h3 {
   margin: 0;
-  color: var(--color-text-primary);
+  color: var(--text-primary);
+  font-weight: 800;
 }
 
 .hero p,
@@ -36,14 +38,15 @@
 .contextLine,
 .cellHint {
   margin: 6px 0 0;
-  color: var(--color-text-secondary);
+  color: var(--text-secondary);
 }
 
 .eyebrow {
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 800;
+  color: var(--primary-emerald);
 }
 
 .contextPill {
@@ -51,17 +54,17 @@
   align-content: center;
   gap: 4px;
   min-width: 220px;
-  border: 1px solid var(--color-border);
-  border-radius: 18px;
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
   padding: 14px 16px;
-  background: var(--color-background);
+  background: var(--bg-card-subtle);
 }
 
 .contextPill span,
 .metricCard span,
 .identityCard span,
 .breakdownRow span {
-  color: var(--color-text-secondary);
+  color: var(--text-secondary);
   font-size: 0.85rem;
 }
 
@@ -69,7 +72,8 @@
 .metricCard strong,
 .identityCard strong,
 .breakdownRow strong {
-  color: var(--color-text-primary);
+  color: var(--text-primary);
+  font-weight: 700;
 }
 
 .card {
@@ -110,7 +114,7 @@
   display: grid;
   gap: 6px;
   padding: 16px;
-  background: var(--color-background);
+  background: var(--bg-card-subtle);
 }
 
 .metricCard strong {
@@ -118,7 +122,7 @@
 }
 
 .metricCard small {
-  color: var(--color-text-secondary);
+  color: var(--text-secondary);
 }
 
 .breakdown,
@@ -127,9 +131,138 @@
   gap: 12px;
 }
 
+.breakdownTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.breakdownSub {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.overviewPieSection {
+  margin-bottom: 16px;
+}
+
+.overviewPieHeading {
+  margin: 0 0 6px;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.pieContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: 20px;
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-default);
+  border-radius: 18px;
+  margin: 4px 0 12px;
+}
+
+.pieWrapper {
+  position: relative;
+  width: 190px;
+  height: 190px;
+  flex-shrink: 0;
+  margin: 0 auto;
+}
+
+.pieSvg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.pieSlice {
+  cursor: pointer;
+}
+
+.pieCenterNumber {
+  fill: var(--text-primary);
+  font-size: 1.65rem;
+  font-weight: 800;
+  font-family: inherit;
+}
+
+.pieCenterLabel {
+  fill: var(--text-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pieLegend {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+  flex: 1;
+  min-width: 260px;
+}
+
+.pieLegendItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pieLegendItem:hover,
+.pieLegendItemActive {
+  border-color: var(--primary-emerald);
+  box-shadow: 0 2px 8px var(--primary-emerald-glow);
+  transform: translateY(-1px);
+}
+
+.pieLegendLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.pieLegendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pieLegendText {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pieLegendValue {
+  color: var(--text-primary);
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
 .breakdownCompact h4 {
   margin: 0;
-  color: var(--color-text-primary);
+  color: var(--text-primary);
+  font-weight: 700;
 }
 
 .breakdownGrid {
@@ -140,21 +273,21 @@
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  border: 1px solid var(--color-border);
-  border-radius: 16px;
-  background: var(--color-background);
+  border: 1px solid var(--border-default);
+  border-radius: 14px;
+  background: var(--bg-card-subtle);
   padding: 14px;
 }
 
 .preview {
   padding: 18px;
-  background: var(--color-background);
+  background: var(--bg-card-subtle);
 }
 
 .previewHeader a,
 .previewItem a {
-  color: var(--color-primary);
-  font-weight: 800;
+  color: var(--primary-emerald);
+  font-weight: 700;
   text-decoration: none;
 }
 
@@ -167,20 +300,22 @@
   display: flex;
   justify-content: space-between;
   gap: 14px;
-  border: 1px solid var(--color-border);
-  border-radius: 16px;
+  border: 1px solid var(--border-default);
+  border-radius: 14px;
   padding: 14px;
-  background: var(--color-surface);
+  background: var(--bg-card);
 }
 
 .previewItem h4 {
   margin: 0;
-  color: var(--color-text-primary);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 700;
 }
 
 .previewItem p,
 .previewItem small {
-  color: var(--color-text-secondary);
+  color: var(--text-secondary);
 }
 
 .unreadBadge,
@@ -190,21 +325,23 @@
   border-radius: 999px;
   padding: 4px 8px;
   font-size: 0.75rem;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .unreadBadge {
-  background: rgba(37, 99, 235, 0.12);
-  color: var(--color-primary);
+  background: var(--primary-emerald-light);
+  color: var(--primary-emerald);
 }
 
 .readBadge {
-  background: var(--color-border);
-  color: var(--color-text-secondary);
+  background: var(--border-default);
+  color: var(--text-secondary);
 }
 
 .tableWrap {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
 }
 
 .table {
@@ -215,17 +352,27 @@
 
 .table th,
 .table td {
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--border-subtle);
   padding: 14px 12px;
   text-align: left;
   vertical-align: top;
 }
 
 .table th {
-  color: var(--color-text-secondary);
-  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  background: var(--bg-card);
+}
+
+.table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.table tbody tr:hover {
+  background-color: var(--table-row-hover);
 }
 
 .cellHint {
@@ -238,7 +385,7 @@
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 14px;
   padding: 16px;
-  background: var(--color-background);
+  background: var(--bg-card-subtle);
 }
 
 .identityCard > div {
@@ -250,29 +397,38 @@
   display: inline-flex;
   flex-wrap: wrap;
   gap: 6px;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--border-default);
   border-radius: 14px;
   padding: 4px;
-  background: var(--color-background);
+  background: var(--bg-card-subtle);
 }
 
 .segment,
 .segmentActive {
   border: 0;
   border-radius: 10px;
-  padding: 8px 12px;
+  padding: 8px 14px;
   cursor: pointer;
-  font-weight: 800;
+  font-weight: 700;
+  font-size: 0.85rem;
+  min-height: 38px;
+  transition: all 0.2s ease;
 }
 
 .segment {
   background: transparent;
-  color: var(--color-text-secondary);
+  color: var(--text-secondary);
+}
+
+.segment:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
 }
 
 .segmentActive {
-  background: var(--color-primary);
-  color: var(--color-surface);
+  background: var(--primary-emerald);
+  color: var(--text-inverse);
+  box-shadow: 0 2px 8px var(--primary-emerald-glow);
 }
 
 .chart {
@@ -281,10 +437,10 @@
   align-items: end;
   gap: 10px;
   min-height: 190px;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--border-default);
   border-radius: 18px;
   padding: 18px;
-  background: var(--color-background);
+  background: var(--bg-card-subtle);
 }
 
 .chartColumn {
@@ -297,7 +453,7 @@
 
 .chartValue,
 .chartLabel {
-  color: var(--color-text-secondary);
+  color: var(--text-secondary);
   font-size: 0.75rem;
   text-align: center;
 }
@@ -309,7 +465,7 @@
   height: 124px;
   max-width: 34px;
   border-radius: 999px;
-  background: var(--color-border);
+  background: var(--border-default);
   overflow: hidden;
 }
 
@@ -317,7 +473,7 @@
   width: 100%;
   min-height: 4px;
   border-radius: 999px 999px 0 0;
-  background: var(--color-primary);
+  background: var(--primary-emerald);
 }
 
 @media (max-width: 720px) {
@@ -326,6 +482,10 @@
   .previewHeader,
   .trendHeader,
   .previewItem {
+    flex-direction: column;
+  }
+
+  .pieContainer {
     flex-direction: column;
   }
 }
