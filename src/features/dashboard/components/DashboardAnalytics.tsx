@@ -432,7 +432,6 @@ const SuperAdminDashboard = ({ overview }: { overview: SuperAdminDashboardOvervi
 
   return (
     <div className={styles.stack}>
-      <OverviewVisualSummary items={overviewPieItems} />
       <DashboardKpiGrid
         cards={[
           { label: "Admins", value: formatDashboardNumber(overview.kpis.totalAdmins) },
@@ -465,6 +464,7 @@ const SuperAdminDashboard = ({ overview }: { overview: SuperAdminDashboardOvervi
           },
         ]}
       />
+      <OverviewVisualSummary items={overviewPieItems} />
       <TaskStatusBreakdown counts={overview.taskStatusCounts} />
       <ManagementReportStatusBreakdown counts={overview.managementReportStatusCounts} />
       <DashboardRecentActivity activities={overview.recentActivity} />
@@ -504,7 +504,6 @@ const AdminDashboard = ({ overview }: { overview: AdminDashboardOverview }) => {
 
   return (
     <div className={styles.stack}>
-      <OverviewVisualSummary items={overviewPieItems} />
       <DashboardKpiGrid
         cards={[
           { label: "Scoped Teams", value: formatDashboardNumber(overview.kpis.scopedTeams) },
@@ -536,6 +535,7 @@ const AdminDashboard = ({ overview }: { overview: AdminDashboardOverview }) => {
           },
         ]}
       />
+      <OverviewVisualSummary items={overviewPieItems} />
       <TaskStatusBreakdown counts={overview.taskStatusCounts} />
       <DashboardRecentActivity activities={overview.recentActivity} />
     </div>
@@ -573,7 +573,6 @@ const MemberDashboard = ({ overview }: { overview: MemberDashboardOverview }) =>
 
   return (
     <div className={styles.stack}>
-      <OverviewVisualSummary items={overviewPieItems} />
       <DashboardKpiGrid
         cards={[
           { label: "My Tasks", value: formatDashboardNumber(overview.kpis.myTotalTasks) },
@@ -600,6 +599,7 @@ const MemberDashboard = ({ overview }: { overview: MemberDashboardOverview }) =>
           },
         ]}
       />
+      <OverviewVisualSummary items={overviewPieItems} />
       <TaskStatusBreakdown counts={overview.taskStatusCounts} />
       <DashboardRecentNotifications notifications={overview.recentNotifications} />
     </div>
