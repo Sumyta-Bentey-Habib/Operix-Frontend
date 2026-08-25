@@ -1320,12 +1320,12 @@ export const DashboardWorkloadContent = ({
           <div className={styles.contextLine}>
             Workload as of {formatDashboardAsOf(workload.context.asOf)}
           </div>
-          <div>
-            <h3>Team Workload</h3>
+          <div className={styles.workloadSection}>
+            <h3 className={styles.workloadSubheading}>Team Workload</h3>
             <TeamWorkloadTable teams={workload.byTeam} />
           </div>
-          <div>
-            <h3>Member Workload</h3>
+          <div className={styles.workloadSection}>
+            <h3 className={styles.workloadSubheading}>Member Workload</h3>
             <MemberWorkloadTable members={workload.byMember.data} />
             <Pagination meta={workload.byMember.meta} onPageChange={setPage} />
           </div>
@@ -1337,8 +1337,8 @@ export const DashboardWorkloadContent = ({
           <div className={styles.contextLine}>
             Workload as of {formatDashboardAsOf(workload.context.asOf)}
           </div>
-          <div>
-            <h3>Team Summary</h3>
+          <div className={styles.workloadSection}>
+            <h3 className={styles.workloadSubheading}>Team Summary</h3>
             <div className={styles.identityCard}>
               <div>
                 <span>Team</span>
@@ -1350,8 +1350,8 @@ export const DashboardWorkloadContent = ({
               counts={getWorkloadPriorityCounts(workload.teamSummary.workload)}
             />
           </div>
-          <div>
-            <h3>Member Workload</h3>
+          <div className={styles.workloadSection}>
+            <h3 className={styles.workloadSubheading}>Member Workload</h3>
             <MemberWorkloadTable members={workload.byMember.data} />
             <Pagination meta={workload.byMember.meta} onPageChange={setPage} />
           </div>

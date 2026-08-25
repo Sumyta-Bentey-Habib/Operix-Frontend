@@ -83,27 +83,44 @@ export const StockLevelIndicator = ({
     : item.isLowStock
       ? `${styles.badge} ${styles.badgeWarning}`
       : styles.badge;
-  return <span className={className}>{label}</span>;
+  return (
+    <span className={className}>
+      <span className={styles.statusDot} />
+      {label}
+    </span>
+  );
 };
 
 const StatusBadge = ({ active }: { active: boolean }) => (
   <span className={active ? styles.badge : `${styles.badge} ${styles.badgeWarning}`}>
+    <span className={styles.statusDot} />
     {active ? "Active" : "Inactive"}
   </span>
 );
 
 const SectionLinks = () => (
-  <div className={styles.actions}>
-    <Link className={styles.secondaryButton} href="/inventory/categories">
+  <nav className={styles.sectionNav} aria-label="Inventory sections">
+    <Link className={styles.navPill} href="/inventory/categories">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M4 7h16M4 12h16M4 17h16" />
+      </svg>
       Categories
     </Link>
-    <Link className={styles.secondaryButton} href="/inventory/assignments">
+    <Link className={styles.navPill} href="/inventory/assignments">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+      </svg>
       Assignments
     </Link>
-    <Link className={styles.secondaryButton} href="/inventory/transactions">
+    <Link className={styles.navPill} href="/inventory/transactions">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+      </svg>
       Transactions
     </Link>
-  </div>
+  </nav>
 );
 
 const SummaryCards = () => {
@@ -112,9 +129,16 @@ const SummaryCards = () => {
 
   return (
     <section className={styles.card}>
-      <div className={styles.actions}>
-        <h2>Inventory Summary</h2>
+      <div className={styles.summaryHeader}>
+        <div>
+          <h2>Inventory Summary</h2>
+          <p className={styles.description}>Real-time stock velocity and assignment tracking across the organization.</p>
+        </div>
         <button className={styles.secondaryButton} type="button" onClick={() => void refresh()}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="23 4 23 10 17 10" />
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+          </svg>
           Refresh Summary
         </button>
       </div>
@@ -123,12 +147,81 @@ const SummaryCards = () => {
         <ErrorState message={getInventoryErrorMessage(error)} onRetry={() => void refresh()} />
       )}
       {summary && !loading && !error && (
-        <div className={styles.grid}>
-          <Metric label="Active Items" value={summary.activeItemCount} />
-          <Metric label="Inactive Items" value={summary.inactiveItemCount} />
-          <Metric label="Low Stock Items" value={summary.lowStockItemCount} />
-          <Metric label="Out of Stock Items" value={summary.outOfStockItemCount} />
-          <Metric label="Outstanding Assignments" value={summary.outstandingAssignmentCount} />
+        <div className={styles.kpiGrid}>
+          <div className={`${styles.kpiCard} ${styles.kpiEmerald}`}>
+            <div className={styles.kpiCardTop}>
+              <span className={styles.kpiLabel}>Active Items</span>
+              <div className={styles.kpiIconWrap}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                  <line x1="12" y1="22.08" x2="12" y2="12" />
+                </svg>
+              </div>
+            </div>
+            <strong className={styles.kpiValue}>{formatInventoryNumber(summary.activeItemCount)}</strong>
+            <p className={styles.kpiSubtext}>Operational & ready</p>
+          </div>
+
+          <div className={`${styles.kpiCard} ${styles.kpiMuted}`}>
+            <div className={styles.kpiCardTop}>
+              <span className={styles.kpiLabel}>Inactive Items</span>
+              <div className={styles.kpiIconWrap}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="2" y="2" width="20" height="8" rx="2" ry="2" />
+                  <rect x="2" y="14" width="20" height="8" rx="2" ry="2" />
+                  <line x1="6" y1="6" x2="6.01" y2="6" />
+                  <line x1="6" y1="18" x2="6.01" y2="18" />
+                </svg>
+              </div>
+            </div>
+            <strong className={styles.kpiValue}>{formatInventoryNumber(summary.inactiveItemCount)}</strong>
+            <p className={styles.kpiSubtext}>Archived or disabled</p>
+          </div>
+
+          <div className={`${styles.kpiCard} ${styles.kpiAmber}`}>
+            <div className={styles.kpiCardTop}>
+              <span className={styles.kpiLabel}>Low Stock</span>
+              <div className={styles.kpiIconWrap}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                  <line x1="12" y1="9" x2="12" y2="13" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+              </div>
+            </div>
+            <strong className={styles.kpiValue}>{formatInventoryNumber(summary.lowStockItemCount)}</strong>
+            <p className={styles.kpiSubtext}>Needs replenishment</p>
+          </div>
+
+          <div className={`${styles.kpiCard} ${styles.kpiRose}`}>
+            <div className={styles.kpiCardTop}>
+              <span className={styles.kpiLabel}>Out of Stock</span>
+              <div className={styles.kpiIconWrap}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                </svg>
+              </div>
+            </div>
+            <strong className={styles.kpiValue}>{formatInventoryNumber(summary.outOfStockItemCount)}</strong>
+            <p className={styles.kpiSubtext}>Zero quantity remaining</p>
+          </div>
+
+          <div className={`${styles.kpiCard} ${styles.kpiCyan}`}>
+            <div className={styles.kpiCardTop}>
+              <span className={styles.kpiLabel}>Assignments</span>
+              <div className={styles.kpiIconWrap}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              </div>
+            </div>
+            <strong className={styles.kpiValue}>{formatInventoryNumber(summary.outstandingAssignmentCount)}</strong>
+            <p className={styles.kpiSubtext}>Active in custody</p>
+          </div>
         </div>
       )}
     </section>
@@ -146,20 +239,30 @@ const ItemFilters = ({ hook }: { hook: ReturnType<typeof useInventoryItems> }) =
   const filters = hook.draftFilters;
   return (
     <section className={styles.card}>
-      <div className={styles.filters}>
+      <div className={styles.filterGrid}>
         <label className={styles.field}>
           <span>Search SKU or Item name</span>
-          <input
-            className={styles.input}
-            maxLength={180}
-            value={filters.q}
-            onChange={(event) => hook.setDraftFilters({ ...filters, q: event.target.value })}
-          />
+          <div className={styles.searchWrap}>
+            <span className={styles.searchIcon}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </span>
+            <input
+              className={`${styles.input} ${styles.searchInput}`}
+              placeholder="Filter by SKU, name, or code..."
+              maxLength={180}
+              value={filters.q}
+              onChange={(event) => hook.setDraftFilters({ ...filters, q: event.target.value })}
+            />
+          </div>
         </label>
         <label className={styles.field}>
           <span>Category ID</span>
           <input
             className={styles.input}
+            placeholder="Category ID..."
             value={filters.categoryId}
             onChange={(event) =>
               hook.setDraftFilters({ ...filters, categoryId: event.target.value })
@@ -170,6 +273,7 @@ const ItemFilters = ({ hook }: { hook: ReturnType<typeof useInventoryItems> }) =
           <span>Team ID</span>
           <input
             className={styles.input}
+            placeholder="Team ID..."
             value={filters.teamId}
             onChange={(event) => hook.setDraftFilters({ ...filters, teamId: event.target.value })}
           />
@@ -186,9 +290,9 @@ const ItemFilters = ({ hook }: { hook: ReturnType<typeof useInventoryItems> }) =
               })
             }
           >
-            <option value="ALL">All</option>
-            <option value="TRUE">Active</option>
-            <option value="FALSE">Inactive</option>
+            <option value="ALL">All Statuses</option>
+            <option value="TRUE">Active Only</option>
+            <option value="FALSE">Inactive Only</option>
           </select>
         </label>
         <label className={styles.field}>
@@ -203,12 +307,15 @@ const ItemFilters = ({ hook }: { hook: ReturnType<typeof useInventoryItems> }) =
               })
             }
           >
-            <option value="ALL">All</option>
+            <option value="ALL">All Types</option>
             <option value="TRUE">Returnable</option>
             <option value="FALSE">Consumable</option>
           </select>
         </label>
-        <label className={styles.checkbox}>
+      </div>
+
+      <div className={styles.filterFooter}>
+        <label className={`${styles.toggleChip} ${filters.lowStockOnly ? styles.toggleChipActive : ""}`}>
           <input
             type="checkbox"
             checked={filters.lowStockOnly}
@@ -216,14 +323,16 @@ const ItemFilters = ({ hook }: { hook: ReturnType<typeof useInventoryItems> }) =
               hook.setDraftFilters({ ...filters, lowStockOnly: event.target.checked })
             }
           />
-          Low stock only
+          Low stock alert only
         </label>
-        <button className={styles.primaryButton} type="button" onClick={hook.applyFilters}>
-          Apply
-        </button>
-        <button className={styles.secondaryButton} type="button" onClick={hook.resetFilters}>
-          Reset
-        </button>
+        <div className={styles.filterActions}>
+          <button className={styles.secondaryButton} type="button" onClick={hook.resetFilters}>
+            Reset
+          </button>
+          <button className={styles.primaryButton} type="button" onClick={hook.applyFilters}>
+            Apply Filters
+          </button>
+        </div>
       </div>
     </section>
   );
@@ -237,14 +346,24 @@ export const InventoryManagerOverview = () => {
     <section className={styles.section}>
       <header className={styles.hero}>
         <div>
-          <p className={styles.eyebrow}>Inventory</p>
+          <p className={styles.eyebrow}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+            </svg>
+            INVENTORY
+          </p>
           <h1>Inventory Management</h1>
           <p className={styles.description}>
             Manage available stock, returnable assignments, returns, and the immutable ledger.
           </p>
         </div>
-        <div className={styles.actions}>
+        <div className={styles.heroActions}>
           <Link className={styles.primaryButton} href="/inventory/items/new">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
             Create Item
           </Link>
           <SectionLinks />
@@ -264,7 +383,13 @@ export const MyInventory = () => {
     <section className={styles.section}>
       <header className={styles.hero}>
         <div>
-          <p className={styles.eyebrow}>My Inventory</p>
+          <p className={styles.eyebrow}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+            </svg>
+            MY INVENTORY
+          </p>
           <h1>Assigned Inventory</h1>
           <p className={styles.description}>View returnable Inventory currently assigned to you.</p>
         </div>
@@ -284,9 +409,20 @@ export const InventoryLanding = () => {
 
 const InventoryItemTable = ({ hook }: { hook: ReturnType<typeof useInventoryItems> }) => (
   <section className={styles.card}>
-    <div className={styles.actions}>
-      <h2>Items</h2>
+    <div className={styles.summaryHeader}>
+      <div className={styles.tableTitleWrap}>
+        <h2>Items</h2>
+        {hook.items.length > 0 && (
+          <span className={styles.countBadge}>
+            {formatInventoryNumber(hook.meta.total ?? hook.items.length)} Items
+          </span>
+        )}
+      </div>
       <button className={styles.secondaryButton} type="button" onClick={() => void hook.refresh()}>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <polyline points="23 4 23 10 17 10" />
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+        </svg>
         Refresh Items
       </button>
     </div>
@@ -321,21 +457,31 @@ const InventoryItemTable = ({ hook }: { hook: ReturnType<typeof useInventoryItem
             <tbody>
               {hook.items.map((item) => (
                 <tr key={item.id}>
-                  <td>{item.sku}</td>
-                  <td>{item.name}</td>
+                  <td>
+                    <span className={styles.skuCode}>{item.sku}</span>
+                  </td>
+                  <td>
+                    <strong>{item.name}</strong>
+                  </td>
                   <td>{item.team.name}</td>
                   <td>{item.category?.name ?? "Uncategorized"}</td>
-                  <td>{formatInventoryNumber(item.quantity)}</td>
+                  <td>
+                    <strong>{formatInventoryNumber(item.quantity)}</strong>
+                  </td>
                   <td>
                     <StockLevelIndicator item={item} />
                   </td>
-                  <td>{item.isReturnable ? "Returnable" : "Consumable"}</td>
+                  <td>
+                    <span className={item.isReturnable ? styles.badge : `${styles.badge} ${styles.badgeWarning}`}>
+                      {item.isReturnable ? "Returnable" : "Consumable"}
+                    </span>
+                  </td>
                   <td>
                     <StatusBadge active={item.isActive} />
                   </td>
                   <td>{formatDisplayDate(item.updatedAt)}</td>
                   <td>
-                    <Link className={styles.link} href={`/inventory/items/${item.id}`}>
+                    <Link className={styles.actionLink} href={`/inventory/items/${item.id}`}>
                       View
                     </Link>
                   </td>
@@ -360,15 +506,27 @@ export const InventoryCategoryList = () => {
     <section className={styles.section}>
       <header className={styles.hero}>
         <div>
-          <p className={styles.eyebrow}>Inventory Categories</p>
+          <p className={styles.eyebrow}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M4 7h16M4 12h16M4 17h16" />
+            </svg>
+            INVENTORY CATEGORIES
+          </p>
           <h1>Categories</h1>
           <p className={styles.description}>Global Category master data for Inventory Items.</p>
         </div>
-        {canManageInventoryCategories(viewer) && (
-          <button className={styles.primaryButton} type="button" onClick={() => setCreating(true)}>
-            Create Category
-          </button>
-        )}
+        <div className={styles.heroActions}>
+          {canManageInventoryCategories(viewer) && (
+            <button className={styles.primaryButton} type="button" onClick={() => setCreating(true)}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Create Category
+            </button>
+          )}
+          <SectionLinks />
+        </div>
       </header>
       <section className={styles.card}>
         {hook.loading && <LoadingState message="Loading Categories..." />}
@@ -397,25 +555,30 @@ export const InventoryCategoryList = () => {
                 <tbody>
                   {hook.categories.map((category) => (
                     <tr key={category.id}>
-                      <td>{category.name}</td>
+                      <td>
+                        <strong>{category.name}</strong>
+                      </td>
                       <td>{category.description ?? "—"}</td>
                       <td>
                         <StatusBadge active={category.isActive} />
                       </td>
                       <td>{formatDisplayDate(category.updatedAt)}</td>
                       <td>
-                        <Link className={styles.link} href={`/inventory/categories/${category.id}`}>
-                          View
-                        </Link>
-                        {canManageInventoryCategories(viewer) && (
-                          <button
-                            className={styles.secondaryButton}
-                            type="button"
-                            onClick={() => setEditing(category)}
-                          >
-                            Edit
-                          </button>
-                        )}
+                        <div style={{ display: "inline-flex", gap: "8px", alignItems: "center" }}>
+                          <Link className={styles.actionLink} href={`/inventory/categories/${category.id}`}>
+                            View
+                          </Link>
+                          {canManageInventoryCategories(viewer) && (
+                            <button
+                              className={styles.secondaryButton}
+                              style={{ padding: "6px 14px", minHeight: "auto", fontSize: "0.82rem" }}
+                              type="button"
+                              onClick={() => setEditing(category)}
+                            >
+                              Edit
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -597,27 +760,31 @@ const InventoryCategorySelect = ({
           </option>
         ))}
       </select>
-      <span className={styles.hint}>
-        Category page {meta.page} of {meta.totalPages}
-      </span>
-      <div className={styles.actions}>
-        <button
-          className={styles.secondaryButton}
-          type="button"
-          disabled={loading || meta.page <= 1}
-          onClick={() => setPage(meta.page - 1)}
-        >
-          Previous Categories
-        </button>
-        <button
-          className={styles.secondaryButton}
-          type="button"
-          disabled={loading || meta.page >= meta.totalPages}
-          onClick={() => setPage(meta.page + 1)}
-        >
-          Next Categories
-        </button>
-      </div>
+      {meta.totalPages > 1 && (
+        <div className={styles.selectPagination}>
+          <span className={styles.hint}>
+            Page {meta.page} of {meta.totalPages}
+          </span>
+          <div className={styles.miniButtons}>
+            <button
+              className={styles.miniBtn}
+              type="button"
+              disabled={loading || meta.page <= 1}
+              onClick={() => setPage(meta.page - 1)}
+            >
+              ‹ Prev
+            </button>
+            <button
+              className={styles.miniBtn}
+              type="button"
+              disabled={loading || meta.page >= meta.totalPages}
+              onClick={() => setPage(meta.page + 1)}
+            >
+              Next ›
+            </button>
+          </div>
+        </div>
+      )}
       {error && <span className={styles.error}>Unable to load Category options.</span>}
     </label>
   );
@@ -645,33 +812,56 @@ const InventoryItemForm = ({
 
   return (
     <form
-      className={styles.form}
+      className={styles.formSection}
       onSubmit={(event) => {
         event.preventDefault();
         if (!validation) onSubmit(values);
       }}
     >
-      <section className={styles.card}>
-        <div className={styles.grid}>
-          {editMode ? (
-            <>
-              <Detail label="Team" value={`${item?.team.name ?? "—"} (${item?.team.id ?? "—"})`} />
-              <Detail label="SKU" value={item?.sku ?? "—"} />
-              <Detail
-                label="Available Quantity"
-                value={formatInventoryNumber(item?.quantity ?? 0)}
-              />
-            </>
-          ) : (
-            <>
-              <label className={styles.field}>
-                <span>Team</span>
-                <input
-                  className={styles.input}
-                  value={selectedTeamName || values.teamId}
-                  readOnly
-                />
-              </label>
+      {/* Card 1: Team Assignment */}
+      <section className={styles.formCard}>
+        <div className={styles.formCardHeader}>
+          <h3>Team Ownership {editMode ? "" : "*"}</h3>
+          <p className={styles.hint}>
+            {editMode
+              ? "The organizational team that manages this inventory item."
+              : "Select the organizational team responsible for this inventory item."}
+          </p>
+        </div>
+
+        {editMode ? (
+          <div className={styles.detailGrid}>
+            <Detail label="Team Name" value={item?.team.name ?? "—"} />
+            <Detail label="Team ID" value={item?.team.id ?? "—"} />
+          </div>
+        ) : (
+          <div className={styles.teamPickerContainer}>
+            {values.teamId && selectedTeamName ? (
+              <div className={styles.selectedTeamPill}>
+                <div className={styles.selectedTeamInfo}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
+                  <div>
+                    <strong>{selectedTeamName}</strong>
+                    <span>Team ID: {values.teamId}</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className={styles.changeTeamBtn}
+                  onClick={() => {
+                    update({ teamId: "" });
+                    setSelectedTeamName("");
+                  }}
+                >
+                  Change Team
+                </button>
+              </div>
+            ) : (
               <TaskTeamPicker
                 selectedTeamId={values.teamId}
                 onSelect={(team) => {
@@ -679,101 +869,161 @@ const InventoryItemForm = ({
                   setSelectedTeamName(team.name);
                 }}
               />
-              <label className={styles.field}>
-                <span>SKU</span>
-                <input
-                  className={styles.input}
-                  maxLength={80}
-                  value={values.sku}
-                  onChange={(e) => update({ sku: e.target.value })}
-                />
-              </label>
-            </>
-          )}
+            )}
+          </div>
+        )}
+      </section>
+
+      {/* Card 2: General Information */}
+      <section className={styles.formCard}>
+        <div className={styles.formCardHeader}>
+          <h3>General Information</h3>
+          <p className={styles.hint}>Specify the item name, unique SKU identifier, and optional description.</p>
+        </div>
+
+        <div className={styles.formTwoCol}>
           <label className={styles.field}>
-            <span>Name</span>
+            <span>Item Name *</span>
             <input
               className={styles.input}
+              placeholder="e.g. Dell UltraSharp 27 Monitor"
               maxLength={180}
               value={values.name}
               onChange={(e) => update({ name: e.target.value })}
             />
           </label>
-          <InventoryCategorySelect
-            value={values.categoryId}
-            onChange={(categoryId) => update({ categoryId })}
-          />
-          <label className={styles.field}>
-            <span>Low Stock Threshold</span>
-            <input
-              className={styles.input}
-              inputMode="numeric"
-              value={values.lowStockThreshold}
-              onChange={(e) => update({ lowStockThreshold: e.target.value })}
-            />
-          </label>
-          {!editMode && (
+
+          {editMode ? (
             <label className={styles.field}>
-              <span>Opening Quantity</span>
+              <span>SKU</span>
+              <input className={styles.input} value={item?.sku ?? "—"} readOnly disabled />
+            </label>
+          ) : (
+            <label className={styles.field}>
+              <span>SKU Code *</span>
               <input
                 className={styles.input}
-                inputMode="numeric"
-                value={values.openingQuantity}
-                onChange={(e) => update({ openingQuantity: e.target.value })}
+                placeholder="e.g. IT-MON-27-01"
+                maxLength={80}
+                value={values.sku}
+                onChange={(e) => update({ sku: e.target.value })}
               />
-            </label>
-          )}
-          <label className={styles.checkbox}>
-            <input
-              type="checkbox"
-              checked={values.isReturnable}
-              onChange={(e) => update({ isReturnable: e.target.checked })}
-            />
-            Returnable
-          </label>
-          {editMode && (
-            <label className={styles.checkbox}>
-              <input
-                type="checkbox"
-                checked={values.isActive}
-                onChange={(e) => update({ isActive: e.target.checked })}
-              />
-              Active
             </label>
           )}
         </div>
+
         <label className={styles.field}>
           <span>Description</span>
           <textarea
             className={styles.textarea}
+            placeholder="Enter item specifications, serial tracking notes, or handling instructions..."
             maxLength={2000}
             value={values.description}
             onChange={(e) => update({ description: e.target.value })}
           />
         </label>
-        {validation && <p className={styles.error}>{validation}</p>}
-        {error && <p className={styles.error}>{error}</p>}
-        <div className={styles.actions}>
-          <Link
-            className={styles.secondaryButton}
-            href={editMode ? `/inventory/items/${item?.id}` : "/inventory"}
-          >
-            Cancel
-          </Link>
-          <button
-            className={styles.primaryButton}
-            type="submit"
-            disabled={
-              pending ||
-              Boolean(validation) ||
-              !values.name.trim() ||
-              (!editMode && (!values.teamId || !values.sku.trim()))
-            }
-          >
-            {pending ? "Saving..." : editMode ? "Save Item" : "Create Item"}
-          </button>
+      </section>
+
+      {/* Card 3: Stock & Classification */}
+      <section className={styles.formCard}>
+        <div className={styles.formCardHeader}>
+          <h3>Stock & Classification</h3>
+          <p className={styles.hint}>Configure stock thresholds, categories, and custody rules.</p>
+        </div>
+
+        <div className={styles.formTwoCol}>
+          <InventoryCategorySelect
+            value={values.categoryId}
+            onChange={(categoryId) => update({ categoryId })}
+          />
+
+          <label className={styles.field}>
+            <span>Low Stock Alert Threshold</span>
+            <input
+              className={styles.input}
+              placeholder="e.g. 5"
+              inputMode="numeric"
+              value={values.lowStockThreshold}
+              onChange={(e) => update({ lowStockThreshold: e.target.value })}
+            />
+          </label>
+        </div>
+
+        <div className={styles.formTwoCol}>
+          {!editMode ? (
+            <label className={styles.field}>
+              <span>Opening Quantity</span>
+              <input
+                className={styles.input}
+                placeholder="e.g. 10"
+                inputMode="numeric"
+                value={values.openingQuantity}
+                onChange={(e) => update({ openingQuantity: e.target.value })}
+              />
+            </label>
+          ) : (
+            <label className={styles.field}>
+              <span>Current Available Quantity</span>
+              <input
+                className={styles.input}
+                value={formatInventoryNumber(item?.quantity ?? 0)}
+                readOnly
+                disabled
+              />
+            </label>
+          )}
+
+          <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap", paddingTop: "24px" }}>
+            <label className={`${styles.toggleChip} ${values.isReturnable ? styles.toggleChipActive : ""}`}>
+              <input
+                type="checkbox"
+                checked={values.isReturnable}
+                onChange={(e) => update({ isReturnable: e.target.checked })}
+              />
+              Returnable Item (Assigned to members)
+            </label>
+
+            {editMode && (
+              <label className={`${styles.toggleChip} ${values.isActive ? styles.toggleChipActive : ""}`}>
+                <input
+                  type="checkbox"
+                  checked={values.isActive}
+                  onChange={(e) => update({ isActive: e.target.checked })}
+                />
+                Active Status
+              </label>
+            )}
+          </div>
         </div>
       </section>
+
+      {validation && <p className={styles.error}>{validation}</p>}
+      {error && <p className={styles.error}>{error}</p>}
+
+      {/* Form Action Buttons */}
+      <div className={styles.formActions}>
+        <Link
+          className={styles.secondaryButton}
+          href={editMode ? `/inventory/items/${item?.id}` : "/inventory"}
+        >
+          Cancel
+        </Link>
+        <button
+          className={styles.primaryButton}
+          type="submit"
+          disabled={
+            pending ||
+            Boolean(validation) ||
+            !values.name.trim() ||
+            (!editMode && (!values.teamId || !values.sku.trim()))
+          }
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          {pending ? "Saving..." : editMode ? "Save Item" : "Create Item"}
+        </button>
+      </div>
     </form>
   );
 };
@@ -800,12 +1050,23 @@ export const InventoryItemCreate = () => {
     <section className={styles.section}>
       <header className={styles.hero}>
         <div>
-          <p className={styles.eyebrow}>Create Inventory Item</p>
+          <p className={styles.eyebrow}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            CREATE INVENTORY ITEM
+          </p>
           <h1>New Item</h1>
           <p className={styles.description}>
             Opening quantity is handled by the create command only. No extra Stock In request is
             sent.
           </p>
+        </div>
+        <div className={styles.heroActions}>
+          <Link className={styles.secondaryButton} href="/inventory">
+            Back to Inventory
+          </Link>
         </div>
       </header>
       <InventoryItemForm onSubmit={submit} pending={pending} error={error} />
@@ -844,8 +1105,19 @@ export const InventoryItemEdit = ({ itemId }: { itemId: string }) => {
     <section className={styles.section}>
       <header className={styles.hero}>
         <div>
-          <p className={styles.eyebrow}>Edit Inventory Item</p>
+          <p className={styles.eyebrow}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+            EDIT INVENTORY ITEM
+          </p>
           <h1>{item?.name ?? "Inventory Item"}</h1>
+        </div>
+        <div className={styles.heroActions}>
+          <Link className={styles.secondaryButton} href={`/inventory/items/${itemId}`}>
+            Back to Item
+          </Link>
         </div>
       </header>
       {loading && <LoadingState message="Loading Item..." />}
@@ -1201,13 +1473,14 @@ const AssignmentFilters = ({
   const filters = hook.draftFilters;
   return (
     <section className={styles.card}>
-      <div className={styles.filters}>
+      <div className={styles.filterGrid}>
         {!memberMode && (
           <>
             <label className={styles.field}>
               <span>Team ID</span>
               <input
                 className={styles.input}
+                placeholder="Filter by Team ID..."
                 value={filters.teamId}
                 onChange={(e) => hook.setDraftFilters({ ...filters, teamId: e.target.value })}
               />
@@ -1216,6 +1489,7 @@ const AssignmentFilters = ({
               <span>Member ID</span>
               <input
                 className={styles.input}
+                placeholder="Filter by Member ID..."
                 value={filters.memberId}
                 onChange={(e) => hook.setDraftFilters({ ...filters, memberId: e.target.value })}
               />
@@ -1226,6 +1500,7 @@ const AssignmentFilters = ({
           <span>Item ID</span>
           <input
             className={styles.input}
+            placeholder="Filter by Item ID..."
             value={filters.itemId}
             onChange={(e) => hook.setDraftFilters({ ...filters, itemId: e.target.value })}
           />
@@ -1242,7 +1517,7 @@ const AssignmentFilters = ({
               })
             }
           >
-            <option value="ALL">All</option>
+            <option value="ALL">All Statuses</option>
             {RETURN_STATUSES.map((status) => (
               <option key={status} value={status}>
                 {formatReturnStatus(status)}
@@ -1268,12 +1543,18 @@ const AssignmentFilters = ({
             onChange={(e) => hook.setDraftFilters({ ...filters, to: e.target.value })}
           />
         </label>
-        <button className={styles.primaryButton} type="button" onClick={hook.applyFilters}>
-          Apply
-        </button>
-        <button className={styles.secondaryButton} type="button" onClick={hook.resetFilters}>
-          Reset
-        </button>
+      </div>
+
+      <div className={styles.filterFooter}>
+        <div />
+        <div className={styles.filterActions}>
+          <button className={styles.secondaryButton} type="button" onClick={hook.resetFilters}>
+            Reset
+          </button>
+          <button className={styles.primaryButton} type="button" onClick={hook.applyFilters}>
+            Apply Filters
+          </button>
+        </div>
       </div>
       {hook.filterError && <p className={styles.error}>{hook.filterError}</p>}
     </section>
@@ -1288,9 +1569,20 @@ const InventoryAssignmentTable = ({
   memberMode?: boolean;
 }) => (
   <section className={styles.card}>
-    <div className={styles.actions}>
-      <h2>{memberMode ? "My Assignments" : "Assignments"}</h2>
+    <div className={styles.summaryHeader}>
+      <div className={styles.tableTitleWrap}>
+        <h2>{memberMode ? "My Assignments" : "Assignments"}</h2>
+        {hook.assignments.length > 0 && (
+          <span className={styles.countBadge}>
+            {formatInventoryNumber(hook.meta.total ?? hook.assignments.length)} Assignments
+          </span>
+        )}
+      </div>
       <button className={styles.secondaryButton} type="button" onClick={() => void hook.refresh()}>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <polyline points="23 4 23 10 17 10" />
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+        </svg>
         Refresh Assignments
       </button>
     </div>
@@ -1324,22 +1616,28 @@ const InventoryAssignmentTable = ({
               {hook.assignments.map((assignment) => (
                 <tr key={assignment.id}>
                   <td>
-                    {assignment.item.name}
+                    <strong>{assignment.item.name}</strong>
                     <br />
-                    <span className={styles.muted}>{assignment.item.sku}</span>
+                    <span className={styles.skuCode}>{assignment.item.sku}</span>
                   </td>
                   <td>
-                    {assignment.member.name}
+                    <strong>{assignment.member.name}</strong>
                     <br />
                     <span className={styles.muted}>{assignment.member.employeeId ?? "—"}</span>
                   </td>
-                  <td>{formatInventoryNumber(assignment.quantity)}</td>
+                  <td>
+                    <strong>{formatInventoryNumber(assignment.quantity)}</strong>
+                  </td>
                   <td>{formatInventoryNumber(assignment.returnedQuantity)}</td>
                   <td>{formatInventoryNumber(assignment.remainingQuantity)}</td>
-                  <td>{formatReturnStatus(assignment.returnStatus)}</td>
+                  <td>
+                    <span className={`${styles.badge} ${assignment.returnStatus === "OUTSTANDING" ? styles.badgeWarning : assignment.returnStatus === "RETURNED" ? "" : styles.badgeWarning}`}>
+                      {formatReturnStatus(assignment.returnStatus)}
+                    </span>
+                  </td>
                   <td>{formatDisplayDate(assignment.assignedAt)}</td>
                   <td>
-                    <Link className={styles.link} href={`/inventory/assignments/${assignment.id}`}>
+                    <Link className={styles.actionLink} href={`/inventory/assignments/${assignment.id}`}>
                       View
                     </Link>
                   </td>
@@ -1361,7 +1659,14 @@ export const InventoryAssignmentList = ({ memberMode = false }: { memberMode?: b
     <section className={styles.section}>
       <header className={styles.hero}>
         <div>
-          <p className={styles.eyebrow}>Inventory Assignments</p>
+          <p className={styles.eyebrow}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            INVENTORY ASSIGNMENTS
+          </p>
           <h1>{memberMode ? "My Inventory" : "Assignments"}</h1>
           <p className={styles.description}>
             Returnable Inventory assignment state is read from the backend ledger.
@@ -1388,7 +1693,7 @@ export const InventoryAssignmentDetails = ({ assignmentId }: { assignmentId: str
           <p className={styles.eyebrow}>Inventory Assignment</p>
           <h1>{assignment?.item.name ?? "Assignment"}</h1>
         </div>
-        <div className={styles.actions}>
+        <div className={styles.heroActions}>
           <Link className={styles.secondaryButton} href="/inventory/assignments">
             Back to Assignments
           </Link>
@@ -1408,87 +1713,91 @@ export const InventoryAssignmentDetails = ({ assignmentId }: { assignmentId: str
       {error && !loading && (
         <ErrorState message={getInventoryErrorMessage(error)} onRetry={() => void refresh()} />
       )}
-      {assignment && !loading && !error && (
-        <>
-          <section className={styles.card}>
-            <div className={styles.detailGrid}>
-              <Detail label="Item" value={`${assignment.item.name} (${assignment.item.sku})`} />
-              <Detail
-                label="Member"
-                value={`${assignment.member.name} (${assignment.member.employeeId ?? assignment.member.id})`}
-              />
-              <Detail
-                label="Assigned Quantity"
-                value={formatInventoryNumber(assignment.quantity)}
-              />
-              <Detail
-                label="Returned Quantity"
-                value={formatInventoryNumber(assignment.returnedQuantity)}
-              />
-              <Detail
-                label="Remaining Quantity"
-                value={formatInventoryNumber(assignment.remainingQuantity)}
-              />
-              <Detail label="Return Status" value={formatReturnStatus(assignment.returnStatus)} />
-              <Detail
-                label="Assigned By"
-                value={`${assignment.assignedBy.name} (${assignment.assignedBy.id})`}
-              />
-              <Detail label="Assigned At" value={formatDisplayDate(assignment.assignedAt)} />
-              <Detail
-                label="Returned At"
-                value={assignment.returnedAt ? formatDisplayDate(assignment.returnedAt) : "—"}
-              />
-            </div>
-            <p className={styles.hint}>
-              Return remains available for managers when remaining quantity is greater than zero,
-              even if the Item or Member changed later.
-            </p>
-          </section>
-          <ReturnDialog
-            open={returnOpen}
-            assignment={assignment}
-            onClose={() => setReturnOpen(false)}
-            onSaved={async (next) => {
+      {assignment && (
+        <div className={styles.detailGrid}>
+          <div className={styles.detailItem}>
+            <span>Item Name</span>
+            <strong>{assignment.item.name}</strong>
+          </div>
+          <div className={styles.detailItem}>
+            <span>SKU</span>
+            <strong>{assignment.item.sku}</strong>
+          </div>
+          <div className={styles.detailItem}>
+            <span>Member</span>
+            <strong>
+              {assignment.member.name} ({assignment.member.employeeId ?? "No employee ID"})
+            </strong>
+          </div>
+          <div className={styles.detailItem}>
+            <span>Assigned Quantity</span>
+            <strong>{formatInventoryNumber(assignment.quantity)}</strong>
+          </div>
+          <div className={styles.detailItem}>
+            <span>Returned Quantity</span>
+            <strong>{formatInventoryNumber(assignment.returnedQuantity)}</strong>
+          </div>
+          <div className={styles.detailItem}>
+            <span>Remaining Quantity</span>
+            <strong>{formatInventoryNumber(assignment.remainingQuantity)}</strong>
+          </div>
+          <div className={styles.detailItem}>
+            <span>Status</span>
+            <strong>{formatReturnStatus(assignment.returnStatus)}</strong>
+          </div>
+          <div className={styles.detailItem}>
+            <span>Assigned At</span>
+            <strong>{formatDisplayDate(assignment.assignedAt)}</strong>
+          </div>
+        </div>
+      )}
+      {assignment && (
+        <ReturnDialog
+          assignment={assignment}
+          open={returnOpen}
+          onClose={() => setReturnOpen(false)}
+          onSaved={async (next) => {
+            setReturnOpen(false);
+            if (next) {
               setAssignment(next);
-              await refresh();
-              setReturnOpen(false);
-            }}
-          />
-        </>
+            }
+            await refresh();
+          }}
+        />
       )}
     </section>
   );
 };
 
 const ReturnDialog = ({
-  open,
   assignment,
+  open,
   onClose,
   onSaved,
 }: {
+  assignment: InventoryAssignment;
   open: boolean;
-  assignment: NonNullable<ReturnType<typeof useInventoryAssignment>["assignment"]>;
   onClose: () => void;
-  onSaved: (assignment: InventoryAssignment) => Promise<void>;
+  onSaved: (next?: InventoryAssignment) => Promise<void>;
 }) => {
-  const [quantity, setQuantity] = useState(assignment.remainingQuantity.toString());
+  const [quantity, setQuantity] = useState("1");
   const [note, setNote] = useState("");
-  const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
 
   const submit = async () => {
-    const validation = validatePositiveInteger(quantity, "Return quantity");
-    if (validation) {
-      setError(validation);
+    const quantityError = validatePositiveInteger(quantity, "Quantity");
+    if (quantityError) {
+      setError(quantityError);
       return;
     }
 
     setPending(true);
     setError(null);
+    const parsedQuantity = Number.parseInt(quantity.trim(), 10);
     try {
       const next = await inventoryAssignmentApi.returnItems(assignment.id, {
-        quantity: Number.parseInt(quantity.trim(), 10),
+        quantity: parsedQuantity,
         ...(note.trim() ? { note: note.trim() } : {}),
       });
       await onSaved(next);
@@ -1555,7 +1864,12 @@ export const InventoryTransactionList = () => {
     <section className={styles.section}>
       <header className={styles.hero}>
         <div>
-          <p className={styles.eyebrow}>Inventory Ledger</p>
+          <p className={styles.eyebrow}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+            </svg>
+            INVENTORY LEDGER
+          </p>
           <h1>Transactions</h1>
           <p className={styles.description}>
             Immutable stock ledger. Corrections use new Adjustments.
@@ -1564,7 +1878,7 @@ export const InventoryTransactionList = () => {
         <SectionLinks />
       </header>
       <section className={styles.card}>
-        <div className={styles.filters}>
+        <div className={styles.filterGrid}>
           <label className={styles.field}>
             <span>Type</span>
             <select
@@ -1574,7 +1888,7 @@ export const InventoryTransactionList = () => {
                 hook.setDraftFilters({ ...filters, type: e.target.value as typeof filters.type })
               }
             >
-              <option value="ALL">All</option>
+              <option value="ALL">All Types</option>
               {TRANSACTION_TYPES.map((type) => (
                 <option key={type} value={type}>
                   {formatTransactionType(type)}
@@ -1587,6 +1901,7 @@ export const InventoryTransactionList = () => {
               <span>{formatInventoryStatus(field)}</span>
               <input
                 className={styles.input}
+                placeholder={`Filter by ${formatInventoryStatus(field)}...`}
                 value={filters[field]}
                 onChange={(e) => hook.setDraftFilters({ ...filters, [field]: e.target.value })}
               />
@@ -1610,16 +1925,39 @@ export const InventoryTransactionList = () => {
               onChange={(e) => hook.setDraftFilters({ ...filters, to: e.target.value })}
             />
           </label>
-          <button className={styles.primaryButton} type="button" onClick={hook.applyFilters}>
-            Apply
-          </button>
-          <button className={styles.secondaryButton} type="button" onClick={hook.resetFilters}>
-            Reset
-          </button>
+        </div>
+
+        <div className={styles.filterFooter}>
+          <div />
+          <div className={styles.filterActions}>
+            <button className={styles.secondaryButton} type="button" onClick={hook.resetFilters}>
+              Reset
+            </button>
+            <button className={styles.primaryButton} type="button" onClick={hook.applyFilters}>
+              Apply Filters
+            </button>
+          </div>
         </div>
         {hook.filterError && <p className={styles.error}>{hook.filterError}</p>}
       </section>
       <section className={styles.card}>
+        <div className={styles.summaryHeader}>
+          <div className={styles.tableTitleWrap}>
+            <h2>Transactions</h2>
+            {hook.transactions.length > 0 && (
+              <span className={styles.countBadge}>
+                {formatInventoryNumber(hook.meta.total ?? hook.transactions.length)} Entries
+              </span>
+            )}
+          </div>
+          <button className={styles.secondaryButton} type="button" onClick={() => void hook.refresh()}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="23 4 23 10 17 10" />
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+            </svg>
+            Refresh Ledger
+          </button>
+        </div>
         {hook.loading && <LoadingState message="Loading Transactions..." />}
         {hook.error && !hook.loading && (
           <ErrorState
@@ -1653,11 +1991,19 @@ export const InventoryTransactionList = () => {
                 <tbody>
                   {hook.transactions.map((transaction) => (
                     <tr key={transaction.id}>
-                      <td>{transaction.item.name}</td>
-                      <td>{formatTransactionType(transaction.type)}</td>
-                      <td>{formatInventoryNumber(transaction.quantity)}</td>
+                      <td>
+                        <strong>{transaction.item.name}</strong>
+                      </td>
+                      <td>
+                        <span className={styles.badge}>{formatTransactionType(transaction.type)}</span>
+                      </td>
+                      <td>
+                        <strong>{formatInventoryNumber(transaction.quantity)}</strong>
+                      </td>
                       <td>{formatInventoryNumber(transaction.previousQuantity)}</td>
-                      <td>{formatInventoryNumber(transaction.resultingQuantity)}</td>
+                      <td>
+                        <strong>{formatInventoryNumber(transaction.resultingQuantity)}</strong>
+                      </td>
                       <td>
                         {transaction.member
                           ? `${transaction.member.name} (${transaction.member.employeeId ?? transaction.member.id})`

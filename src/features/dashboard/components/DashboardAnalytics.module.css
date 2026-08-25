@@ -36,7 +36,8 @@
 .previewHeader h3,
 .breakdown h3,
 .trendHeader h3,
-.cardTitle {
+.cardTitle,
+.workloadSubheading {
   margin: 0;
   color: var(--text-primary);
   font-weight: 800;
@@ -108,10 +109,27 @@
 }
 
 .stack {
-  display: grid;
-  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
   width: 100%;
   box-sizing: border-box;
+}
+
+.workloadSection {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.workloadSubheading {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 /* ==========================================================================
@@ -886,6 +904,11 @@
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   width: 100%;
+  border: 1px solid var(--border-default);
+  border-radius: 18px;
+  background: var(--bg-card);
+  box-shadow: var(--card-shadow);
+  box-sizing: border-box;
 }
 
 .table {
@@ -897,14 +920,14 @@
 .table th,
 .table td {
   border-bottom: 1px solid var(--border-subtle);
-  padding: 12px 10px;
+  padding: 14px 16px;
   text-align: left;
-  vertical-align: top;
+  vertical-align: middle;
 }
 
 .table th {
   color: var(--text-muted);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
