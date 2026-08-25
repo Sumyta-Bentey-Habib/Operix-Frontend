@@ -37,18 +37,22 @@ export const TaskTable = ({ tasks, viewer, onAssign, onStart }: TaskTableProps) 
       <tbody>
         {tasks.map((task) => (
           <tr key={task.id}>
-            <td className={styles.mono}>{task.referenceCode}</td>
-            <td>{task.title}</td>
+            <td>
+              <span className={styles.mono}>{task.referenceCode}</span>
+            </td>
+            <td className={styles.taskTitleCell}>{task.title}</td>
             <td>
               <TaskPriorityBadge priority={task.priority} />
             </td>
             <td>
               <TaskStatusBadge status={task.status} />
             </td>
-            <td className={styles.mono}>{task.teamId}</td>
-            <td>{formatOptionalDate(task.dueAt)}</td>
-            <td>{task.isOverdue ? <span className={styles.overdue}>Overdue</span> : "No"}</td>
-            <td>{formatDisplayDate(task.createdAt)}</td>
+            <td>
+              <span className={styles.mono}>{task.teamId}</span>
+            </td>
+            <td className={styles.dateCell}>{formatOptionalDate(task.dueAt)}</td>
+            <td>{task.isOverdue ? <span className={styles.overdue}>Overdue</span> : <span className={styles.notOverdue}>No</span>}</td>
+            <td className={styles.dateCell}>{formatDisplayDate(task.createdAt)}</td>
             <td>
               <div className={styles.actions}>
                 <Link className={styles.button} href={`/tasks/${task.id}`}>

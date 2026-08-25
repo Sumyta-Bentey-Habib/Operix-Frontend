@@ -1,18 +1,21 @@
 .picker {
-  display: grid;
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
 }
 
 .selected {
   align-items: center;
-  background: var(--bg-muted);
-  border-radius: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
   color: var(--text-primary);
   display: flex;
-  font-size: 0.85rem;
-  font-weight: 800;
+  font-size: 0.82rem;
+  font-weight: 700;
   justify-content: space-between;
-  padding: 10px 12px;
+  padding: 8px 12px;
 }
 
 .selected button {
@@ -21,34 +24,61 @@
   color: var(--primary-emerald);
   cursor: pointer;
   font-weight: 800;
+  font-size: 0.78rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: opacity 0.15s ease;
+}
+
+.selected button:hover {
+  opacity: 0.8;
 }
 
 .options {
-  display: grid;
-  gap: 8px;
-  max-height: 260px;
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  padding-right: 2px;
 }
 
 .option,
 .activeOption {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
   color: var(--text-primary);
   cursor: pointer;
-  display: grid;
-  gap: 4px;
-  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px;
   text-align: left;
+  transition: all 0.15s ease;
+}
+
+.option strong,
+.activeOption strong {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .option span,
 .activeOption span {
   color: var(--text-secondary);
-  font-size: 0.8rem;
+  font-size: 0.74rem;
+}
+
+.option:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-card-hover);
 }
 
 .activeOption {
   border-color: var(--primary-emerald);
+  background: var(--primary-emerald-light);
+  box-shadow: 0 0 0 1px var(--primary-emerald);
 }
