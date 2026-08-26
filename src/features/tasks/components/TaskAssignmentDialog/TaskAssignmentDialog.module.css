@@ -6,10 +6,12 @@
 }
 
 .summary {
-  background: var(--bg-muted);
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-subtle);
   border-radius: 14px;
   color: var(--text-secondary);
   padding: 14px;
+  font-size: 0.88rem;
 }
 
 .summary strong {
@@ -17,46 +19,105 @@
 }
 
 .field {
-  color: var(--text-secondary);
+  color: var(--text-primary);
   font-size: 0.84rem;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .field textarea {
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-default);
   border-radius: 12px;
-  min-height: 96px;
-  padding: 10px 12px;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.9rem;
+  min-height: 100px;
+  padding: 12px 14px;
+  outline: none;
+  resize: vertical;
+  transition: all 0.2s ease;
+}
+
+.field textarea:focus {
+  border-color: var(--primary-emerald);
+  box-shadow: 0 0 0 3px var(--primary-emerald-glow);
 }
 
 .error {
-  color: var(--destructive);
-  font-size: 0.88rem;
-  font-weight: 800;
+  color: var(--badge-negative-text);
+  font-size: 0.84rem;
+  font-weight: 600;
 }
 
 .actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 12px;
+  margin-top: 14px;
 }
 
 .primaryButton,
 .secondaryButton {
+  border: 1px solid transparent;
   border-radius: 12px;
   cursor: pointer;
-  font-weight: 800;
-  padding: 10px 14px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  padding: 11px 20px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
 }
 
 .primaryButton {
   background: var(--primary-emerald);
-  border: 0;
   color: var(--text-inverse);
+  box-shadow: 0 2px 8px var(--primary-emerald-glow);
+}
+
+.primaryButton:hover:not(:disabled) {
+  background: var(--primary-emerald-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--primary-emerald-glow);
 }
 
 .secondaryButton {
-  background: var(--card);
-  border: 1px solid var(--border);
+  background: var(--bg-card-subtle);
+  border-color: var(--border-default);
   color: var(--text-primary);
+}
+
+.secondaryButton:hover:not(:disabled) {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+}
+
+.primaryButton:focus-visible {
+  outline: 2px solid var(--primary-emerald);
+  outline-offset: 2px;
+}
+
+.secondaryButton:focus-visible {
+  outline: 2px solid var(--primary-emerald);
+  outline-offset: 2px;
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+@media (max-width: 480px) {
+  .actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
 }

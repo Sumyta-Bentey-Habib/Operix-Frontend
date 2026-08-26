@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 import styles from "./Modal.module.css";
 
 export interface ModalProps {
@@ -12,6 +12,8 @@ export interface ModalProps {
 }
 
 export const Modal = ({ open, title, description, children, onClose }: ModalProps) => {
+  const dialogRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!open) return;
 
@@ -26,12 +28,22 @@ export const Modal = ({ open, title, description, children, onClose }: ModalProp
   if (!open) return null;
 
   return (
-    <div className={styles.backdrop} role="presentation">
+    <div
+      className={styles.backdrop}
+      role="presentation"
+      onClick={(e) => {
+        if (dialogRef.current && !dialogRef.current.contains(e.target as Node)) {
+          onClose();
+        }
+      }}
+    >
       <section
+        ref={dialogRef}
         className={styles.dialog}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
+        onClick={(e) => e.stopPropagation()}
       >
         <header className={styles.header}>
           <div>
@@ -46,7 +58,7 @@ export const Modal = ({ open, title, description, children, onClose }: ModalProp
             onClick={onClose}
             aria-label="Close dialog"
           >
-            ×
+            ✕
           </button>
         </header>
         <div className={styles.body}>{children}</div>

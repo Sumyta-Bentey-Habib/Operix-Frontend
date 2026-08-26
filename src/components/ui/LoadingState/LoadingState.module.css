@@ -6,11 +6,12 @@
   min-height: 220px;
   color: var(--text-secondary);
   font-size: 0.9rem;
+  font-weight: 500;
 }
 
 .spinner {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border: 3px solid var(--border-default);
   border-top-color: var(--primary-emerald);
   border-radius: 50%;
@@ -20,5 +21,54 @@
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+.message {
+  color: var(--text-secondary);
+}
+
+.skeletonContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 16px;
+}
+
+.skeletonHeader {
+  height: 36px;
+  width: 40%;
+  border-radius: 12px;
+  background: linear-gradient(
+    90deg,
+    var(--bg-card-subtle) 25%,
+    var(--bg-card-hover) 37%,
+    var(--bg-card-subtle) 63%
+  );
+  background-size: 400% 100%;
+  animation: skeletonPulse 1.4s ease infinite;
+}
+
+.skeletonRow {
+  height: 48px;
+  width: 100%;
+  border-radius: 12px;
+  background: linear-gradient(
+    90deg,
+    var(--bg-card-subtle) 25%,
+    var(--bg-card-hover) 37%,
+    var(--bg-card-subtle) 63%
+  );
+  background-size: 400% 100%;
+  animation: skeletonPulse 1.4s ease infinite;
+}
+
+@keyframes skeletonPulse {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
   }
 }

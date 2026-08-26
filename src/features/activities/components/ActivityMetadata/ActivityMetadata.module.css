@@ -1,22 +1,22 @@
 .metadata {
-  background: var(--bg-canvas);
-  border: 1px solid var(--border-subtle);
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-default);
   border-radius: 12px;
   display: grid;
   gap: 6px;
-  padding: 10px;
+  padding: 12px;
 }
 
 .row {
   display: grid;
   gap: 6px;
-  grid-template-columns: 150px minmax(0, 1fr);
+  grid-template-columns: 140px minmax(0, 1fr);
 }
 
 .key {
   color: var(--text-secondary);
   font-size: 0.76rem;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .value {
@@ -28,4 +28,11 @@
 .empty {
   color: var(--text-muted);
   font-size: 0.78rem;
+}
+
+@media (max-width: 480px) {
+  .row {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
 }

@@ -159,5 +159,5 @@
 }
 
 .barFillBlue {
-  background-color: #3b82f6;
+  background-color: var(--primary-emerald-hover);
 }

@@ -19,12 +19,15 @@ export const CompletedVsPendingChart: React.FC = () => {
           <div className={styles.legendItem}>
             <span
               className={styles.legendDot}
-              style={{ backgroundColor: "var(--primary-emerald, #10b981)" }}
+              style={{ backgroundColor: "var(--primary-emerald)" }}
             />
             <span>Completed</span>
           </div>
           <div className={styles.legendItem}>
-            <span className={styles.legendDot} style={{ backgroundColor: "#f59e0b" }} />
+            <span
+              className={styles.legendDot}
+              style={{ backgroundColor: "var(--badge-pending-text)" }}
+            />
             <span>Pending</span>
           </div>
         </div>

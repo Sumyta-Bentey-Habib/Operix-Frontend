@@ -20,34 +20,40 @@ export const AuthGuard: React.FC<{ children: ReactNode }> = ({ children }) => {
       <div
         style={{
           minHeight: "100vh",
-          backgroundColor: "#030403",
+          backgroundColor: "var(--bg-canvas)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          color: "#ffffff",
+          color: "var(--text-primary)",
           gap: "16px",
+          padding: "24px",
+          textAlign: "center",
         }}
       >
-        <span style={{ fontSize: "0.95rem", color: "#ffffff" }}>
+        <span style={{ fontSize: "1.05rem", fontWeight: 700, color: "var(--text-primary)" }}>
           Unable to confirm your session.
         </span>
-        <span style={{ fontSize: "0.88rem", color: "#9ca3af" }}>
+        <span style={{ fontSize: "0.88rem", color: "var(--text-secondary)", maxWidth: "400px" }}>
           {hydrationError?.message ?? "Please retry when the API is available."}
         </span>
         <button
           type="button"
           onClick={() => void retryHydration()}
           style={{
-            border: "1px solid rgba(16, 185, 129, 0.6)",
-            borderRadius: "999px",
-            background: "rgba(16, 185, 129, 0.12)",
-            color: "#ffffff",
-            padding: "10px 18px",
+            border: "1px solid var(--primary-emerald)",
+            borderRadius: "12px",
+            background: "var(--primary-emerald)",
+            color: "var(--text-inverse)",
+            padding: "10px 22px",
+            minHeight: "44px",
             cursor: "pointer",
+            fontWeight: 700,
+            fontSize: "0.875rem",
+            boxShadow: "0 2px 8px var(--primary-emerald-glow)",
           }}
         >
-          Retry
+          Retry Session
         </button>
       </div>
     );
@@ -58,12 +64,12 @@ export const AuthGuard: React.FC<{ children: ReactNode }> = ({ children }) => {
       <div
         style={{
           minHeight: "100vh",
-          backgroundColor: "#030403",
+          backgroundColor: "var(--bg-canvas)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          color: "#ffffff",
+          color: "var(--text-primary)",
           gap: "16px",
         }}
       >
@@ -76,13 +82,15 @@ export const AuthGuard: React.FC<{ children: ReactNode }> = ({ children }) => {
           style={{
             width: "36px",
             height: "36px",
-            border: "3px solid rgba(255, 255, 255, 0.15)",
-            borderTopColor: "#10b981",
+            border: "3px solid var(--border-default)",
+            borderTopColor: "var(--primary-emerald)",
             borderRadius: "50%",
             animation: "authSpin 0.75s linear infinite",
           }}
         />
-        <span style={{ fontSize: "0.88rem", color: "#9ca3af" }}>Checking your session...</span>
+        <span style={{ fontSize: "0.88rem", color: "var(--text-secondary)", fontWeight: 500 }}>
+          Checking your session...
+        </span>
       </div>
     );
   }

@@ -66,7 +66,7 @@
 
 .trendLine {
   fill: none;
-  stroke: #ef4444;
+  stroke: var(--badge-negative-text);
   stroke-width: 2.5;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -82,7 +82,7 @@
 
 .dotRed {
   fill: var(--bg-card);
-  stroke: #ef4444;
+  stroke: var(--badge-negative-text);
   stroke-width: 2.5;
   cursor: pointer;
 }

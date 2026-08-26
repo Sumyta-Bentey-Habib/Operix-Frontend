@@ -1,12 +1,13 @@
 .filters {
   align-items: end;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: 18px;
+  box-shadow: var(--card-shadow);
   display: grid;
   gap: 14px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  padding: 16px;
+  padding: 20px;
 }
 
 .field {
@@ -15,17 +16,27 @@
 }
 
 .label {
-  color: var(--text-secondary);
-  font-size: 0.76rem;
-  font-weight: 800;
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  font-weight: 700;
 }
 
 .input {
-  background: var(--bg-canvas);
+  background: var(--bg-input);
   border: 1px solid var(--border-default);
-  border-radius: 10px;
+  border-radius: 12px;
   color: var(--text-primary);
-  padding: 10px 12px;
+  font: inherit;
+  font-size: 0.875rem;
+  padding: 10px 14px;
+  min-height: 44px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.input:focus {
+  border-color: var(--primary-emerald);
+  box-shadow: 0 0 0 3px var(--primary-emerald-glow);
 }
 
 .actions {
@@ -35,26 +46,50 @@
 
 .button,
 .secondaryButton {
-  border-radius: 10px;
+  border: 1px solid transparent;
+  border-radius: 12px;
   cursor: pointer;
-  font-weight: 800;
-  padding: 10px 12px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  padding: 10px 16px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
 }
 
 .button {
   background: var(--primary-emerald);
-  border: 1px solid var(--primary-emerald);
   color: var(--text-inverse);
+  box-shadow: 0 2px 8px var(--primary-emerald-glow);
+}
+
+.button:hover:not(:disabled) {
+  background: var(--primary-emerald-hover);
+  transform: translateY(-1px);
 }
 
 .secondaryButton {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
+  background: var(--bg-card-subtle);
+  border-color: var(--border-default);
   color: var(--text-primary);
+}
+
+.secondaryButton:hover:not(:disabled) {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+}
+
+.button:focus-visible,
+.secondaryButton:focus-visible {
+  outline: 2px solid var(--primary-emerald);
+  outline-offset: 2px;
 }
 
 @media (max-width: 760px) {
   .filters {
     grid-template-columns: 1fr;
+    padding: 16px;
   }
 }

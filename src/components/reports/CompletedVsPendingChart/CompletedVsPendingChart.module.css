@@ -32,7 +32,7 @@
 
 .title {
   font-size: 1.05rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary);
   margin: 0;
 }
@@ -102,11 +102,11 @@
 }
 
 .barCompleted {
-  background-color: var(--primary-emerald, #10b981);
+  background-color: var(--primary-emerald);
 }
 
 .barPending {
-  background-color: #f59e0b;
+  background-color: var(--badge-pending-text);
 }
 
 .monthLabel {

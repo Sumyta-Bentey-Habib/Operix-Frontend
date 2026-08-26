@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -31,8 +31,10 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
 }) => {
   const { viewer, profile, signOut } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [logoutError, setLogoutError] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const mobileNavRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -57,6 +59,10 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
     return activeTabId || "dashboard";
   })();
 
+  const closeMobileNav = useCallback(() => {
+    setIsMobileNavOpen(false);
+  }, []);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -66,6 +72,37 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsMenuOpen(false);
+        setIsMobileNavOpen(false);
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  // Close mobile nav on route transition without triggering cascading render effect
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
+    setIsMobileNavOpen(false);
+  }
+
+  const handleLogout = () => {
+    setLogoutError(null);
+    void signOut()
+      .then(() => {
+        router.replace("/");
+      })
+      .catch((error: unknown) => {
+        setLogoutError(
+          error instanceof Error ? error.message : "Unable to log out. Please try again.",
+        );
+      });
+  };
 
   const navbarClassName = className ? `${styles.navbar} ${className}` : styles.navbar;
 
@@ -113,7 +150,9 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
           title={APP_STRINGS.actions.notifications}
         />
 
-        <ThemeToggle />
+        <div className={styles.desktopThemeToggle}>
+          <ThemeToggle />
+        </div>
 
         <div
           ref={menuRef}
@@ -153,18 +192,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
                 className={`${styles.dropdownItem} ${styles.dropdownItemLogout}`}
                 onClick={(e) => {
                   e.stopPropagation();
-                  setLogoutError(null);
-                  void signOut()
-                    .then(() => {
-                      router.replace("/");
-                    })
-                    .catch((error: unknown) => {
-                      setLogoutError(
-                        error instanceof Error
-                          ? error.message
-                          : "Unable to log out. Please try again.",
-                      );
-                    });
+                  handleLogout();
                 }}
               >
                 <LogoutIcon size={16} />
@@ -178,7 +206,106 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
             </div>
           )}
         </div>
+
+        {/* Mobile Hamburger Menu Button */}
+        <button
+          type="button"
+          className={styles.hamburgerButton}
+          onClick={() => setIsMobileNavOpen((prev) => !prev)}
+          aria-expanded={isMobileNavOpen}
+          aria-label={isMobileNavOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-controls="mobile-nav-drawer"
+        >
+          <span
+            className={`${styles.hamburgerLine} ${isMobileNavOpen ? styles.hamburgerLineOpen1 : ""}`}
+          />
+          <span
+            className={`${styles.hamburgerLine} ${isMobileNavOpen ? styles.hamburgerLineOpen2 : ""}`}
+          />
+          <span
+            className={`${styles.hamburgerLine} ${isMobileNavOpen ? styles.hamburgerLineOpen3 : ""}`}
+          />
+        </button>
       </div>
+
+      {/* Mobile Navigation Drawer & Backdrop */}
+      {isMobileNavOpen && (
+        <div className={styles.mobileNavBackdrop} onClick={closeMobileNav} role="presentation">
+          <div
+            id="mobile-nav-drawer"
+            ref={mobileNavRef}
+            className={styles.mobileNavDrawer}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile Navigation"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles.mobileNavHeader}>
+              <div className={styles.mobileNavUserSection}>
+                <Image
+                  src={currentUser.avatarUrl}
+                  alt={currentUser.name}
+                  width={42}
+                  height={42}
+                  className={styles.mobileNavAvatar}
+                  unoptimized
+                />
+                <div className={styles.mobileNavUserInfo}>
+                  <span className={styles.mobileNavUserName}>{currentUser.name}</span>
+                  <span className={styles.mobileNavUserRole}>{currentUser.roleLabel}</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                className={styles.mobileNavCloseBtn}
+                onClick={closeMobileNav}
+                aria-label="Close menu"
+              >
+                ✕
+              </button>
+            </div>
+
+            <nav className={styles.mobileNavList} aria-label="Mobile navigation links">
+              {visibleTabs.map((tab) => {
+                const isActive = tab.id === currentTabId;
+                return (
+                  <Link
+                    key={tab.id}
+                    href={tab.href}
+                    className={`${styles.mobileNavItem} ${isActive ? styles.mobileNavActiveItem : ""}`}
+                    onClick={() => {
+                      onTabChange?.(tab.id);
+                      closeMobileNav();
+                    }}
+                    aria-current={isActive ? "page" : undefined}
+                  >
+                    <span>{tab.label}</span>
+                    {isActive && <span className={styles.activeDot} />}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            <div className={styles.mobileNavFooter}>
+              <div className={styles.mobileThemeRow}>
+                <span className={styles.mobileThemeLabel}>Appearance</span>
+                <ThemeToggle />
+              </div>
+              <button
+                type="button"
+                className={styles.mobileLogoutBtn}
+                onClick={() => {
+                  closeMobileNav();
+                  handleLogout();
+                }}
+              >
+                <LogoutIcon size={18} />
+                <span>Log out</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 };
