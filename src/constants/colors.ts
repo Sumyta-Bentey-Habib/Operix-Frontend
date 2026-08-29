@@ -29,17 +29,17 @@ export const THEME_COLORS = {
     borderDefault: "#e5e7eb",
     borderHover: "#d1d5db",
 
-    // Primary Emerald Brand Accent
-    primaryEmerald: "#059669",
-    primaryEmeraldHover: "#047857",
-    primaryEmeraldLight: "#e6f7f0",
-    primaryEmeraldDark: "#065f46",
-    primaryEmeraldMuted: "#d1fae5",
-    primaryEmeraldGlow: "rgba(5, 150, 105, 0.25)",
+    // Primary Red Brand Accent (Apex Pharma)
+    primaryEmerald: "#dc2626",
+    primaryEmeraldHover: "#b91c1c",
+    primaryEmeraldLight: "#fef2f2",
+    primaryEmeraldDark: "#991b1b",
+    primaryEmeraldMuted: "#fee2e2",
+    primaryEmeraldGlow: "rgba(220, 38, 38, 0.25)",
 
     // Status Badges & Alerts
-    positiveBg: "#e6f7f0",
-    positiveText: "#059669",
+    positiveBg: "#fef2f2",
+    positiveText: "#dc2626",
     negativeBg: "#fef2f2",
     negativeText: "#dc2626",
     pendingBg: "#fef3c7",
@@ -82,17 +82,17 @@ export const THEME_COLORS = {
     borderDefault: "#2a374f",
     borderHover: "#3b4b66",
 
-    // Primary Emerald Brand Accent
-    primaryEmerald: "#10b981",
-    primaryEmeraldHover: "#059669",
-    primaryEmeraldLight: "rgba(16, 185, 129, 0.15)",
-    primaryEmeraldDark: "#047857",
-    primaryEmeraldMuted: "rgba(16, 185, 129, 0.2)",
-    primaryEmeraldGlow: "rgba(16, 185, 129, 0.35)",
+    // Primary Red Brand Accent (Apex Pharma)
+    primaryEmerald: "#ef4444",
+    primaryEmeraldHover: "#dc2626",
+    primaryEmeraldLight: "rgba(239, 68, 68, 0.15)",
+    primaryEmeraldDark: "#b91c1c",
+    primaryEmeraldMuted: "rgba(239, 68, 68, 0.2)",
+    primaryEmeraldGlow: "rgba(239, 68, 68, 0.35)",
 
     // Status Badges & Alerts
-    positiveBg: "rgba(16, 185, 129, 0.15)",
-    positiveText: "#34d399",
+    positiveBg: "rgba(239, 68, 68, 0.15)",
+    positiveText: "#fca5a5",
     negativeBg: "rgba(239, 68, 68, 0.15)",
     negativeText: "#f87171",
     pendingBg: "rgba(245, 158, 11, 0.15)",

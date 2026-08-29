@@ -25,15 +25,15 @@
   --border-default: #e5e7eb;
   --border-hover: #d1d5db;
 
-  --primary-emerald: #059669;
-  --primary-emerald-hover: #047857;
-  --primary-emerald-light: #e6f7f0;
-  --primary-emerald-dark: #065f46;
-  --primary-emerald-muted: #d1fae5;
-  --primary-emerald-glow: rgba(5, 150, 105, 0.25);
+  --primary-emerald: #dc2626;
+  --primary-emerald-hover: #b91c1c;
+  --primary-emerald-light: #fef2f2;
+  --primary-emerald-dark: #991b1b;
+  --primary-emerald-muted: #fee2e2;
+  --primary-emerald-glow: rgba(220, 38, 38, 0.25);
 
-  --badge-positive-bg: #e6f7f0;
-  --badge-positive-text: #059669;
+  --badge-positive-bg: #fef2f2;
+  --badge-positive-text: #dc2626;
   --badge-negative-bg: #fef2f2;
   --badge-negative-text: #dc2626;
   --badge-pending-bg: #fef3c7;
@@ -98,15 +98,15 @@
   --border-default: #2a374f;
   --border-hover: #3b4b66;
 
-  --primary-emerald: #10b981;
-  --primary-emerald-hover: #059669;
-  --primary-emerald-light: rgba(16, 185, 129, 0.15);
-  --primary-emerald-dark: #047857;
-  --primary-emerald-muted: rgba(16, 185, 129, 0.2);
-  --primary-emerald-glow: rgba(16, 185, 129, 0.35);
+  --primary-emerald: #ef4444;
+  --primary-emerald-hover: #dc2626;
+  --primary-emerald-light: rgba(239, 68, 68, 0.15);
+  --primary-emerald-dark: #b91c1c;
+  --primary-emerald-muted: rgba(239, 68, 68, 0.2);
+  --primary-emerald-glow: rgba(239, 68, 68, 0.35);
 
-  --badge-positive-bg: rgba(16, 185, 129, 0.15);
-  --badge-positive-text: #34d399;
+  --badge-positive-bg: rgba(239, 68, 68, 0.15);
+  --badge-positive-text: #fca5a5;
   --badge-negative-bg: rgba(239, 68, 68, 0.15);
   --badge-negative-text: #f87171;
   --badge-pending-bg: rgba(245, 158, 11, 0.15);

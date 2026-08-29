@@ -4,7 +4,7 @@ import { IconProps } from "./types";
 export const CreditCardIcon: React.FC<IconProps> = ({
   className = "",
   size = 20,
-  color = "#059669",
+  color = "#dc2626",
 }) => (
   <svg
     width={size}

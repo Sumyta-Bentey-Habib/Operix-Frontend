@@ -157,7 +157,7 @@
 }
 
 .barHighlight {
-  background: linear-gradient(180deg, #10b981 0%, var(--primary-emerald) 100%);
+  background: linear-gradient(180deg, #ef4444 0%, var(--primary-emerald) 100%);
   box-shadow: 0 4px 14px var(--primary-emerald-glow);
 }
 
@@ -171,14 +171,14 @@
   top: -26px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #065f46;
+  background-color: #991b1b;
   color: #ffffff;
   font-size: 0.6875rem;
   font-weight: 700;
   padding: 0.18rem 0.55rem;
   border-radius: 9999px;
   white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(6, 95, 70, 0.4);
+  box-shadow: 0 2px 8px rgba(153, 27, 27, 0.4);
   display: flex;
   align-items: center;
   gap: 0.15rem;
@@ -194,7 +194,7 @@
   transform: translateX(-50%);
   border-width: 4px 4px 0 4px;
   border-style: solid;
-  border-color: #065f46 transparent transparent transparent;
+  border-color: #991b1b transparent transparent transparent;
 }
 
 .monthLabel {

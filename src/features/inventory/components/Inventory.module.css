@@ -34,7 +34,7 @@
   gap: 24px;
   align-items: center;
   flex-wrap: wrap;
-  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(16, 185, 129, 0.03) 100%);
+  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(239, 68, 68, 0.03) 100%);
   position: relative;
   overflow: hidden;
 }
@@ -440,7 +440,7 @@
 }
 
 .primaryButton {
-  background: linear-gradient(135deg, var(--primary-emerald) 0%, #059669 100%);
+  background: linear-gradient(135deg, var(--primary-emerald) 0%, #b91c1c 100%);
   color: var(--text-inverse);
   box-shadow: 0 2px 8px var(--primary-emerald-glow);
 }
