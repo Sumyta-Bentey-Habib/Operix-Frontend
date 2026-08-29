@@ -4,6 +4,7 @@ import Link from "next/link";
 import { canAssignTask, canStartTask } from "@/lib/auth/permissions";
 import type { OperixViewer } from "@/types/auth";
 import { formatDisplayDate } from "@/utils/date";
+import { obfuscateId } from "@/utils/id-obfuscator";
 import type { Task } from "../../types/task.types";
 import { TaskPriorityBadge } from "../TaskPriorityBadge";
 import { TaskStatusBadge } from "../TaskStatusBadge";
@@ -27,7 +28,7 @@ export const TaskTable = ({ tasks, viewer, onAssign, onStart }: TaskTableProps) 
           <th>Title</th>
           <th>Priority</th>
           <th>Status</th>
-          <th>Team ID</th>
+          <th>Team Reference</th>
           <th>Due</th>
           <th>Overdue</th>
           <th>Created</th>
@@ -48,7 +49,7 @@ export const TaskTable = ({ tasks, viewer, onAssign, onStart }: TaskTableProps) 
               <TaskStatusBadge status={task.status} />
             </td>
             <td>
-              <span className={styles.mono}>{task.teamId}</span>
+              <span className={styles.mono}>{obfuscateId(task.teamId, "TM")}</span>
             </td>
             <td className={styles.dateCell}>{formatOptionalDate(task.dueAt)}</td>
             <td>{task.isOverdue ? <span className={styles.overdue}>Overdue</span> : <span className={styles.notOverdue}>No</span>}</td>

@@ -12,6 +12,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useMembers } from "@/features/members/hooks/use-members";
 import { TaskTeamPicker } from "@/features/tasks/components/TaskTeamPicker";
 import { formatDisplayDate } from "@/utils/date";
+import { obfuscateId } from "@/utils/id-obfuscator";
 import { inventoryAssignmentApi } from "../api/inventory-assignment.api";
 import { inventoryCategoryApi } from "../api/inventory-category.api";
 import { inventoryItemApi } from "../api/inventory-item.api";
@@ -227,13 +228,6 @@ const SummaryCards = () => {
     </section>
   );
 };
-
-const Metric = ({ label, value }: { label: string; value: number }) => (
-  <div className={styles.detailItem}>
-    <span>{label}</span>
-    <strong>{formatInventoryNumber(value)}</strong>
-  </div>
-);
 
 const ItemFilters = ({ hook }: { hook: ReturnType<typeof useInventoryItems> }) => {
   const filters = hook.draftFilters;
@@ -723,7 +717,7 @@ export const InventoryCategoryDetails = ({ categoryId }: { categoryId: string })
       {category && !loading && !error && (
         <section className={styles.card}>
           <div className={styles.detailGrid}>
-            <Detail label="Category ID" value={category.id} />
+            <Detail label="Category Reference" value={obfuscateId(category.id, "CAT")} />
             <Detail label="Status" value={category.isActive ? "Active" : "Inactive"} />
             <Detail label="Description" value={category.description ?? "—"} />
             <Detail label="Updated" value={formatDisplayDate(category.updatedAt)} />
@@ -832,7 +826,10 @@ const InventoryItemForm = ({
         {editMode ? (
           <div className={styles.detailGrid}>
             <Detail label="Team Name" value={item?.team.name ?? "—"} />
-            <Detail label="Team ID" value={item?.team.id ?? "—"} />
+            <Detail
+              label="Team Reference"
+              value={item?.team.id ? obfuscateId(item.team.id, "TM") : "—"}
+            />
           </div>
         ) : (
           <div className={styles.teamPickerContainer}>
@@ -847,7 +844,7 @@ const InventoryItemForm = ({
                   </svg>
                   <div>
                     <strong>{selectedTeamName}</strong>
-                    <span>Team ID: {values.teamId}</span>
+                    <span>Team Ref: {obfuscateId(values.teamId, "TM")}</span>
                   </div>
                 </div>
                 <button
@@ -1176,10 +1173,14 @@ export const InventoryItemDetails = ({ itemId }: { itemId: string }) => {
           <section className={styles.card}>
             <div className={styles.detailGrid}>
               <Detail label="SKU" value={item.sku} />
-              <Detail label="Team" value={`${item.team.name} (${item.team.id})`} />
+              <Detail label="Team" value={`${item.team.name} (${obfuscateId(item.team.id, "TM")})`} />
               <Detail
                 label="Category"
-                value={item.category ? `${item.category.name} (${item.category.id})` : "—"}
+                value={
+                  item.category
+                    ? `${item.category.name} (${obfuscateId(item.category.id, "CAT")})`
+                    : "—"
+                }
               />
               <Detail label="Available Quantity" value={formatInventoryNumber(item.quantity)} />
               <Detail
@@ -1274,7 +1275,7 @@ const MemberSelect = ({
         {!optional && <option value="">Select active Member</option>}
         {members.map((member) => (
           <option key={member.id} value={member.id} disabled={member.status !== "ACTIVE"}>
-            {member.name} ({member.employeeId ?? member.id}){" "}
+            {member.name} ({member.employeeId ?? obfuscateId(member.id, "MEM")}){" "}
             {member.status !== "ACTIVE" ? "inactive" : ""}
           </option>
         ))}
@@ -2006,7 +2007,7 @@ export const InventoryTransactionList = () => {
                       </td>
                       <td>
                         {transaction.member
-                          ? `${transaction.member.name} (${transaction.member.employeeId ?? transaction.member.id})`
+                          ? `${transaction.member.name} (${transaction.member.employeeId ?? obfuscateId(transaction.member.id, "MEM")})`
                           : "—"}
                       </td>
                       <td>{transaction.actor.name}</td>

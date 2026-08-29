@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { TaskSubmissions } from "@/features/submissions";
 import { canAssignTask, canStartTask } from "@/lib/auth/permissions";
 import { formatDisplayDate } from "@/utils/date";
+import { obfuscateId } from "@/utils/id-obfuscator";
 import { taskApi } from "../../api/task.api";
 import { useTask } from "../../hooks/use-task";
 import {
@@ -128,16 +129,18 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
             <dd>{task.isOverdue ? <span className={styles.overdue}>Overdue</span> : "No"}</dd>
           </div>
           <div>
-            <dt>Team ID</dt>
-            <dd className={styles.mono}>{task.teamId}</dd>
+            <dt>Team Reference</dt>
+            <dd className={styles.mono}>{obfuscateId(task.teamId, "TM")}</dd>
           </div>
           <div>
-            <dt>Category ID</dt>
-            <dd className={styles.mono}>{formatOptionalText(task.categoryId)}</dd>
+            <dt>Category Reference</dt>
+            <dd className={styles.mono}>
+              {task.categoryId ? obfuscateId(task.categoryId, "CAT") : "—"}
+            </dd>
           </div>
           <div>
-            <dt>Created By ID</dt>
-            <dd className={styles.mono}>{task.createdById}</dd>
+            <dt>Created By</dt>
+            <dd className={styles.mono}>{obfuscateId(task.createdById, "USR")}</dd>
           </div>
           <div>
             <dt>Due</dt>

@@ -2,6 +2,7 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import type { Team } from "@/features/teams";
+import { obfuscateId } from "@/utils/id-obfuscator";
 import type { ManagementReport, ManagementReportFormValues } from "../../types/report.types";
 import { reportToFormValues } from "../../utils/report-form";
 import { validateReportPeriod } from "../../utils/report-date";
@@ -73,15 +74,15 @@ export const ReportForm = ({
               <span>Team *</span>
               {values.teamId && (
                 <p className={styles.hint}>
-                  Selected Team: {selectedTeamName || values.teamId} ({values.teamId})
+                  Selected Team: {selectedTeamName || obfuscateId(values.teamId, "TM")}
                 </p>
               )}
               <ReportTeamPicker selectedTeamId={values.teamId} onSelect={handleTeamSelect} />
             </div>
           ) : (
             <div className={styles.detailItem}>
-              <span>Team ID</span>
-              <strong>{values.teamId}</strong>
+              <span>Team Reference</span>
+              <strong>{obfuscateId(values.teamId, "TM")}</strong>
             </div>
           )}
           <label className={styles.field}>
