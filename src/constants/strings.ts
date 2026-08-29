@@ -1,6 +1,12 @@
 export const APP_STRINGS = {
   appName: "Operix",
   appDescription: "Super Admin Financial & Operations Dashboard",
+  dashboardTitles: {
+    superAdmin: "Operix - Super Admin Dashboard",
+    admin: "Operix - Admin Dashboard",
+    member: "Operix - Member Dashboard",
+    default: "Operix - Dashboard",
+  },
   welcomePrefix: "Welcome Back,",
   actions: {
     addNewWallet: "Add New Wallet",

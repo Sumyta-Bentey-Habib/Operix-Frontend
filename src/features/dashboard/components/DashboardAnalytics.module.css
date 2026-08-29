@@ -90,6 +90,27 @@
   font-size: 0.9rem;
 }
 
+.contextDatePickerTrigger {
+  padding: 4px 8px;
+  min-height: 32px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 0.92rem;
+  font-weight: 700;
+  box-shadow: none;
+  gap: 8px;
+  margin-top: 2px;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.contextDatePickerTrigger:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-default);
+}
+
 .card {
   padding: 24px;
   width: 100%;

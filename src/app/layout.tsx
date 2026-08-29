@@ -12,8 +12,11 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Operix - Super Admin Dashboard",
-  description: "Super Admin Financial & Operations Dashboard",
+  title: {
+    default: "Operix",
+    template: "%s - Operix",
+  },
+  description: "Operix Financial & Operations Management Platform",
   icons: {
     icon: [
       { url: "/icon.svg", type: "image/svg+xml" },
