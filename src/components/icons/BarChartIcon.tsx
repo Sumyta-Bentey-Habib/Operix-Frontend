@@ -4,7 +4,7 @@ import { IconProps } from "./types";
 export const BarChartIcon: React.FC<IconProps> = ({
   className = "",
   size = 18,
-  color = "#059669",
+  color = "#dc2626",
 }) => (
   <svg
     width={size}

@@ -5,6 +5,7 @@ import styles from "./RecentReportsTable.module.css";
 import { FileDocIcon, DownloadIcon, MoreDotsIcon } from "@/components/icons";
 import { RECENT_REPORTS_DATA } from "@/data/reportsData";
 import { APP_STRINGS } from "@/constants/strings";
+import { CSS_VARS } from "@/constants/colors";
 import type { ReportItem, ReportStatus } from "@/types/dashboard";
 
 export interface RecentReportsTableProps {
@@ -56,7 +57,7 @@ export const RecentReportsTable: React.FC<RecentReportsTableProps> = ({
                 <td className={styles.td}>
                   <div className={styles.nameCell}>
                     <div className={styles.fileIconWrapper} aria-hidden="true">
-                      <FileDocIcon size={22} color="#059669" />
+                      <FileDocIcon size={22} color={CSS_VARS.primaryEmerald} />
                     </div>
                     <span className={styles.reportName}>{item.name}</span>
                   </div>
