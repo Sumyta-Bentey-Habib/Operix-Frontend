@@ -9,6 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 import { canAssignMemberToTeam, canEditTeam, canReassignTeamAdmin } from "@/lib/auth/permissions";
 import { isOperixApiError } from "@/lib/api";
 import { formatDisplayDate } from "@/utils/date";
+import { obfuscateId } from "@/utils/id-obfuscator";
 import { teamApi } from "../../api/team.api";
 import { useTeam } from "../../hooks/use-team";
 import type { CreateTeamInput, UpdateTeamInput } from "../../types/team.types";
@@ -109,7 +110,7 @@ export const TeamDetails = ({ teamId }: TeamDetailsProps) => {
         <header className={styles.header}>
           <div>
             <h1 className={styles.title}>{team.name}</h1>
-            <p className={styles.subtitle}>Admin ID {team.adminId}</p>
+            <p className={styles.subtitle}>Admin Handle: {obfuscateId(team.adminId, "ADM")}</p>
           </div>
           <div className={styles.actions}>
             {canEditTeam(viewer) && (
@@ -152,7 +153,7 @@ export const TeamDetails = ({ teamId }: TeamDetailsProps) => {
         </header>
         <div className={styles.details}>
           <DetailItem label="Name" value={team.name} />
-          <DetailItem label="Admin ID" value={team.adminId} />
+          <DetailItem label="Admin Handle" value={obfuscateId(team.adminId, "ADM")} />
           <DetailItem label="Created" value={formatDisplayDate(team.createdAt)} />
           <DetailItem label="Updated" value={formatDisplayDate(team.updatedAt)} />
         </div>

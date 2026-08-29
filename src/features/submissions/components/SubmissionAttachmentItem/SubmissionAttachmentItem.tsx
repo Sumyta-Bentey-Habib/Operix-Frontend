@@ -1,5 +1,6 @@
 import { formatFileSize, formatFileType } from "@/features/files";
 import { formatDisplayDate } from "@/utils/date";
+import { obfuscateId } from "@/utils/id-obfuscator";
 import type { FileAttachmentResponse } from "@/features/files";
 import styles from "./SubmissionAttachmentItem.module.css";
 
@@ -34,8 +35,8 @@ export const SubmissionAttachmentItem = ({
             <dd>{formatDisplayDate(file.createdAt)}</dd>
           </div>
           <div>
-            <dt>Uploaded By ID</dt>
-            <dd className={styles.mono}>{file.uploadedById}</dd>
+            <dt>Uploaded By</dt>
+            <dd className={styles.mono}>{obfuscateId(file.uploadedById, "USR")}</dd>
           </div>
         </dl>
       </div>

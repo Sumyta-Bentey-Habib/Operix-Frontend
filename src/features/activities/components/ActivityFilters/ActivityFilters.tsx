@@ -59,10 +59,10 @@ export const ActivityFilters = ({
 
     {viewer.role !== "MEMBER" && (
       <label className={styles.field}>
-        <span className={styles.label}>Actor ID</span>
+        <span className={styles.label}>Actor Reference</span>
         <input
           className={styles.input}
-          placeholder="Exact actor ID"
+          placeholder="Exact actor reference"
           value={filters.actorId}
           onChange={(event) => onChange((current) => ({ ...current, actorId: event.target.value }))}
         />

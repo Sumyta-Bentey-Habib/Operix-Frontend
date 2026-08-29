@@ -2,6 +2,7 @@
 
 import { ErrorState } from "@/components/ui/ErrorState";
 import { LoadingState } from "@/components/ui/LoadingState";
+import { obfuscateId } from "@/utils/id-obfuscator";
 import { getPerformanceErrorMessage } from "../../utils/performance-errors";
 import { useTeamPerformance } from "../../hooks/use-team-performance";
 import { MetricContext } from "../MetricContext";
@@ -36,7 +37,7 @@ export const TeamPerformanceDetails = ({ teamId }: { teamId: string }) => {
       <section className={styles.card}>
         <div className={styles.identityGrid}>
           <Identity label="Team" value={data.team.name} />
-          <Identity label="Admin ID" value={data.team.adminId} />
+          <Identity label="Admin Handle" value={obfuscateId(data.team.adminId, "ADM")} />
           <Identity label="Members" value={String(data.team.memberCount)} />
           <Identity label="Active Members" value={String(data.team.activeMemberCount)} />
         </div>

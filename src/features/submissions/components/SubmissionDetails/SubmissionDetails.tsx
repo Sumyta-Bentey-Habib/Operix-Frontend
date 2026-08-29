@@ -5,6 +5,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { isOperixApiError } from "@/lib/api";
 import { formatDisplayDate } from "@/utils/date";
+import { obfuscateId } from "@/utils/id-obfuscator";
 import { useSubmission } from "../../hooks/use-submission";
 import { getSubmissionErrorView } from "../submission-errors";
 import { SubmissionAttachments } from "../SubmissionAttachments";
@@ -46,8 +47,8 @@ export const SubmissionDetails = ({ submissionId }: SubmissionDetailsProps) => {
         </header>
         <dl className={styles.grid}>
           <div>
-            <dt>Submitted By ID</dt>
-            <dd className={styles.mono}>{submission.submittedById}</dd>
+            <dt>Submitted By</dt>
+            <dd className={styles.mono}>{obfuscateId(submission.submittedById, "MEM")}</dd>
           </div>
           <div>
             <dt>Submitted At</dt>

@@ -64,35 +64,6 @@
   align-items: center;
 }
 
-.addWalletButton {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 1.2rem;
-  min-height: 44px;
-  background-color: var(--primary-emerald);
-  color: var(--text-inverse);
-  border: 1px solid var(--primary-emerald);
-  border-radius: 12px;
-  font-size: 0.875rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 4px 12px var(--primary-emerald-glow);
-  transition: all 0.2s ease;
-}
-
-.addWalletButton:hover {
-  background-color: var(--primary-emerald-hover);
-  border-color: var(--primary-emerald-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px var(--primary-emerald-glow);
-}
-
-.addWalletButton:focus-visible {
-  outline: 2px solid var(--primary-emerald);
-  outline-offset: 2px;
-}
-
 @media (max-width: 640px) {
   .headerContainer {
     flex-direction: column;
@@ -109,8 +80,7 @@
     width: 100%;
   }
 
-  .dateFilterButton,
-  .addWalletButton {
+  .dateFilterButton {
     flex: 1;
     justify-content: center;
   }

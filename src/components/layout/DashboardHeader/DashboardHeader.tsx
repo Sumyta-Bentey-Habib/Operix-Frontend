@@ -2,7 +2,7 @@
 
 import React from "react";
 import styles from "./DashboardHeader.module.css";
-import { CalendarIcon, ChevronDownIcon, PlusIcon } from "@/components/icons";
+import { CalendarIcon, ChevronDownIcon } from "@/components/icons";
 import { USER_PROFILE_DATA, DATE_FILTER_DATA } from "@/data/dashboardData";
 import { APP_STRINGS } from "@/constants/strings";
 import { useAuth } from "@/context/AuthContext";
@@ -10,13 +10,11 @@ import { useAuth } from "@/context/AuthContext";
 export interface DashboardHeaderProps {
   className?: string;
   onDateFilterClick?: () => void;
-  onAddWalletClick?: () => void;
 }
 
 export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   className,
   onDateFilterClick,
-  onAddWalletClick,
 }) => {
   const { profile, viewer } = useAuth();
   const displayName = profile?.name || viewer?.userId || USER_PROFILE_DATA.name;
@@ -44,16 +42,6 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           <span className={styles.chevronIcon}>
             <ChevronDownIcon size={14} />
           </span>
-        </button>
-
-        <button
-          type="button"
-          className={styles.addWalletButton}
-          aria-label={APP_STRINGS.ariaLabels.addNewWallet}
-          onClick={onAddWalletClick}
-        >
-          <PlusIcon size={14} />
-          <span>{APP_STRINGS.actions.addNewWallet}</span>
         </button>
       </div>
     </div>
