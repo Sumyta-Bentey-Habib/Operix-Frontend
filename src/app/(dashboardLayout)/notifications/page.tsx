@@ -7,7 +7,7 @@ import { NotificationList } from "@/features/notifications";
 export default function NotificationsPage() {
   return (
     <AuthGuard>
-      <DashboardShell activeTab="dashboard">
+      <DashboardShell activeTab="dashboard" title="Notifications">
         <NotificationList />
       </DashboardShell>
     </AuthGuard>

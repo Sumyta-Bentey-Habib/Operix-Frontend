@@ -4,6 +4,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { Pagination } from "@/components/ui/Pagination";
+import { DatePicker } from "@/components/ui/DatePicker";
 import { useAuth } from "@/context/AuthContext";
 import {
   formatActivityCode,
@@ -333,12 +334,18 @@ const DashboardAnalyticsHeader = ({
   name,
   role,
   overview,
+  selectedDate,
+  onDateChange,
 }: {
   name: string;
   role?: string | null;
   overview: DashboardOverviewResponse | null;
+  selectedDate?: string;
+  onDateChange?: (date: string) => void;
 }) => {
   const roleLabel = role === "SUPER_ADMIN" ? "Super Admin / Chief" : role === "ADMIN" ? "Admin" : "Member / Staff";
+  const defaultAsOf = overview ? overview.context.asOf.slice(0, 10) : "";
+  const activeDate = selectedDate || defaultAsOf;
 
   return (
     <section className={styles.hero}>
@@ -356,7 +363,14 @@ const DashboardAnalyticsHeader = ({
       </div>
       <div className={styles.contextPill}>
         <span>Overview as of</span>
-        <strong>{overview ? formatDashboardAsOf(overview.context.asOf) : "Loading..."}</strong>
+        <DatePicker
+          mode="single"
+          value={activeDate}
+          onChangeDate={onDateChange}
+          placeholder={overview ? formatDashboardAsOf(overview.context.asOf) : "Loading..."}
+          triggerClassName={styles.contextDatePickerTrigger}
+          ariaLabel="Select overview snapshot date"
+        />
       </div>
     </section>
   );
@@ -1375,6 +1389,7 @@ export const DashboardAnalytics = () => {
   const overviewState = useDashboardOverview();
   const workloadState = useDashboardWorkload(viewer?.role ?? null);
   const trendState = useDashboardTrends();
+  const [selectedSnapshotDate, setSelectedSnapshotDate] = useState<string | undefined>(undefined);
 
   if (hydrationStatus === "IDLE" || hydrationStatus === "LOADING") {
     return <LoadingState message="Loading Dashboard..." />;
@@ -1388,7 +1403,13 @@ export const DashboardAnalytics = () => {
 
   return (
     <div className={styles.layout} data-role={viewer.role}>
-      <DashboardAnalyticsHeader name={displayName} role={viewer.role} overview={overviewState.overview} />
+      <DashboardAnalyticsHeader
+        name={displayName}
+        role={viewer.role}
+        overview={overviewState.overview}
+        selectedDate={selectedSnapshotDate}
+        onDateChange={setSelectedSnapshotDate}
+      />
       <SectionShell
         title="Overview"
         description="Executive operational overview and performance trends."

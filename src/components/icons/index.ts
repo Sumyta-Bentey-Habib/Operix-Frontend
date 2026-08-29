@@ -26,6 +26,8 @@ export * from "./SearchIcon";
 export * from "./BellIcon";
 export * from "./CalendarIcon";
 export * from "./ChevronDownIcon";
+export * from "./ChevronLeftIcon";
+export * from "./ChevronRightIcon";
 export * from "./PlusIcon";
 export * from "./SendIcon";
 export * from "./ReceiveIcon";
