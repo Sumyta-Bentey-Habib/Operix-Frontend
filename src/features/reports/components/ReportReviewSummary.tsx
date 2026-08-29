@@ -1,4 +1,5 @@
 import { formatDisplayDate } from "@/utils/date";
+import { obfuscateId } from "@/utils/id-obfuscator";
 import type { ManagementReportReviewSummary } from "../types/report.types";
 import styles from "./Reports.module.css";
 
@@ -14,10 +15,10 @@ export const ReportReviewSummary = ({
     {review ? (
       <div className={styles.stack}>
         <p>
-          {review.action.replaceAll("_", " ")} by {review.reviewerId} on{" "}
+          {review.action.replaceAll("_", " ")} by {obfuscateId(review.reviewerId, "REV")} on{" "}
           {formatDisplayDate(review.reviewedAt)}
         </p>
-        <p>Report version ID: {review.reportVersionId}</p>
+        <p>Version Reference: {obfuscateId(review.reportVersionId, "VER")}</p>
         {review.feedback && <p>Feedback: {review.feedback}</p>}
       </div>
     ) : (

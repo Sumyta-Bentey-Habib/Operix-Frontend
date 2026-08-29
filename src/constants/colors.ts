@@ -173,3 +173,55 @@ export const CSS_VARS = {
 export type ThemeMode = "light" | "dark";
 export type ThemeColors = typeof THEME_COLORS.light;
 export type CssVars = typeof CSS_VARS;
+
+/**
+ * Standardized status colors for dashboard charts and metrics
+ */
+export const DASHBOARD_STATUS_COLORS: Record<string, string> = {
+  PENDING: "#9CA3AF",
+  ASSIGNED: "#6366F1",
+  IN_PROGRESS: "#3B82F6",
+  SUBMITTED: "#06B6D4",
+  UNDER_REVIEW: "#8B5CF6",
+  COMPLETED: "#10B981",
+  REVISION_REQUIRED: "#F59E0B",
+  RESUBMITTED: "#EC4899",
+  CANCELLED: "#EF4444",
+  DRAFT: "#9CA3AF",
+  APPROVED: "#10B981",
+  REJECTED: "#EF4444",
+};
+
+/**
+ * Standardized priority colors for task breakdown charts
+ */
+export const DASHBOARD_PRIORITY_COLORS: Record<string, string> = {
+  URGENT: "#EF4444",
+  HIGH: "#F59E0B",
+  MEDIUM: "#3B82F6",
+  LOW: "#10B981",
+};
+
+/**
+ * Role-Based Dashboard Theme Configurations
+ */
+export const ROLE_DASHBOARD_THEMES = {
+  SUPER_ADMIN: {
+    name: "Executive Analytics Theme",
+    badge: "Super Admin / Chief",
+    accentColor: "#6366F1",
+    themeClass: "super-admin-theme",
+  },
+  ADMIN: {
+    name: "Management Control Theme",
+    badge: "Admin",
+    accentColor: "#0284C7",
+    themeClass: "admin-theme",
+  },
+  MEMBER: {
+    name: "Personal Workspace Theme",
+    badge: "Member / Staff",
+    accentColor: "#10B981",
+    themeClass: "member-theme",
+  },
+} as const;

@@ -12,6 +12,8 @@ import {
 import { resolveActivityTargetHref } from "@/features/activities/utils/activity-target";
 import { formatNotificationType } from "@/features/notifications/utils/notification-display";
 import { resolveNotificationTargetHref } from "@/features/notifications/utils/notification-target";
+import { obfuscateId } from "@/utils/id-obfuscator";
+import { DASHBOARD_STATUS_COLORS, DASHBOARD_PRIORITY_COLORS } from "@/constants/colors";
 import type { TaskPriority, TaskStatus } from "@/features/tasks/types/task.types";
 import { useDashboardOverview } from "../hooks/use-dashboard-overview";
 import { useDashboardTrends } from "../hooks/use-dashboard-trends";
@@ -67,27 +69,9 @@ const REPORT_STATUSES: DashboardManagementReportStatus[] = [
   "APPROVED",
 ];
 
-const STATUS_COLOR_MAP: Record<string, string> = {
-  PENDING: "#9CA3AF",
-  ASSIGNED: "#6366F1",
-  IN_PROGRESS: "#3B82F6",
-  SUBMITTED: "#06B6D4",
-  UNDER_REVIEW: "#8B5CF6",
-  COMPLETED: "#10B981",
-  REVISION_REQUIRED: "#F59E0B",
-  RESUBMITTED: "#EC4899",
-  CANCELLED: "#EF4444",
-  DRAFT: "#9CA3AF",
-  APPROVED: "#10B981",
-  REJECTED: "#EF4444",
-};
+const STATUS_COLOR_MAP: Record<string, string> = DASHBOARD_STATUS_COLORS;
 
-const PRIORITY_COLOR_MAP: Record<TaskPriority, string> = {
-  URGENT: "#EF4444",
-  HIGH: "#F59E0B",
-  MEDIUM: "#3B82F6",
-  LOW: "#10B981",
-};
+const PRIORITY_COLOR_MAP: Record<TaskPriority, string> = DASHBOARD_PRIORITY_COLORS;
 
 interface PieSliceData {
   key: string;
@@ -347,23 +331,36 @@ const DashboardMetricCard = ({ label, value, hint }: MetricCardProps) => (
 
 const DashboardAnalyticsHeader = ({
   name,
+  role,
   overview,
 }: {
   name: string;
+  role?: string | null;
   overview: DashboardOverviewResponse | null;
-}) => (
-  <section className={styles.hero}>
-    <div>
-      <p className={styles.eyebrow}>Operational snapshot</p>
-      <h1>Dashboard</h1>
-      <p>Welcome back, {name}. Here is the backend computed snapshot for your account.</p>
-    </div>
-    <div className={styles.contextPill}>
-      <span>Overview as of</span>
-      <strong>{overview ? formatDashboardAsOf(overview.context.asOf) : "Loading..."}</strong>
-    </div>
-  </section>
-);
+}) => {
+  const roleLabel = role === "SUPER_ADMIN" ? "Super Admin / Chief" : role === "ADMIN" ? "Admin" : "Member / Staff";
+
+  return (
+    <section className={styles.hero}>
+      <div>
+        <p className={styles.eyebrow}>Operational snapshot</p>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+          <h1>Dashboard</h1>
+          {role ? (
+            <span className={styles.roleBadge} data-role={role}>
+              {roleLabel}
+            </span>
+          ) : null}
+        </div>
+        <p>Welcome back, {name}. Here is the dynamic role-tailored snapshot for your account.</p>
+      </div>
+      <div className={styles.contextPill}>
+        <span>Overview as of</span>
+        <strong>{overview ? formatDashboardAsOf(overview.context.asOf) : "Loading..."}</strong>
+      </div>
+    </section>
+  );
+};
 
 const SectionShell = ({
   title,
@@ -731,6 +728,10 @@ const SuperAdminDashboard = ({
 
   return (
     <div className={styles.stack}>
+      <div className={styles.directAccessNote}>
+        <span className={styles.directAccessDot} />
+        <span>Direct Operational Data Stream — Exposed directly to eliminate manual spreadsheet collection & calculations.</span>
+      </div>
       <ModernKpiGrid cards={modernKpis} />
 
       <div className={styles.modernMiddleGrid}>
@@ -1124,7 +1125,7 @@ export const DashboardRecentActivity = ({
                 <h4>{title}</h4>
                 <p>
                   {getActivityActorName(activity)} · {activity.entityType}
-                  {activity.entityId ? ` ${activity.entityId}` : ""}
+                  {activity.entityId ? ` ${obfuscateId(activity.entityId, activity.entityType.slice(0, 3))}` : ""}
                 </p>
                 <small>{formatDashboardAsOf(activity.createdAt)}</small>
               </div>
@@ -1206,7 +1207,7 @@ const TeamWorkloadTable = ({ teams }: { teams: TeamWorkloadRow[] }) => {
         <thead>
           <tr>
             <th>Team</th>
-            <th>Admin ID</th>
+            <th>Admin Handle</th>
             <th>Active</th>
             <th>Overdue</th>
             <th>Pending</th>
@@ -1218,7 +1219,7 @@ const TeamWorkloadTable = ({ teams }: { teams: TeamWorkloadRow[] }) => {
           {teams.map((team) => (
             <tr key={team.teamId}>
               <td>{team.teamName}</td>
-              <td>{team.adminId}</td>
+              <td>{obfuscateId(team.adminId, "ADM")}</td>
               <td>{formatDashboardNumber(team.workload?.activeTasks)}</td>
               <td>{formatDashboardNumber(team.workload?.overdueTasks)}</td>
               <td>{formatDashboardNumber(getWorkloadStatusCount(team.workload, "PENDING"))}</td>
@@ -1383,11 +1384,11 @@ export const DashboardAnalytics = () => {
     return <ErrorState title="Dashboard unavailable" message="Sign in to view Dashboard." />;
   }
 
-  const displayName = profile?.name ?? profile?.email ?? viewer.userId;
+  const displayName = profile?.name ?? profile?.email ?? obfuscateId(viewer.userId, "USR");
 
   return (
-    <div className={styles.layout}>
-      <DashboardAnalyticsHeader name={displayName} overview={overviewState.overview} />
+    <div className={styles.layout} data-role={viewer.role}>
+      <DashboardAnalyticsHeader name={displayName} role={viewer.role} overview={overviewState.overview} />
       <SectionShell
         title="Overview"
         description="Executive operational overview and performance trends."

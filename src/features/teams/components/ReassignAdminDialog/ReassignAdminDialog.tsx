@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Modal } from "@/components/ui/Modal";
+import { obfuscateId } from "@/utils/id-obfuscator";
 import type { Admin } from "@/features/admins/types/admin.types";
 import type { Team } from "../../types/team.types";
 import { AdminPicker } from "../AdminPicker";
@@ -70,8 +71,8 @@ const Content = ({ team, pending, error, onSubmit, onClose }: ReassignAdminDialo
       <ConfirmDialog
         open={confirming}
         title="Confirm Admin reassignment"
-        message={`Team: ${team.name}. Current Admin ID: ${team.adminId}. New Admin: ${
-          selectedAdmin?.name ?? selectedAdminId
+        message={`Team: ${team.name}. Current Admin Handle: ${obfuscateId(team.adminId, "ADM")}. New Admin: ${
+          selectedAdmin?.name ?? obfuscateId(selectedAdminId, "ADM")
         }.`}
         confirmLabel="Reassign Admin"
         pending={pending}

@@ -1076,3 +1076,86 @@
     height: 100px;
   }
 }
+
+/* ==========================================================================
+   Role-Based Dashboard Themes
+   ========================================================================== */
+.layout[data-role="SUPER_ADMIN"] .hero {
+  border-left: 5px solid #6366f1;
+  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(99, 102, 241, 0.04) 100%);
+}
+
+.layout[data-role="SUPER_ADMIN"] .eyebrow {
+  color: #6366f1;
+}
+
+.layout[data-role="ADMIN"] .hero {
+  border-left: 5px solid #0284c7;
+  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(2, 132, 199, 0.04) 100%);
+}
+
+.layout[data-role="ADMIN"] .eyebrow {
+  color: #0284c7;
+}
+
+.layout[data-role="MEMBER"] .hero {
+  border-left: 5px solid #10b981;
+  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(16, 185, 129, 0.04) 100%);
+}
+
+.layout[data-role="MEMBER"] .eyebrow {
+  color: #10b981;
+}
+
+.roleBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.roleBadge[data-role="SUPER_ADMIN"] {
+  background: rgba(99, 102, 241, 0.12);
+  color: #6366f1;
+  border: 1px solid rgba(99, 102, 241, 0.25);
+}
+
+.roleBadge[data-role="ADMIN"] {
+  background: rgba(2, 132, 199, 0.12);
+  color: #0284c7;
+  border: 1px solid rgba(2, 132, 199, 0.25);
+}
+
+.roleBadge[data-role="MEMBER"] {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.directAccessNote {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.directAccessDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+}
+

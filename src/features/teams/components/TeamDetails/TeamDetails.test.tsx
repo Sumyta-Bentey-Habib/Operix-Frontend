@@ -116,7 +116,7 @@ describe("TeamDetails", () => {
     expect(screen.getByRole("alert")).not.toHaveTextContent("another Admin");
   });
 
-  it("shows read-only detail actions to ADMIN", () => {
+  it("shows assign member and hides edit/reassign detail actions for ADMIN", () => {
     mocks.useAuth.mockReturnValue({ viewer: adminViewer });
     mocks.useTeam.mockReturnValue(defaultHook);
 
@@ -124,7 +124,7 @@ describe("TeamDetails", () => {
 
     expect(screen.queryByRole("button", { name: "Edit" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Reassign Admin" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Assign Member" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Assign Member" })).toBeInTheDocument();
   });
 
   it("renames Team and avoids unchanged PATCH through disabled save", () => {

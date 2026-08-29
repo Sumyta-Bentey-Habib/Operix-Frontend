@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Submission } from "../../types/submission.types";
 import { formatDisplayDate } from "@/utils/date";
+import { obfuscateId } from "@/utils/id-obfuscator";
 import styles from "./SubmissionCard.module.css";
 
 export interface SubmissionCardProps {
@@ -37,8 +38,8 @@ export const SubmissionCard = ({
     <p className={styles.text}>{submission.submissionText ?? "No submission text provided."}</p>
     <dl className={styles.details}>
       <div>
-        <dt>Submitted By ID</dt>
-        <dd>{submission.submittedById}</dd>
+        <dt>Submitted By</dt>
+        <dd>{obfuscateId(submission.submittedById, "MEM")}</dd>
       </div>
       <div>
         <dt>Attachments</dt>

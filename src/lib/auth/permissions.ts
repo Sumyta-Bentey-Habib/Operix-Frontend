@@ -46,7 +46,7 @@ export const canReassignTeamAdmin = (viewer: OperixViewer | null): boolean =>
   viewer?.role === "SUPER_ADMIN";
 
 export const canAssignMemberToTeam = (viewer: OperixViewer | null): boolean =>
-  viewer?.role === "SUPER_ADMIN";
+  viewer?.role === "SUPER_ADMIN" || viewer?.role === "ADMIN";
 
 export const canTransferMember = (viewer: OperixViewer | null): boolean =>
   viewer?.role === "SUPER_ADMIN";

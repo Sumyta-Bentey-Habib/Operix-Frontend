@@ -9,6 +9,7 @@ import { Pagination } from "@/components/ui/Pagination";
 import { useAdmins } from "@/features/admins/hooks/use-admins";
 import { useTeams } from "@/features/teams/hooks/use-teams";
 import { formatDisplayDate } from "@/utils/date";
+import { obfuscateId } from "@/utils/id-obfuscator";
 import { useReports } from "../../hooks/use-reports";
 import {
   canCreateManagementReport,
@@ -262,8 +263,8 @@ export const ReportsPageContent = () => {
                     <th>Title</th>
                     <th>Period</th>
                     <th>Status</th>
-                    <th>Team ID</th>
-                    <th>Admin ID</th>
+                    <th>Team Reference</th>
+                    <th>Admin Reference</th>
                     <th>Latest Version</th>
                     <th>Last Updated</th>
                     <th>Actions</th>
@@ -279,8 +280,8 @@ export const ReportsPageContent = () => {
                       <td>
                         <ReportStatusBadge status={report.status} />
                       </td>
-                      <td>{report.teamId}</td>
-                      <td>{report.adminId}</td>
+                      <td>{report.teamName ?? obfuscateId(report.teamId, "TM")}</td>
+                      <td>{report.adminName ?? obfuscateId(report.adminId, "ADM")}</td>
                       <td>
                         {report.latestSubmittedVersion
                           ? `V${report.latestSubmittedVersion.version}`
