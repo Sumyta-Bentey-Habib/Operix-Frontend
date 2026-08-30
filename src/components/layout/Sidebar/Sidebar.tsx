@@ -12,6 +12,7 @@ import {
   ContactsIcon,
   SettingsIcon,
   LogoutIcon,
+  TodoIcon,
 } from "@/components/icons";
 import { SIDEBAR_NAV_ITEMS, SIDEBAR_LOGOUT_ITEM } from "@/constants/navigation";
 import { APP_STRINGS } from "@/constants/strings";
@@ -40,6 +41,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         return <DashboardIcon size={20} color={color} />;
       case "documents":
         return <DocumentsIcon size={20} color={color} />;
+      case "todos":
+        return <TodoIcon size={20} color={color} />;
       case "reports":
         return <ReportsIcon size={20} color={color} />;
       case "workspace":

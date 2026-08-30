@@ -20,6 +20,7 @@ export * from "./HistoryIcon";
 export * from "./ContactsIcon";
 export * from "./SettingsIcon";
 export * from "./LogoutIcon";
+export * from "./TodoIcon";
 
 // Action & UI Icons
 export * from "./SearchIcon";
