@@ -26,4 +26,3 @@ if (typeof window !== "undefined") {
     writable: true,
   });
 }
-

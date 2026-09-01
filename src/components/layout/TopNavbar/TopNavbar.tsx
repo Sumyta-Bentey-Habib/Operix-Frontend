@@ -122,7 +122,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
 
   // Filter primary tabs and grouped dropdowns by role permissions
   const visiblePrimaryTabs = TOP_NAV_PRIMARY_TABS.filter((tab) =>
-    canSeeNavigationItem(viewer, tab.id)
+    canSeeNavigationItem(viewer, tab.id),
   );
 
   const visibleGroups = TOP_NAV_GROUPS.map((group) => ({
@@ -130,9 +130,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
     items: group.items.filter((item) => canSeeNavigationItem(viewer, item.id)),
   })).filter((group) => group.items.length > 0);
 
-  const allVisibleTabs = TOP_NAV_TABS.filter((tab) =>
-    canSeeNavigationItem(viewer, tab.id)
-  );
+  const allVisibleTabs = TOP_NAV_TABS.filter((tab) => canSeeNavigationItem(viewer, tab.id));
 
   const closeMobileNav = useCallback(() => {
     setIsMobileNavOpen(false);
@@ -186,11 +184,11 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
     setLogoutError(null);
     void signOut()
       .then(() => {
-        router.replace("/");
+        router.replace("/login");
       })
       .catch((error: unknown) => {
         setLogoutError(
-          error instanceof Error ? error.message : "Unable to log out. Please try again."
+          error instanceof Error ? error.message : "Unable to log out. Please try again.",
         );
       });
   };
@@ -268,11 +266,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
                 </button>
 
                 {isDropdownOpen && (
-                  <div
-                    className={styles.dropdownMenu}
-                    role="menu"
-                    aria-orientation="vertical"
-                  >
+                  <div className={styles.dropdownMenu} role="menu" aria-orientation="vertical">
                     <div className={styles.dropdownMenuHeader}>
                       <span className={styles.dropdownSectionTitle}>{group.label}</span>
                     </div>

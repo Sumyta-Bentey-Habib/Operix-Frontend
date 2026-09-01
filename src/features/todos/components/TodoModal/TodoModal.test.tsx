@@ -23,13 +23,7 @@ describe("TodoModal", () => {
   };
 
   it("renders create mode when no initialData is provided", () => {
-    render(
-      <TodoModal
-        isOpen={true}
-        onClose={mockOnClose}
-        onSubmit={mockOnSubmit}
-      />,
-    );
+    render(<TodoModal isOpen={true} onClose={mockOnClose} onSubmit={mockOnSubmit} />);
 
     expect(screen.getByText("Create Admin Task")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Create Task" })).toBeDisabled();

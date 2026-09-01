@@ -44,9 +44,7 @@ export const getDynamicTabTitle = ({
   }
 
   const isDashboard =
-    activeTab === "dashboard" ||
-    pathname === "/dashboard" ||
-    pathname === "/dashboard/";
+    activeTab === "dashboard" || pathname === "/dashboard" || pathname === "/dashboard/";
 
   if (isDashboard) {
     return getRoleDashboardTitle(role);

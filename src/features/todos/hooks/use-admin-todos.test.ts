@@ -81,10 +81,11 @@ describe("useAdminTodos", () => {
     });
 
     expect(
-      result.current.filteredTodos.every((item) =>
-        item.title.toLowerCase().includes("expense") ||
-        item.description?.toLowerCase().includes("expense") ||
-        item.tags.some((t) => t.includes("expense")),
+      result.current.filteredTodos.every(
+        (item) =>
+          item.title.toLowerCase().includes("expense") ||
+          item.description?.toLowerCase().includes("expense") ||
+          item.tags.some((t) => t.includes("expense")),
       ),
     ).toBe(true);
   });

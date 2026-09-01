@@ -44,6 +44,49 @@
   white-space: nowrap;
 }
 
+.tabNavigation {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--border-default);
+  padding-bottom: 12px;
+}
+
+.tabButton {
+  background: transparent;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.tabButton:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.tabButtonActive {
+  background: var(--primary-emerald-light);
+  color: var(--primary-emerald);
+  font-weight: 700;
+}
+
+.tabBadge {
+  background: var(--badge-pending-bg);
+  color: var(--badge-pending-text);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 9999px;
+}
+
 @media (max-width: 720px) {
   .header {
     flex-direction: column;

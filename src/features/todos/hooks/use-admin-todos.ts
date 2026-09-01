@@ -141,9 +141,7 @@ export const useAdminTodos = () => {
     ).length;
 
     const todayStr = new Date().toISOString().split("T")[0];
-    const overdue = todos.filter(
-      (t) => !t.completed && t.dueDate && t.dueDate < todayStr,
-    ).length;
+    const overdue = todos.filter((t) => !t.completed && t.dueDate && t.dueDate < todayStr).length;
 
     const completionRate = total === 0 ? 0 : Math.round((completed / total) * 100);
 

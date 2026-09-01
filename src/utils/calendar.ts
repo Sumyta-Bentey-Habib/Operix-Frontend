@@ -43,9 +43,7 @@ export const formatYmd = (year: number, monthIndex: number, day: number): string
   return `${y}-${m}-${d}`;
 };
 
-export const parseYmd = (
-  ymd: string,
-): { year: number; month: number; day: number } | null => {
+export const parseYmd = (ymd: string): { year: number; month: number; day: number } | null => {
   if (!ymd) return null;
   const match = ymd.match(/^(\d{4})-(\d{2})-(\d{2})/);
   if (!match) return null;
@@ -79,7 +77,11 @@ export const isSameDate = (d1?: string | null, d2?: string | null): boolean => {
   return d1.slice(0, 10) === d2.slice(0, 10);
 };
 
-export const isDateInRange = (date: string, start?: string | null, end?: string | null): boolean => {
+export const isDateInRange = (
+  date: string,
+  start?: string | null,
+  end?: string | null,
+): boolean => {
   if (!date || !start || !end) return false;
   const target = date.slice(0, 10);
   const s = start.slice(0, 10);

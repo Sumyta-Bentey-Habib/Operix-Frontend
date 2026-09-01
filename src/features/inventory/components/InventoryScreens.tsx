@@ -102,13 +102,27 @@ const StatusBadge = ({ active }: { active: boolean }) => (
 const SectionLinks = () => (
   <nav className={styles.sectionNav} aria-label="Inventory sections">
     <Link className={styles.navPill} href="/inventory/categories">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+      >
         <path d="M4 7h16M4 12h16M4 17h16" />
       </svg>
       Categories
     </Link>
     <Link className={styles.navPill} href="/inventory/assignments">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+      >
         <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
         <circle cx="9" cy="7" r="4" />
         <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
@@ -116,7 +130,14 @@ const SectionLinks = () => (
       Assignments
     </Link>
     <Link className={styles.navPill} href="/inventory/transactions">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+      >
         <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
       </svg>
       Transactions
@@ -133,10 +154,19 @@ const SummaryCards = () => {
       <div className={styles.summaryHeader}>
         <div>
           <h2>Inventory Summary</h2>
-          <p className={styles.description}>Real-time stock velocity and assignment tracking across the organization.</p>
+          <p className={styles.description}>
+            Real-time stock velocity and assignment tracking across the organization.
+          </p>
         </div>
         <button className={styles.secondaryButton} type="button" onClick={() => void refresh()}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <polyline points="23 4 23 10 17 10" />
             <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
           </svg>
@@ -153,14 +183,23 @@ const SummaryCards = () => {
             <div className={styles.kpiCardTop}>
               <span className={styles.kpiLabel}>Active Items</span>
               <div className={styles.kpiIconWrap}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
                   <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
                   <line x1="12" y1="22.08" x2="12" y2="12" />
                 </svg>
               </div>
             </div>
-            <strong className={styles.kpiValue}>{formatInventoryNumber(summary.activeItemCount)}</strong>
+            <strong className={styles.kpiValue}>
+              {formatInventoryNumber(summary.activeItemCount)}
+            </strong>
             <p className={styles.kpiSubtext}>Operational & ready</p>
           </div>
 
@@ -168,7 +207,14 @@ const SummaryCards = () => {
             <div className={styles.kpiCardTop}>
               <span className={styles.kpiLabel}>Inactive Items</span>
               <div className={styles.kpiIconWrap}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <rect x="2" y="2" width="20" height="8" rx="2" ry="2" />
                   <rect x="2" y="14" width="20" height="8" rx="2" ry="2" />
                   <line x1="6" y1="6" x2="6.01" y2="6" />
@@ -176,7 +222,9 @@ const SummaryCards = () => {
                 </svg>
               </div>
             </div>
-            <strong className={styles.kpiValue}>{formatInventoryNumber(summary.inactiveItemCount)}</strong>
+            <strong className={styles.kpiValue}>
+              {formatInventoryNumber(summary.inactiveItemCount)}
+            </strong>
             <p className={styles.kpiSubtext}>Archived or disabled</p>
           </div>
 
@@ -184,14 +232,23 @@ const SummaryCards = () => {
             <div className={styles.kpiCardTop}>
               <span className={styles.kpiLabel}>Low Stock</span>
               <div className={styles.kpiIconWrap}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
                   <line x1="12" y1="9" x2="12" y2="13" />
                   <line x1="12" y1="17" x2="12.01" y2="17" />
                 </svg>
               </div>
             </div>
-            <strong className={styles.kpiValue}>{formatInventoryNumber(summary.lowStockItemCount)}</strong>
+            <strong className={styles.kpiValue}>
+              {formatInventoryNumber(summary.lowStockItemCount)}
+            </strong>
             <p className={styles.kpiSubtext}>Needs replenishment</p>
           </div>
 
@@ -199,13 +256,22 @@ const SummaryCards = () => {
             <div className={styles.kpiCardTop}>
               <span className={styles.kpiLabel}>Out of Stock</span>
               <div className={styles.kpiIconWrap}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <circle cx="12" cy="12" r="10" />
                   <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
                 </svg>
               </div>
             </div>
-            <strong className={styles.kpiValue}>{formatInventoryNumber(summary.outOfStockItemCount)}</strong>
+            <strong className={styles.kpiValue}>
+              {formatInventoryNumber(summary.outOfStockItemCount)}
+            </strong>
             <p className={styles.kpiSubtext}>Zero quantity remaining</p>
           </div>
 
@@ -213,14 +279,23 @@ const SummaryCards = () => {
             <div className={styles.kpiCardTop}>
               <span className={styles.kpiLabel}>Assignments</span>
               <div className={styles.kpiIconWrap}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                   <circle cx="9" cy="7" r="4" />
                   <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
                 </svg>
               </div>
             </div>
-            <strong className={styles.kpiValue}>{formatInventoryNumber(summary.outstandingAssignmentCount)}</strong>
+            <strong className={styles.kpiValue}>
+              {formatInventoryNumber(summary.outstandingAssignmentCount)}
+            </strong>
             <p className={styles.kpiSubtext}>Active in custody</p>
           </div>
         </div>
@@ -238,7 +313,14 @@ const ItemFilters = ({ hook }: { hook: ReturnType<typeof useInventoryItems> }) =
           <span>Search SKU or Item name</span>
           <div className={styles.searchWrap}>
             <span className={styles.searchIcon}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <circle cx="11" cy="11" r="8" />
                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
@@ -309,7 +391,9 @@ const ItemFilters = ({ hook }: { hook: ReturnType<typeof useInventoryItems> }) =
       </div>
 
       <div className={styles.filterFooter}>
-        <label className={`${styles.toggleChip} ${filters.lowStockOnly ? styles.toggleChipActive : ""}`}>
+        <label
+          className={`${styles.toggleChip} ${filters.lowStockOnly ? styles.toggleChipActive : ""}`}
+        >
           <input
             type="checkbox"
             checked={filters.lowStockOnly}
@@ -341,7 +425,14 @@ export const InventoryManagerOverview = () => {
       <header className={styles.hero}>
         <div>
           <p className={styles.eyebrow}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
               <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
             </svg>
@@ -354,7 +445,14 @@ export const InventoryManagerOverview = () => {
         </div>
         <div className={styles.heroActions}>
           <Link className={styles.primaryButton} href="/inventory/items/new">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <line x1="12" y1="5" x2="12" y2="19" />
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
@@ -378,7 +476,14 @@ export const MyInventory = () => {
       <header className={styles.hero}>
         <div>
           <p className={styles.eyebrow}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
               <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
             </svg>
@@ -413,7 +518,14 @@ const InventoryItemTable = ({ hook }: { hook: ReturnType<typeof useInventoryItem
         )}
       </div>
       <button className={styles.secondaryButton} type="button" onClick={() => void hook.refresh()}>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
           <polyline points="23 4 23 10 17 10" />
           <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
         </svg>
@@ -466,7 +578,11 @@ const InventoryItemTable = ({ hook }: { hook: ReturnType<typeof useInventoryItem
                     <StockLevelIndicator item={item} />
                   </td>
                   <td>
-                    <span className={item.isReturnable ? styles.badge : `${styles.badge} ${styles.badgeWarning}`}>
+                    <span
+                      className={
+                        item.isReturnable ? styles.badge : `${styles.badge} ${styles.badgeWarning}`
+                      }
+                    >
                       {item.isReturnable ? "Returnable" : "Consumable"}
                     </span>
                   </td>
@@ -501,7 +617,14 @@ export const InventoryCategoryList = () => {
       <header className={styles.hero}>
         <div>
           <p className={styles.eyebrow}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M4 7h16M4 12h16M4 17h16" />
             </svg>
             INVENTORY CATEGORIES
@@ -511,8 +634,19 @@ export const InventoryCategoryList = () => {
         </div>
         <div className={styles.heroActions}>
           {canManageInventoryCategories(viewer) && (
-            <button className={styles.primaryButton} type="button" onClick={() => setCreating(true)}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <button
+              className={styles.primaryButton}
+              type="button"
+              onClick={() => setCreating(true)}
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <line x1="12" y1="5" x2="12" y2="19" />
                 <line x1="5" y1="12" x2="19" y2="12" />
               </svg>
@@ -559,13 +693,20 @@ export const InventoryCategoryList = () => {
                       <td>{formatDisplayDate(category.updatedAt)}</td>
                       <td>
                         <div style={{ display: "inline-flex", gap: "8px", alignItems: "center" }}>
-                          <Link className={styles.actionLink} href={`/inventory/categories/${category.id}`}>
+                          <Link
+                            className={styles.actionLink}
+                            href={`/inventory/categories/${category.id}`}
+                          >
                             View
                           </Link>
                           {canManageInventoryCategories(viewer) && (
                             <button
                               className={styles.secondaryButton}
-                              style={{ padding: "6px 14px", minHeight: "auto", fontSize: "0.82rem" }}
+                              style={{
+                                padding: "6px 14px",
+                                minHeight: "auto",
+                                fontSize: "0.82rem",
+                              }}
                               type="button"
                               onClick={() => setEditing(category)}
                             >
@@ -836,7 +977,14 @@ const InventoryItemForm = ({
             {values.teamId && selectedTeamName ? (
               <div className={styles.selectedTeamPill}>
                 <div className={styles.selectedTeamInfo}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                     <circle cx="9" cy="7" r="4" />
                     <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -875,7 +1023,9 @@ const InventoryItemForm = ({
       <section className={styles.formCard}>
         <div className={styles.formCardHeader}>
           <h3>General Information</h3>
-          <p className={styles.hint}>Specify the item name, unique SKU identifier, and optional description.</p>
+          <p className={styles.hint}>
+            Specify the item name, unique SKU identifier, and optional description.
+          </p>
         </div>
 
         <div className={styles.formTwoCol}>
@@ -970,8 +1120,18 @@ const InventoryItemForm = ({
             </label>
           )}
 
-          <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap", paddingTop: "24px" }}>
-            <label className={`${styles.toggleChip} ${values.isReturnable ? styles.toggleChipActive : ""}`}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "16px",
+              flexWrap: "wrap",
+              paddingTop: "24px",
+            }}
+          >
+            <label
+              className={`${styles.toggleChip} ${values.isReturnable ? styles.toggleChipActive : ""}`}
+            >
               <input
                 type="checkbox"
                 checked={values.isReturnable}
@@ -981,7 +1141,9 @@ const InventoryItemForm = ({
             </label>
 
             {editMode && (
-              <label className={`${styles.toggleChip} ${values.isActive ? styles.toggleChipActive : ""}`}>
+              <label
+                className={`${styles.toggleChip} ${values.isActive ? styles.toggleChipActive : ""}`}
+              >
                 <input
                   type="checkbox"
                   checked={values.isActive}
@@ -1015,7 +1177,14 @@ const InventoryItemForm = ({
             (!editMode && (!values.teamId || !values.sku.trim()))
           }
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <polyline points="20 6 9 17 4 12" />
           </svg>
           {pending ? "Saving..." : editMode ? "Save Item" : "Create Item"}
@@ -1048,7 +1217,14 @@ export const InventoryItemCreate = () => {
       <header className={styles.hero}>
         <div>
           <p className={styles.eyebrow}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <line x1="12" y1="5" x2="12" y2="19" />
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
@@ -1103,7 +1279,14 @@ export const InventoryItemEdit = ({ itemId }: { itemId: string }) => {
       <header className={styles.hero}>
         <div>
           <p className={styles.eyebrow}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
             </svg>
@@ -1173,7 +1356,10 @@ export const InventoryItemDetails = ({ itemId }: { itemId: string }) => {
           <section className={styles.card}>
             <div className={styles.detailGrid}>
               <Detail label="SKU" value={item.sku} />
-              <Detail label="Team" value={`${item.team.name} (${obfuscateId(item.team.id, "TM")})`} />
+              <Detail
+                label="Team"
+                value={`${item.team.name} (${obfuscateId(item.team.id, "TM")})`}
+              />
               <Detail
                 label="Category"
                 value={
@@ -1580,7 +1766,14 @@ const InventoryAssignmentTable = ({
         )}
       </div>
       <button className={styles.secondaryButton} type="button" onClick={() => void hook.refresh()}>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
           <polyline points="23 4 23 10 17 10" />
           <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
         </svg>
@@ -1632,13 +1825,18 @@ const InventoryAssignmentTable = ({
                   <td>{formatInventoryNumber(assignment.returnedQuantity)}</td>
                   <td>{formatInventoryNumber(assignment.remainingQuantity)}</td>
                   <td>
-                    <span className={`${styles.badge} ${assignment.returnStatus === "OUTSTANDING" ? styles.badgeWarning : assignment.returnStatus === "RETURNED" ? "" : styles.badgeWarning}`}>
+                    <span
+                      className={`${styles.badge} ${assignment.returnStatus === "OUTSTANDING" ? styles.badgeWarning : assignment.returnStatus === "RETURNED" ? "" : styles.badgeWarning}`}
+                    >
                       {formatReturnStatus(assignment.returnStatus)}
                     </span>
                   </td>
                   <td>{formatDisplayDate(assignment.assignedAt)}</td>
                   <td>
-                    <Link className={styles.actionLink} href={`/inventory/assignments/${assignment.id}`}>
+                    <Link
+                      className={styles.actionLink}
+                      href={`/inventory/assignments/${assignment.id}`}
+                    >
                       View
                     </Link>
                   </td>
@@ -1661,7 +1859,14 @@ export const InventoryAssignmentList = ({ memberMode = false }: { memberMode?: b
       <header className={styles.hero}>
         <div>
           <p className={styles.eyebrow}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
               <circle cx="9" cy="7" r="4" />
               <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
@@ -1866,7 +2071,14 @@ export const InventoryTransactionList = () => {
       <header className={styles.hero}>
         <div>
           <p className={styles.eyebrow}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
             </svg>
             INVENTORY LEDGER
@@ -1951,8 +2163,19 @@ export const InventoryTransactionList = () => {
               </span>
             )}
           </div>
-          <button className={styles.secondaryButton} type="button" onClick={() => void hook.refresh()}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <button
+            className={styles.secondaryButton}
+            type="button"
+            onClick={() => void hook.refresh()}
+          >
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <polyline points="23 4 23 10 17 10" />
               <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
             </svg>
@@ -1996,7 +2219,9 @@ export const InventoryTransactionList = () => {
                         <strong>{transaction.item.name}</strong>
                       </td>
                       <td>
-                        <span className={styles.badge}>{formatTransactionType(transaction.type)}</span>
+                        <span className={styles.badge}>
+                          {formatTransactionType(transaction.type)}
+                        </span>
                       </td>
                       <td>
                         <strong>{formatInventoryNumber(transaction.quantity)}</strong>

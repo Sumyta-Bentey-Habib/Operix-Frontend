@@ -52,7 +52,13 @@ export const TaskTable = ({ tasks, viewer, onAssign, onStart }: TaskTableProps) 
               <span className={styles.mono}>{obfuscateId(task.teamId, "TM")}</span>
             </td>
             <td className={styles.dateCell}>{formatOptionalDate(task.dueAt)}</td>
-            <td>{task.isOverdue ? <span className={styles.overdue}>Overdue</span> : <span className={styles.notOverdue}>No</span>}</td>
+            <td>
+              {task.isOverdue ? (
+                <span className={styles.overdue}>Overdue</span>
+              ) : (
+                <span className={styles.notOverdue}>No</span>
+              )}
+            </td>
             <td className={styles.dateCell}>{formatDisplayDate(task.createdAt)}</td>
             <td>
               <div className={styles.actions}>

@@ -29,7 +29,7 @@ export const THEME_COLORS = {
     borderDefault: "#e5e7eb",
     borderHover: "#d1d5db",
 
-    // Primary Red Brand Accent (Apex Pharma)
+    // Primary Red Brand Accent (Operix)
     primaryEmerald: "#dc2626",
     primaryEmeraldHover: "#b91c1c",
     primaryEmeraldLight: "#fef2f2",
@@ -82,7 +82,7 @@ export const THEME_COLORS = {
     borderDefault: "#2a374f",
     borderHover: "#3b4b66",
 
-    // Primary Red Brand Accent (Apex Pharma)
+    // Primary Red Brand Accent (Operix)
     primaryEmerald: "#ef4444",
     primaryEmeraldHover: "#dc2626",
     primaryEmeraldLight: "rgba(239, 68, 68, 0.15)",

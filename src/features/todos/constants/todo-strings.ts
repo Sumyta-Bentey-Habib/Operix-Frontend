@@ -2,7 +2,7 @@ import type {
   TodoCategory,
   TodoPriority,
   TodoSortField,
-  TodoStatusFilter
+  TodoStatusFilter,
 } from "../types/todo.types";
 
 export const TODO_STRINGS = {

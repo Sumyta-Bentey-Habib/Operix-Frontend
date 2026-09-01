@@ -23,13 +23,7 @@ describe("Calendar Component", () => {
 
   it("calls onSelectDate when a day is clicked in single mode", () => {
     const handleSelect = vi.fn();
-    render(
-      <Calendar
-        mode="single"
-        selectedDate="2026-08-15"
-        onSelectDate={handleSelect}
-      />,
-    );
+    render(<Calendar mode="single" selectedDate="2026-08-15" onSelectDate={handleSelect} />);
 
     const dayBtn = screen.getByLabelText(/^2026-08-20/);
     fireEvent.click(dayBtn);
@@ -62,13 +56,7 @@ describe("Calendar Component", () => {
 
   it("applies preset date ranges", () => {
     const handleSelectRange = vi.fn();
-    render(
-      <Calendar
-        mode="range"
-        showPresets={true}
-        onSelectRange={handleSelectRange}
-      />,
-    );
+    render(<Calendar mode="range" showPresets={true} onSelectRange={handleSelectRange} />);
 
     const todayBtn = screen.getByTestId("preset-today");
     fireEvent.click(todayBtn);

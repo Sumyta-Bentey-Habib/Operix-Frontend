@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./LoginPage.module.css";
 import { useAuth } from "@/context/AuthContext";
+import { AUTH_STRINGS } from "@/constants/auth-strings";
 import {
   LogoIcon,
   ArrowRightIcon,
@@ -78,19 +79,19 @@ export const LoginPage: React.FC = () => {
             <LogoIcon size={22} />
           </div>
           <div className={styles.brandNameContainer}>
-            <span className={styles.brandLogoText}>Operix</span>
-            <span className={styles.brandLogoSub}>Apex Pharma</span>
+            <span className={styles.brandLogoText}>{AUTH_STRINGS.brand.name}</span>
+            <span className={styles.brandLogoSub}>{AUTH_STRINGS.brand.subName}</span>
           </div>
         </div>
 
         <div className={styles.topQuickPills}>
-          <span className={styles.topRoleIndicator}>🌿 Pharmaceutical Operations & Governance</span>
+          <span className={styles.topRoleIndicator}>🌿 {AUTH_STRINGS.brand.tagline}</span>
         </div>
       </header>
 
       {/* Hero Section */}
       <main className={styles.mainHeroSection}>
-        <h1 className={styles.heroTitle}>Operix</h1>
+        <h1 className={styles.heroTitle}>{AUTH_STRINGS.brand.name}</h1>
         <p className={styles.heroSubline}>Healthcare. Precision. Excellence.</p>
 
         {/* Dynamic Typewriter Word */}
@@ -132,9 +133,9 @@ export const LoginPage: React.FC = () => {
           </Link>
         </div>
 
-        {/* Action Button linking to separate signin form page */}
+        {/* Action Button linking to separate login form page */}
         <Link
-          href="/signin"
+          href="/login"
           className={styles.journeyPillBtn}
           aria-label="Access Pharma Portal Sign In"
         >
@@ -145,18 +146,7 @@ export const LoginPage: React.FC = () => {
 
       {/* Page Footer */}
       <footer className={styles.pageFooter}>
-        <p>
-          © 2026 Operix • In collaboration with{" "}
-          <a
-            href="https://www.apexpharmabd.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.footerLink}
-          >
-            Apex Pharma Ltd.
-          </a>{" "}
-          Delivering healthcare excellence.
-        </p>
+        <p>{AUTH_STRINGS.brand.copyright}</p>
       </footer>
     </div>
   );

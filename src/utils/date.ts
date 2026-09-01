@@ -5,3 +5,4 @@ const dateFormatter = new Intl.DateTimeFormat("en-GB", {
 });
 
 export const formatDisplayDate = (value: string): string => dateFormatter.format(new Date(value));
+export const formatDate = formatDisplayDate;
