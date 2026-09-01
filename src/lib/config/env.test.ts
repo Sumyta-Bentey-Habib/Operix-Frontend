@@ -1,7 +1,11 @@
-import { describe, expect, it } from "vitest";
-import { parseApiBaseUrl } from "./env";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { getApiBaseUrl, parseApiBaseUrl } from "./env";
 
 describe("parseApiBaseUrl", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   it("accepts absolute http and https URLs without a trailing slash", () => {
     expect(parseApiBaseUrl("http://localhost:5000/api/v1")).toBe("http://localhost:5000/api/v1");
     expect(parseApiBaseUrl("https://api.operix.test/api/v1")).toBe(
@@ -20,5 +24,15 @@ describe("parseApiBaseUrl", () => {
     expect(() => parseApiBaseUrl("http://localhost:5000/api/v1/")).toThrow(
       "NEXT_PUBLIC_API_BASE_URL must not end with a slash.",
     );
+  });
+
+  it("validates the public API base URL lazily when requested", () => {
+    vi.stubEnv("NEXT_PUBLIC_API_BASE_URL", undefined);
+
+    expect(() => getApiBaseUrl()).toThrow("NEXT_PUBLIC_API_BASE_URL is required.");
+
+    vi.stubEnv("NEXT_PUBLIC_API_BASE_URL", "https://api.operix.test/api/v1");
+
+    expect(getApiBaseUrl()).toBe("https://api.operix.test/api/v1");
   });
 });

@@ -1,9 +1,9 @@
-import { API_BASE_URL } from "@/lib/config/env";
+import { getApiBaseUrl } from "@/lib/config/env";
 
 export type QueryScalar = string | number | boolean;
 export type QueryParams = Record<string, QueryScalar | null | undefined>;
 
-export const joinApiUrl = (path: string, query?: QueryParams, baseUrl = API_BASE_URL): string => {
+export const joinApiUrl = (path: string, query?: QueryParams, baseUrl = getApiBaseUrl()): string => {
   const cleanPath = path.startsWith("/") ? path.slice(1) : path;
   const url = new URL(`${baseUrl}/${cleanPath}`);
   const queryString = buildQueryString(query);
