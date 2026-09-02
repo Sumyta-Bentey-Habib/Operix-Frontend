@@ -7,11 +7,11 @@ import { LoadingState } from "@/components/ui/LoadingState";
 import { Modal } from "@/components/ui/Modal";
 import { Pagination } from "@/components/ui/Pagination";
 import { useAuth } from "@/context/AuthContext";
-import { canChangeMemberStatus, canCreateMember } from "@/lib/auth/permissions";
+import { canChangeMemberStatus } from "@/lib/auth/permissions";
 import type { UserStatus } from "@/types/auth";
 import { memberApi } from "../../api/member.api";
 import { useMembers } from "../../hooks/use-members";
-import type { CreateMemberInput, Member, UpdateMemberInput } from "../../types/member.types";
+import type { Member, UpdateMemberInput } from "../../types/member.types";
 import { getMemberErrorView } from "../member-errors";
 import { MemberForm } from "../MemberForm";
 import { MemberStatusDialog } from "../MemberStatusDialog";
@@ -23,8 +23,6 @@ type FieldErrors = Partial<Record<"email" | "employeeId" | "form", string>>;
 export const MemberList = () => {
   const { viewer } = useAuth();
   const { members, meta, loading, error, setPage, refresh } = useMembers();
-  const [creating, setCreating] = useState(false);
-  const [createPending, setCreatePending] = useState(false);
   const [editingMember, setEditingMember] = useState<Member | null>(null);
   const [updatePending, setUpdatePending] = useState(false);
   const [statusMember, setStatusMember] = useState<Member | null>(null);
@@ -34,24 +32,7 @@ export const MemberList = () => {
 
   if (!viewer) return null;
 
-  const handleCreate = async (input: CreateMemberInput | UpdateMemberInput) => {
-    if (createPending || !canCreateMember(viewer)) return;
-    setCreatePending(true);
-    setFormErrors({});
-
-    try {
-      await memberApi.create(input as CreateMemberInput);
-      setCreating(false);
-      await refresh();
-    } catch (createError) {
-      const view = getMemberErrorView(createError);
-      setFormErrors(view.field ? { [view.field]: view.message } : { form: view.message });
-    } finally {
-      setCreatePending(false);
-    }
-  };
-
-  const handleUpdate = async (input: CreateMemberInput | UpdateMemberInput) => {
+  const handleUpdate = async (input: UpdateMemberInput) => {
     if (!editingMember || updatePending || Object.keys(input).length === 0) return;
     setUpdatePending(true);
     setFormErrors({});
@@ -102,18 +83,6 @@ export const MemberList = () => {
             transfer are handled in the Team management slice.
           </p>
         </div>
-        {canCreateMember(viewer) && (
-          <button
-            type="button"
-            className={styles.primaryButton}
-            onClick={() => {
-              setFormErrors({});
-              setCreating(true);
-            }}
-          >
-            Create Member
-          </button>
-        )}
       </div>
 
       {loading && <LoadingState message="Loading Members..." />}
@@ -142,24 +111,6 @@ export const MemberList = () => {
           />
           <Pagination meta={meta} onPageChange={setPage} disabled={loading} />
         </>
-      )}
-
-      {canCreateMember(viewer) && (
-        <Modal
-          open={creating}
-          title="Create Member"
-          description="Provision a new Member account. The initial password is not stored after submission."
-          onClose={() => !createPending && setCreating(false)}
-        >
-          <MemberForm
-            mode="create"
-            viewerRole={viewer.role}
-            pending={createPending}
-            fieldErrors={formErrors}
-            onSubmit={handleCreate}
-            onCancel={() => setCreating(false)}
-          />
-        </Modal>
       )}
 
       <Modal

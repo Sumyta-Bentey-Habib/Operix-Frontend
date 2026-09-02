@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { OperixApiError } from "@/lib/api";
 import { MemberList } from "./MemberList";
@@ -7,7 +7,6 @@ import type { Member } from "../../types/member.types";
 const mocks = vi.hoisted(() => ({
   useAuth: vi.fn(),
   useMembers: vi.fn(),
-  create: vi.fn(),
   update: vi.fn(),
   updateStatus: vi.fn(),
 }));
@@ -22,7 +21,6 @@ vi.mock("../../hooks/use-members", () => ({
 
 vi.mock("../../api/member.api", () => ({
   memberApi: {
-    create: mocks.create,
     update: mocks.update,
     updateStatus: mocks.updateStatus,
   },
@@ -111,13 +109,13 @@ describe("MemberList", () => {
     expect(screen.getByRole("alert")).toHaveTextContent("permission");
   });
 
-  it("shows create and status actions to SUPER_ADMIN", () => {
+  it("hides create but shows status actions to SUPER_ADMIN", () => {
     mocks.useAuth.mockReturnValue({ viewer: superAdminViewer });
     mocks.useMembers.mockReturnValue(defaultHook);
 
     render(<MemberList />);
 
-    expect(screen.getByRole("button", { name: "Create Member" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Create Member" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Change Status" })).toBeInTheDocument();
   });
 
@@ -147,35 +145,4 @@ describe("MemberList", () => {
     expect(setPage).toHaveBeenCalledWith(2);
   });
 
-  it("prevents duplicate create submission while pending", async () => {
-    let resolveCreate: (value: Member) => void = () => undefined;
-    mocks.create.mockReturnValue(
-      new Promise<Member>((resolve) => {
-        resolveCreate = resolve;
-      }),
-    );
-    mocks.useAuth.mockReturnValue({ viewer: superAdminViewer });
-    mocks.useMembers.mockReturnValue(defaultHook);
-
-    render(<MemberList />);
-
-    fireEvent.click(screen.getByRole("button", { name: "Create Member" }));
-    fireEvent.change(screen.getByLabelText(/Name/), {
-      target: { value: "Member B" },
-    });
-    fireEvent.change(screen.getByLabelText(/Email/), {
-      target: { value: "memberb@example.com" },
-    });
-    fireEvent.change(screen.getByLabelText(/Initial Password/), {
-      target: { value: "Password123!" },
-    });
-
-    const save = screen.getByRole("button", { name: "Save" });
-    fireEvent.click(save);
-    fireEvent.click(save);
-
-    expect(mocks.create).toHaveBeenCalledTimes(1);
-    resolveCreate(member);
-    await waitFor(() => expect(defaultHook.refresh).toHaveBeenCalled());
-  });
 });
