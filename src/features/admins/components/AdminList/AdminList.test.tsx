@@ -6,7 +6,6 @@ import type { Admin } from "../../types/admin.types";
 
 const mocks = vi.hoisted(() => ({
   useAdmins: vi.fn(),
-  create: vi.fn(),
   update: vi.fn(),
   updateStatus: vi.fn(),
 }));
@@ -17,7 +16,6 @@ vi.mock("../../hooks/use-admins", () => ({
 
 vi.mock("../../api/admin.api", () => ({
   adminApi: {
-    create: mocks.create,
     update: mocks.update,
     updateStatus: mocks.updateStatus,
   },
@@ -104,35 +102,12 @@ describe("AdminList", () => {
     expect(setPage).toHaveBeenCalledWith(2);
   });
 
-  it("prevents duplicate create submission while pending", async () => {
-    let resolveCreate: (value: Admin) => void = () => undefined;
-    mocks.create.mockReturnValue(
-      new Promise<Admin>((resolve) => {
-        resolveCreate = resolve;
-      }),
-    );
+  it("does not render the Create Admin action", () => {
     mocks.useAdmins.mockReturnValue(defaultHook);
 
     render(<AdminList />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Create Admin" }));
-    fireEvent.change(screen.getByLabelText(/Name/), {
-      target: { value: "Admin B" },
-    });
-    fireEvent.change(screen.getByLabelText(/Email/), {
-      target: { value: "adminb@example.com" },
-    });
-    fireEvent.change(screen.getByLabelText(/Initial Password/), {
-      target: { value: "Password123!" },
-    });
-
-    const save = screen.getByRole("button", { name: "Save" });
-    fireEvent.click(save);
-    fireEvent.click(save);
-
-    expect(mocks.create).toHaveBeenCalledTimes(1);
-    resolveCreate(admin);
-    await waitFor(() => expect(defaultHook.refresh).toHaveBeenCalled());
+    expect(screen.queryByRole("button", { name: "Create Admin" })).not.toBeInTheDocument();
   });
 
   it("shows ADMIN_HAS_ASSIGNED_TEAMS conflict", async () => {
