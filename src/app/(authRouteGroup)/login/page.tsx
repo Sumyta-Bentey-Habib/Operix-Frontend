@@ -1,11 +1,11 @@
-import { LoginPage } from "@/components/auth/LoginPage";
+import { SignInPage } from "@/components/auth/SignInPage";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Login - Operix",
-  description: "Sign in to Operix Enterprise Financial & Operations Workspace",
+  title: "Sign In - Operix",
+  description: "Sign in to your Operix Enterprise Workspace",
 };
 
 export default function LoginRoutePage() {
-  return <LoginPage />;
+  return <SignInPage />;
 }

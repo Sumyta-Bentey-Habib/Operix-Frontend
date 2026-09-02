@@ -76,10 +76,7 @@ export const Calendar: React.FC<CalendarProps> = ({
   const [activePresetId, setActivePresetId] = useState<string | null>(null);
 
   // Calendar days grid calculation
-  const calendarDays = useMemo(
-    () => getCalendarDays(viewYear, viewMonth),
-    [viewYear, viewMonth],
-  );
+  const calendarDays = useMemo(() => getCalendarDays(viewYear, viewMonth), [viewYear, viewMonth]);
 
   const handlePrevMonth = useCallback(() => {
     if (viewMonth === 0) {
@@ -252,13 +249,9 @@ export const Calendar: React.FC<CalendarProps> = ({
           {calendarDays.map((day) => {
             const isSingleSelected = mode === "single" && isSameDate(day.date, internalDate);
             const isRangeStart =
-              mode === "range" &&
-              effectiveRangeStart &&
-              isSameDate(day.date, effectiveRangeStart);
+              mode === "range" && effectiveRangeStart && isSameDate(day.date, effectiveRangeStart);
             const isRangeEnd =
-              mode === "range" &&
-              effectiveRangeEnd &&
-              isSameDate(day.date, effectiveRangeEnd);
+              mode === "range" && effectiveRangeEnd && isSameDate(day.date, effectiveRangeEnd);
             const isSelected = isSingleSelected || isRangeStart || isRangeEnd;
             const inRange =
               mode === "range" &&
@@ -325,19 +318,11 @@ export const Calendar: React.FC<CalendarProps> = ({
             </div>
 
             <div className={styles.footerActions}>
-              <button
-                type="button"
-                className={styles.clearBtn}
-                onClick={handleClear}
-              >
+              <button type="button" className={styles.clearBtn} onClick={handleClear}>
                 Clear
               </button>
               {onApply && (
-                <button
-                  type="button"
-                  className={styles.applyBtn}
-                  onClick={handleApply}
-                >
+                <button type="button" className={styles.applyBtn} onClick={handleApply}>
                   Apply
                 </button>
               )}

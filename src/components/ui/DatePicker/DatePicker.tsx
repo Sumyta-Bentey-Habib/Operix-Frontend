@@ -3,11 +3,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { CalendarIcon, ChevronDownIcon } from "@/components/icons";
 import { Calendar } from "../Calendar";
-import {
-  DateRange,
-  formatCalendarDisplayDate,
-  formatCalendarRangeDisplay,
-} from "@/utils/calendar";
+import { DateRange, formatCalendarDisplayDate, formatCalendarRangeDisplay } from "@/utils/calendar";
 import styles from "./DatePicker.module.css";
 
 export interface DatePickerProps {
@@ -139,9 +135,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           <CalendarIcon size={16} />
         </span>
         <span>{displayLabel}</span>
-        <span
-          className={`${styles.chevronIcon} ${isOpen ? styles.chevronIconRotated : ""}`}
-        >
+        <span className={`${styles.chevronIcon} ${isOpen ? styles.chevronIconRotated : ""}`}>
           <ChevronDownIcon size={14} />
         </span>
       </button>

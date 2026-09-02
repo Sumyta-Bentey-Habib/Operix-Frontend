@@ -11,7 +11,7 @@ export const AuthGuard: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   useEffect(() => {
     if (hydrationStatus === "UNAUTHENTICATED") {
-      router.replace("/");
+      router.replace("/login");
     }
   }, [hydrationStatus, router]);
 

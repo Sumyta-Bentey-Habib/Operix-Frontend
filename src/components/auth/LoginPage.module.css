@@ -13,7 +13,7 @@
   font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
 }
 
-/* Ambient glow & greenish bokeh orbs in background matching Apex Pharma & Operix */
+/* Ambient glow & bokeh orbs in background matching Operix theme */
 .ambientBackground {
   position: absolute;
   inset: 0;

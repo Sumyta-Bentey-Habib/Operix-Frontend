@@ -32,9 +32,7 @@ describe("document-title utility", () => {
       expect(getDynamicTabTitle({ activeTab: "dashboard", role: "MEMBER" })).toBe(
         "Operix - Member Dashboard",
       );
-      expect(getDynamicTabTitle({ activeTab: "dashboard", role: null })).toBe(
-        "Operix - Dashboard",
-      );
+      expect(getDynamicTabTitle({ activeTab: "dashboard", role: null })).toBe("Operix - Dashboard");
     });
 
     it("returns role-based dashboard title when pathname is /dashboard", () => {
@@ -47,15 +45,11 @@ describe("document-title utility", () => {
       expect(getDynamicTabTitle({ activeTab: "admins", role: "SUPER_ADMIN" })).toBe(
         "Operix - Admins",
       );
-      expect(getDynamicTabTitle({ activeTab: "members", role: "ADMIN" })).toBe(
-        "Operix - Members",
-      );
+      expect(getDynamicTabTitle({ activeTab: "members", role: "ADMIN" })).toBe("Operix - Members");
       expect(getDynamicTabTitle({ activeTab: "teams", role: "ADMIN" })).toBe("Operix - Teams");
       expect(getDynamicTabTitle({ activeTab: "tasks", role: "ADMIN" })).toBe("Operix - Tasks");
       expect(getDynamicTabTitle({ activeTab: "kpi", role: "ADMIN" })).toBe("Operix - KPIs");
-      expect(getDynamicTabTitle({ activeTab: "reports", role: "ADMIN" })).toBe(
-        "Operix - Reports",
-      );
+      expect(getDynamicTabTitle({ activeTab: "reports", role: "ADMIN" })).toBe("Operix - Reports");
       expect(getDynamicTabTitle({ activeTab: "inventory", role: "ADMIN" })).toBe(
         "Operix - Inventory",
       );
@@ -71,9 +65,7 @@ describe("document-title utility", () => {
       expect(getDynamicTabTitle({ activeTab: "history" })).toBe("Operix - Activity Feed");
       expect(getDynamicTabTitle({ activeTab: "activity" })).toBe("Operix - Activity Feed");
       expect(getDynamicTabTitle({ activeTab: "notifications" })).toBe("Operix - Notifications");
-      expect(getDynamicTabTitle({ activeTab: "submissions" })).toBe(
-        "Operix - Task Submissions",
-      );
+      expect(getDynamicTabTitle({ activeTab: "submissions" })).toBe("Operix - Task Submissions");
     });
 
     it("prioritizes custom pageTitle when provided", () => {

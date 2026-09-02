@@ -25,7 +25,9 @@
   box-shadow: var(--card-shadow);
   padding: 24px;
   box-sizing: border-box;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .hero {
@@ -169,7 +171,10 @@
   border: 1px solid var(--border-default);
   border-radius: 16px;
   background: var(--bg-card-subtle);
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
   overflow: hidden;
 }
 

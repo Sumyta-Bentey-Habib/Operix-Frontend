@@ -143,8 +143,14 @@ export const ReportDetails = ({ reportId }: { reportId: string }) => {
         <h2>Report Details</h2>
         <div className={styles.detailGrid}>
           <Detail label="Report Reference" value={obfuscateId(report.id, "RPT")} />
-          <Detail label="Team Reference" value={report.teamName ?? obfuscateId(report.teamId, "TM")} />
-          <Detail label="Admin Reference" value={report.adminName ?? obfuscateId(report.adminId, "ADM")} />
+          <Detail
+            label="Team Reference"
+            value={report.teamName ?? obfuscateId(report.teamId, "TM")}
+          />
+          <Detail
+            label="Admin Reference"
+            value={report.adminName ?? obfuscateId(report.adminId, "ADM")}
+          />
           <Detail
             label="Submitted At"
             value={report.submittedAt ? formatDisplayDate(report.submittedAt) : "—"}

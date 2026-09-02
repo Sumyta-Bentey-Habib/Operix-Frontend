@@ -112,11 +112,7 @@ export const TodoList: React.FC = () => {
             <h1 className={styles.heading}>{TODO_STRINGS.pageTitle}</h1>
             <p className={styles.subheading}>{TODO_STRINGS.pageSubtitle}</p>
           </div>
-          <button
-            type="button"
-            className={styles.newTodoButton}
-            onClick={handleOpenCreateModal}
-          >
+          <button type="button" className={styles.newTodoButton} onClick={handleOpenCreateModal}>
             <PlusIcon size={16} />
             <span>{TODO_STRINGS.openNewTaskModal}</span>
           </button>
@@ -131,11 +127,7 @@ export const TodoList: React.FC = () => {
             value={quickTitle}
             onChange={(e) => setQuickTitle(e.target.value)}
           />
-          <button
-            type="submit"
-            className={styles.quickAddSubmit}
-            disabled={!quickTitle.trim()}
-          >
+          <button type="submit" className={styles.quickAddSubmit} disabled={!quickTitle.trim()}>
             <PlusIcon size={16} />
             <span>{TODO_STRINGS.quickAddButton}</span>
           </button>
@@ -207,9 +199,7 @@ export const TodoList: React.FC = () => {
                 className={styles.searchInput}
                 placeholder={TODO_STRINGS.searchPlaceholder}
                 value={filterState.search}
-                onChange={(e) =>
-                  setFilterState((prev) => ({ ...prev, search: e.target.value }))
-                }
+                onChange={(e) => setFilterState((prev) => ({ ...prev, search: e.target.value }))}
               />
             </div>
 
@@ -290,12 +280,16 @@ export const TodoList: React.FC = () => {
               <CheckCircleIcon size={40} />
             </div>
             <h3 className={styles.emptyTitle}>
-              {filterState.search || filterState.priority !== "ALL" || filterState.category !== "ALL"
+              {filterState.search ||
+              filterState.priority !== "ALL" ||
+              filterState.category !== "ALL"
                 ? TODO_STRINGS.empty.noSearchResultsTitle
                 : TODO_STRINGS.empty.noTasksTitle}
             </h3>
             <p className={styles.emptySubtitle}>
-              {filterState.search || filterState.priority !== "ALL" || filterState.category !== "ALL"
+              {filterState.search ||
+              filterState.priority !== "ALL" ||
+              filterState.category !== "ALL"
                 ? TODO_STRINGS.empty.noSearchResultsSubtitle
                 : TODO_STRINGS.empty.noTasksSubtitle}
             </p>
@@ -306,9 +300,7 @@ export const TodoList: React.FC = () => {
             return (
               <div
                 key={todo.id}
-                className={`${styles.todoItem} ${
-                  todo.completed ? styles.todoItemCompleted : ""
-                }`}
+                className={`${styles.todoItem} ${todo.completed ? styles.todoItemCompleted : ""}`}
               >
                 <div className={styles.itemMain}>
                   <div className={styles.checkboxWrapper}>

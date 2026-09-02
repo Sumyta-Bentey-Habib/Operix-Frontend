@@ -104,7 +104,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           onClick={() => {
             void signOut()
               .then(() => {
-                router.replace("/");
+                router.replace("/login");
               })
               .catch(() => {
                 // AuthContext retains the viewer when backend sign out fails.

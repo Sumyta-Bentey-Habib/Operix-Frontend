@@ -2,11 +2,7 @@
 
 import React, { useState } from "react";
 import { Modal } from "@/components/ui/Modal";
-import {
-  CATEGORY_OPTIONS,
-  PRIORITY_OPTIONS,
-  TODO_STRINGS,
-} from "../../constants/todo-strings";
+import { CATEGORY_OPTIONS, PRIORITY_OPTIONS, TODO_STRINGS } from "../../constants/todo-strings";
 import type {
   CreateTodoInput,
   TodoCategory,
@@ -160,18 +156,10 @@ const TodoForm: React.FC<TodoFormProps> = ({ initialData, onClose, onSubmit }) =
       </div>
 
       <div className={styles.footer}>
-        <button
-          type="button"
-          className={styles.cancelButton}
-          onClick={onClose}
-        >
+        <button type="button" className={styles.cancelButton} onClick={onClose}>
           {TODO_STRINGS.actions.cancel}
         </button>
-        <button
-          type="submit"
-          className={styles.submitButton}
-          disabled={!title.trim()}
-        >
+        <button type="submit" className={styles.submitButton} disabled={!title.trim()}>
           {isEditing ? TODO_STRINGS.actions.save : TODO_STRINGS.actions.create}
         </button>
       </div>
@@ -186,12 +174,7 @@ export interface TodoModalProps {
   initialData?: TodoItem | null;
 }
 
-export const TodoModal: React.FC<TodoModalProps> = ({
-  isOpen,
-  onClose,
-  onSubmit,
-  initialData,
-}) => {
+export const TodoModal: React.FC<TodoModalProps> = ({ isOpen, onClose, onSubmit, initialData }) => {
   const isEditing = Boolean(initialData);
 
   return (

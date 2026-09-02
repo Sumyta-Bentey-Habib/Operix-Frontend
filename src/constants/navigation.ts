@@ -11,10 +11,20 @@ export interface NavGroup {
 }
 
 export const TOP_NAV_PRIMARY_TABS: NavItemDetail[] = [
-  { id: "dashboard", label: "Dashboard", href: "/dashboard", description: "Executive overview & metrics" },
+  {
+    id: "dashboard",
+    label: "Dashboard",
+    href: "/dashboard",
+    description: "Executive overview & metrics",
+  },
   { id: "tasks", label: "Tasks", href: "/tasks", description: "Task management & reviews" },
   { id: "kpi", label: "KPIs", href: "/kpi", description: "Performance indicators & analytics" },
-  { id: "reports", label: "Reports", href: "/reports", description: "Financial & operational reports" },
+  {
+    id: "reports",
+    label: "Reports",
+    href: "/reports",
+    description: "Financial & operational reports",
+  },
 ];
 
 export const TOP_NAV_GROUPS: NavGroup[] = [
@@ -22,20 +32,55 @@ export const TOP_NAV_GROUPS: NavGroup[] = [
     id: "people",
     label: "People",
     items: [
-      { id: "members", label: "Members", href: "/members", description: "Manage organizational staff" },
+      {
+        id: "members",
+        label: "Members",
+        href: "/members",
+        description: "Manage organizational staff",
+      },
       { id: "teams", label: "Teams", href: "/teams", description: "Team structures & rosters" },
-      { id: "admins", label: "Admins", href: "/admins", description: "System administrator access" },
-      { id: "contacts", label: "Contacts", href: "/contacts", description: "Directory & contact cards" },
+      {
+        id: "admins",
+        label: "Admins",
+        href: "/admins",
+        description: "System administrator access",
+      },
+      {
+        id: "contacts",
+        label: "Contacts",
+        href: "/contacts",
+        description: "Directory & contact cards",
+      },
     ],
   },
   {
     id: "operations",
     label: "Operations",
     items: [
-      { id: "inventory", label: "Inventory", href: "/inventory", description: "Asset & inventory records" },
-      { id: "documents", label: "Documents", href: "/documents", description: "Central document repository" },
-      { id: "todos", label: "Todo List", href: "/todos", description: "Personal & management tasks" },
-      { id: "history", label: "Activity Feed", href: "/activity", description: "Audit trail & event log" },
+      {
+        id: "inventory",
+        label: "Inventory",
+        href: "/inventory",
+        description: "Asset & inventory records",
+      },
+      {
+        id: "documents",
+        label: "Documents",
+        href: "/documents",
+        description: "Central document repository",
+      },
+      {
+        id: "todos",
+        label: "Todo List",
+        href: "/todos",
+        description: "Personal & management tasks",
+      },
+      {
+        id: "history",
+        label: "Activity Feed",
+        href: "/activity",
+        description: "Audit trail & event log",
+      },
     ],
   },
 ];

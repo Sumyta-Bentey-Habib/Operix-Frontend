@@ -32,9 +32,13 @@ export const getDefaultAdminTodos = (userId: string): TodoItem[] => {
     category: template.category,
     dueDate: createIso(template.offsetDays),
     tags: [...template.tags],
-    createdAt: new Date(now.getTime() - Math.abs(template.offsetDays) * 24 * 60 * 60 * 1000).toISOString(),
+    createdAt: new Date(
+      now.getTime() - Math.abs(template.offsetDays) * 24 * 60 * 60 * 1000,
+    ).toISOString(),
     updatedAt: new Date(now.getTime() - 12 * 60 * 60 * 1000).toISOString(),
-    completedAt: template.completed ? new Date(now.getTime() - 12 * 60 * 60 * 1000).toISOString() : null,
+    completedAt: template.completed
+      ? new Date(now.getTime() - 12 * 60 * 60 * 1000).toISOString()
+      : null,
   }));
 };
 
@@ -128,11 +132,7 @@ export const updateTodo = (
         ? updates.tags.map((t) => t.trim()).filter(Boolean)
         : existing.tags,
     completed: updates.completed !== undefined ? updates.completed : existing.completed,
-    completedAt: isCompletedChange
-      ? updates.completed
-        ? now
-        : null
-      : existing.completedAt,
+    completedAt: isCompletedChange ? (updates.completed ? now : null) : existing.completedAt,
     updatedAt: now,
   };
 

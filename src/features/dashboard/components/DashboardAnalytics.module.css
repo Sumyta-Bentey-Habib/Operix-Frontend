@@ -495,7 +495,9 @@
   background: linear-gradient(180deg, var(--primary-emerald) 0%, #b91c1c 100%);
   border-radius: 5px 5px 0 0;
   box-shadow: 0 2px 8px var(--primary-emerald-glow);
-  transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;
+  transition:
+    height 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.2s ease;
 }
 
 .chartBarGhost {
@@ -1179,4 +1181,3 @@
   background: #10b981;
   box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
 }
-

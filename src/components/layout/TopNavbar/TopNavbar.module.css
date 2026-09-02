@@ -174,7 +174,8 @@
 }
 
 @keyframes pulseDot {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
@@ -186,7 +187,9 @@
 
 .dropdownChevron {
   color: var(--text-muted);
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease;
+  transition:
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.2s ease;
   flex-shrink: 0;
 }
 

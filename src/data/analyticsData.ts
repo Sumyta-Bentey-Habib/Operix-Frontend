@@ -18,7 +18,7 @@ export const TASK_STATUS_DISTRIBUTION: StatusDistributionPoint[] = [
     label: "Completed Tasks",
     count: 1180,
     percentage: 83.1,
-    color: CSS_VARS.primaryEmerald, 
+    color: CSS_VARS.primaryEmerald,
   },
   {
     id: "in_progress",

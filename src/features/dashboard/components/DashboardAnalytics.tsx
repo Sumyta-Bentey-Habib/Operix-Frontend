@@ -207,8 +207,7 @@ export const StatusPieChart = ({
       <div className={styles.pieVerticalList}>
         {items.map((item) => {
           const slice = slices.find((s) => s.key === item.key);
-          const pct =
-            slice?.percentage ?? (total > 0 ? Math.round((item.count / total) * 100) : 0);
+          const pct = slice?.percentage ?? (total > 0 ? Math.round((item.count / total) * 100) : 0);
           const isHovered = hoveredKey === item.key;
 
           return (
@@ -343,7 +342,8 @@ const DashboardAnalyticsHeader = ({
   selectedDate?: string;
   onDateChange?: (date: string) => void;
 }) => {
-  const roleLabel = role === "SUPER_ADMIN" ? "Super Admin / Chief" : role === "ADMIN" ? "Admin" : "Member / Staff";
+  const roleLabel =
+    role === "SUPER_ADMIN" ? "Super Admin / Chief" : role === "ADMIN" ? "Admin" : "Member / Staff";
   const defaultAsOf = overview ? overview.context.asOf.slice(0, 10) : "";
   const activeDate = selectedDate || defaultAsOf;
 
@@ -458,7 +458,11 @@ export const CompletionTrendChart = ({
       {points.length === 0 ? (
         <EmptyState title="No trend buckets" message="No completion trend buckets returned." />
       ) : (
-        <div className={styles.chartContainerModern} role="img" aria-label="Completion trends chart">
+        <div
+          className={styles.chartContainerModern}
+          role="img"
+          aria-label="Completion trends chart"
+        >
           {totalCompleted === 0 ? (
             <div className={styles.trendEmptyOverlay}>
               <div className={styles.trendEmptyBadge}>
@@ -479,7 +483,8 @@ export const CompletionTrendChart = ({
                 <span>No completions in this period</span>
               </div>
               <p className={styles.trendEmptyNotice}>
-                Completed tasks will populate daily velocity bars automatically as assignments are finished.
+                Completed tasks will populate daily velocity bars automatically as assignments are
+                finished.
               </p>
             </div>
           ) : null}
@@ -744,7 +749,10 @@ const SuperAdminDashboard = ({
     <div className={styles.stack}>
       <div className={styles.directAccessNote}>
         <span className={styles.directAccessDot} />
-        <span>Direct Operational Data Stream — Exposed directly to eliminate manual spreadsheet collection & calculations.</span>
+        <span>
+          Direct Operational Data Stream — Exposed directly to eliminate manual spreadsheet
+          collection & calculations.
+        </span>
       </div>
       <ModernKpiGrid cards={modernKpis} />
 
@@ -1139,7 +1147,9 @@ export const DashboardRecentActivity = ({
                 <h4>{title}</h4>
                 <p>
                   {getActivityActorName(activity)} · {activity.entityType}
-                  {activity.entityId ? ` ${obfuscateId(activity.entityId, activity.entityType.slice(0, 3))}` : ""}
+                  {activity.entityId
+                    ? ` ${obfuscateId(activity.entityId, activity.entityType.slice(0, 3))}`
+                    : ""}
                 </p>
                 <small>{formatDashboardAsOf(activity.createdAt)}</small>
               </div>
