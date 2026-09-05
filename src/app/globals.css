@@ -41,6 +41,9 @@
 
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
+  --info: #2563eb;
+  --warning: #d97706;
+  --success: #16a34a;
   --warning-bg: #fef3c7;
   --warning-text: #d97706;
   --danger-bg: #fef2f2;
@@ -114,6 +117,9 @@
 
   --destructive: #f87171;
   --destructive-foreground: #0b0f17;
+  --info: #60a5fa;
+  --warning: #fbbf24;
+  --success: #4ade80;
   --warning-bg: rgba(245, 158, 11, 0.15);
   --warning-text: #fbbf24;
   --danger-bg: rgba(239, 68, 68, 0.15);

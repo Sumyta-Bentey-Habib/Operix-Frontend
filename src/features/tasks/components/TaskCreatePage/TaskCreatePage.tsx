@@ -1,7 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { ChevronLeftIcon, ChevronRightIcon } from "@/components/icons";
+import { TASK_CREATE_STRINGS } from "@/utils/task-strings";
 import { taskApi } from "../../api/task.api";
 import type { CreateTaskInput } from "../../types/task.types";
 import { getTaskErrorView } from "../task-errors";
@@ -28,17 +31,44 @@ export const TaskCreatePage = () => {
     }
   };
 
+  const handleCancel = () => {
+    router.push("/tasks");
+  };
+
   return (
-    <section className={styles.section}>
-      <div>
-        <p className={styles.eyebrow}>Operations</p>
-        <h1 className={styles.title}>Create Task</h1>
-        <p className={styles.description}>
-          Create a pending Task for one of your backend-scoped Teams. Assignment is a separate
-          workflow action after creation.
-        </p>
+    <section className={styles.container}>
+      {/* Top Breadcrumb & Navigation Bar */}
+      <div className={styles.topBar}>
+        <nav className={styles.breadcrumbs} aria-label="Breadcrumb">
+          <Link href="/dashboard" className={styles.breadcrumbLink}>
+            {TASK_CREATE_STRINGS.breadcrumbs.dashboard}
+          </Link>
+          <ChevronRightIcon size={12} className={styles.breadcrumbSeparator} />
+          <Link href="/tasks" className={styles.breadcrumbLink}>
+            {TASK_CREATE_STRINGS.breadcrumbs.tasks}
+          </Link>
+          <ChevronRightIcon size={12} className={styles.breadcrumbSeparator} />
+          <span className={styles.breadcrumbCurrent}>
+            {TASK_CREATE_STRINGS.breadcrumbs.current}
+          </span>
+        </nav>
+        <Link href="/tasks" className={styles.backButton}>
+          <ChevronLeftIcon size={14} />
+          <span>{TASK_CREATE_STRINGS.navigation.backToTasks}</span>
+        </Link>
       </div>
-      <TaskForm pending={pending} error={error} onSubmit={handleSubmit} />
+
+      {/* Header Section */}
+      <header className={styles.header}>
+        <div className={styles.headerMain}>
+          <span className={styles.eyebrow}>{TASK_CREATE_STRINGS.eyebrow}</span>
+          <h1 className={styles.title}>{TASK_CREATE_STRINGS.title}</h1>
+          <p className={styles.description}>{TASK_CREATE_STRINGS.description}</p>
+        </div>
+      </header>
+
+      {/* Main Form */}
+      <TaskForm pending={pending} error={error} onSubmit={handleSubmit} onCancel={handleCancel} />
     </section>
   );
 };
