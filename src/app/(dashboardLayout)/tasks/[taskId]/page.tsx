@@ -15,7 +15,7 @@ export default async function TaskDetailsPage({ params }: TaskDetailsPageProps) 
 
   return (
     <AuthGuard>
-      <DashboardShell activeTab="tasks" header={<></>} title={TASK_DETAILS_STRINGS.eyebrow}>
+      <DashboardShell activeTab="tasks" hideHeader title={TASK_DETAILS_STRINGS.eyebrow}>
         <PermissionGuard allowedRoles={["SUPER_ADMIN", "ADMIN", "MEMBER"]}>
           <TaskDetails taskId={taskId} />
         </PermissionGuard>
