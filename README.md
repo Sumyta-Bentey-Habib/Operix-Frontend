@@ -79,6 +79,7 @@ src/
 ├── data/         # Mock datasets used by the current UI
 ├── features/     # Feature API adapters, hooks, and domain components
 ├── lib/          # Shared API, config, and auth helpers
+├── test/         # Unit and integration test suites mirroring src structure
 ├── types/        # Shared view and domain types
 └── utils/        # Pure formatting helpers
 ```
