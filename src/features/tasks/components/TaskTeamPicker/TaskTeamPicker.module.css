@@ -7,15 +7,16 @@
 
 .selected {
   align-items: center;
-  background: var(--bg-card);
-  border: 1px solid var(--border-default);
+  background: var(--primary-emerald-light);
+  border: 1px solid var(--primary-emerald);
   border-radius: 10px;
   color: var(--text-primary);
   display: flex;
-  font-size: 0.82rem;
+  font-size: 0.825rem;
   font-weight: 700;
   justify-content: space-between;
   padding: 8px 12px;
+  box-shadow: 0 0 0 1px var(--primary-emerald-glow);
 }
 
 .selected button {
@@ -25,20 +26,20 @@
   cursor: pointer;
   font-weight: 800;
   font-size: 0.78rem;
-  padding: 2px 6px;
-  border-radius: 4px;
-  transition: opacity 0.15s ease;
+  padding: 2px 8px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
 }
 
 .selected button:hover {
-  opacity: 0.8;
+  background: var(--primary-emerald-muted);
 }
 
 .options {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  max-height: 180px;
+  max-height: 190px;
   overflow-y: auto;
   scrollbar-width: thin;
   padding-right: 2px;
@@ -46,22 +47,22 @@
 
 .option,
 .activeOption {
-  background: var(--bg-card);
+  background: var(--bg-card-subtle);
   border: 1px solid var(--border-default);
   border-radius: 10px;
   color: var(--text-primary);
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 8px 12px;
+  gap: 3px;
+  padding: 10px 12px;
   text-align: left;
   transition: all 0.15s ease;
 }
 
 .option strong,
 .activeOption strong {
-  font-size: 0.82rem;
+  font-size: 0.825rem;
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -69,12 +70,13 @@
 .option span,
 .activeOption span {
   color: var(--text-secondary);
-  font-size: 0.74rem;
+  font-size: 0.75rem;
 }
 
 .option:hover {
   border-color: var(--border-hover);
   background: var(--bg-card-hover);
+  transform: translateX(2px);
 }
 
 .activeOption {

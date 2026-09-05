@@ -102,3 +102,74 @@ export const TASK_TABLE_STRINGS = {
     start: "Start",
   },
 } as const;
+
+export const TASK_CREATE_STRINGS = {
+  eyebrow: "Operations",
+  title: "Create Task",
+  description: "Define a new operational task, assign it to a team, and schedule execution.",
+  breadcrumbs: {
+    dashboard: "Dashboard",
+    tasks: "Tasks",
+    current: "New Task",
+  },
+  navigation: {
+    backToTasks: "Back to Tasks",
+  },
+  sections: {
+    generalInfo: "Task Information",
+    generalInfoSubtitle: "Define the core requirements, instructions, and internal remarks.",
+    configuration: "Assignment & Schedule",
+    configurationSubtitle: "Select the responsible team and specify task deadline.",
+    guidelines: "Task Lifecycle & Governance",
+  },
+  fields: {
+    titleLabel: "Task Title",
+    titleRequired: "*",
+    titlePlaceholder: "e.g., Prepare quarterly compliance report",
+    titleHelper: "A concise, descriptive summary of the required work.",
+    descriptionLabel: "Description",
+    descriptionPlaceholder: "Detailed task instructions, deliverables, and acceptance criteria...",
+    descriptionHelper: "Provide comprehensive background and execution context.",
+    remarksLabel: "Internal Remarks",
+    remarksPlaceholder: "Optional internal notes or coordination guidelines...",
+    remarksHelper: "Visible to team leads and designated assignees.",
+    priorityLabel: "Priority Level",
+    priorityHelper: "Select operational urgency level for this task.",
+    dueAtLabel: "Due Date & Time",
+    dueAtHelper: "Target completion timestamp (optional).",
+    teamLabel: "Target Team",
+    teamRequired: "*",
+    teamHelper: "Choose which team will be responsible for executing this task.",
+    selectedTeamPrefix: "Selected:",
+    clearTeam: "Clear",
+  },
+  priorities: {
+    LOW: { label: "Low", description: "Standard backlog item" },
+    MEDIUM: { label: "Medium", description: "Normal operational priority" },
+    HIGH: { label: "High", description: "Time-sensitive deliverable" },
+    URGENT: { label: "Urgent", description: "Critical blocker requiring immediate action" },
+  },
+  guidelines: [
+    {
+      title: "Pending by default",
+      description: "Tasks are created in PENDING status until an admin assigns them.",
+    },
+    {
+      title: "Team Scoped",
+      description: "Assignment will be restricted to members of the selected team.",
+    },
+    {
+      title: "Workflow Tracking",
+      description: "Status progression and submissions will be tracked in real-time.",
+    },
+  ],
+  actions: {
+    submit: "Create Task",
+    submitting: "Creating Task...",
+    cancel: "Cancel",
+  },
+  validation: {
+    titleRequired: "Task title is required.",
+    teamRequired: "Choose a Team before creating the Task.",
+  },
+} as const;
