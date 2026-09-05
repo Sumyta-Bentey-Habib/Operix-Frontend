@@ -154,4 +154,58 @@ describe("TaskCreatePage", () => {
 
     expect(mockPush).toHaveBeenCalledWith("/tasks");
   });
+
+  it("allows selecting due date via DateTimePicker and submits with dueAt", async () => {
+    vi.spyOn(taskApi, "create").mockResolvedValueOnce({
+      id: "task-1000",
+      referenceCode: "TSK-1000",
+      title: "Deploy release v2",
+      description: null,
+      remarks: null,
+      priority: "MEDIUM",
+      status: "PENDING",
+      dueAt: "2026-09-10T17:00:00.000Z",
+      startedAt: null,
+      completedAt: null,
+      cancelledAt: null,
+      teamId: "team-123",
+      categoryId: null,
+      createdById: "admin-1",
+      createdAt: "2026-09-05T00:00:00.000Z",
+      updatedAt: "2026-09-05T00:00:00.000Z",
+      isOverdue: false,
+    });
+
+    render(<TaskCreatePage />);
+
+    const titleInput = screen.getByPlaceholderText(TASK_CREATE_STRINGS.fields.titlePlaceholder);
+    fireEvent.change(titleInput, { target: { value: "Deploy release v2" } });
+
+    const selectTeamBtn = screen.getByText("Select Team Alpha");
+    fireEvent.click(selectTeamBtn);
+
+    const dateTrigger = screen.getByRole("button", {
+      name: new RegExp(TASK_CREATE_STRINGS.fields.dueAtAriaLabel, "i"),
+    });
+    fireEvent.click(dateTrigger);
+
+    const presetBtn = screen.getByRole("button", {
+      name: TASK_CREATE_STRINGS.dateTimePicker.presets.todayEod,
+    });
+    fireEvent.click(presetBtn);
+
+    const submitBtn = screen.getByRole("button", { name: TASK_CREATE_STRINGS.actions.submit });
+    fireEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(taskApi.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: "Deploy release v2",
+          teamId: "team-123",
+          dueAt: expect.any(String),
+        }),
+      );
+      expect(mockReplace).toHaveBeenCalledWith("/tasks/task-1000");
+    });
+  });
 });

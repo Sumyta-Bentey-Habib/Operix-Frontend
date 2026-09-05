@@ -8,6 +8,10 @@ import {
   isDateInRange,
   isSameDate,
   PRESET_DATE_RANGES,
+  parseDateTimeParts,
+  buildDateTimeLocal,
+  formatDateTimeDisplay,
+  getRelativeDayLabel,
 } from "@/utils/calendar";
 
 describe("calendar utilities", () => {
@@ -83,6 +87,36 @@ describe("calendar utilities", () => {
       const range = last7Days?.getRange(ref);
       expect(range?.endDate).toBe("2026-08-29");
       expect(range?.startDate).toBe("2026-08-23");
+    });
+  });
+
+  describe("DateTime helpers", () => {
+    it("parses date-time parts and formats display nicely", () => {
+      const parts = parseDateTimeParts("2026-09-05T14:30");
+      expect(parts.date).toBe("2026-09-05");
+      expect(parts.hour12).toBe(2);
+      expect(parts.minute).toBe(30);
+      expect(parts.period).toBe("PM");
+
+      expect(formatDateTimeDisplay("2026-09-05T14:30")).toBe("5 Sep 2026, 02:30 PM");
+    });
+
+    it("builds local datetime string properly", () => {
+      expect(buildDateTimeLocal("2026-09-05", 9, 15, "AM")).toBe("2026-09-05T09:15");
+      expect(buildDateTimeLocal("2026-09-05", 5, 0, "PM")).toBe("2026-09-05T17:00");
+      expect(buildDateTimeLocal("2026-09-05", 12, 0, "PM")).toBe("2026-09-05T12:00");
+      expect(buildDateTimeLocal("2026-09-05", 12, 0, "AM")).toBe("2026-09-05T00:00");
+    });
+
+    it("returns relative day badges", () => {
+      const now = new Date();
+      const todayYmd = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+      expect(getRelativeDayLabel(todayYmd)).toBe("Today");
+
+      const tomorrow = new Date(now);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowYmd = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, "0")}-${String(tomorrow.getDate()).padStart(2, "0")}`;
+      expect(getRelativeDayLabel(tomorrowYmd)).toBe("Tomorrow");
     });
   });
 });
