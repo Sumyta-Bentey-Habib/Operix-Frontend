@@ -12,6 +12,7 @@ import type { Team } from "@/features/teams";
 import { TASK_CREATE_STRINGS } from "@/utils/task-strings";
 import type { CreateTaskInput, TaskPriority } from "../../types/task.types";
 import { TaskTeamPicker } from "../TaskTeamPicker";
+import { DateTimePicker } from "@/components/ui/DateTimePicker";
 import styles from "./TaskForm.module.css";
 
 export interface TaskFormProps {
@@ -246,14 +247,17 @@ export const TaskForm = ({ pending, error, onSubmit, onCancel }: TaskFormProps) 
               {/* Due Date & Time */}
               <div className={styles.fieldGroup}>
                 <label htmlFor="task-due-at" className={styles.label}>
-                  {TASK_CREATE_STRINGS.fields.dueAtLabel}
+                  <CalendarIcon size={14} />
+                  <span>{TASK_CREATE_STRINGS.fields.dueAtLabel}</span>
                 </label>
-                <input
+                <DateTimePicker
                   id="task-due-at"
-                  type="datetime-local"
-                  className={styles.input}
                   value={dueAt}
-                  onChange={(event) => setDueAt(event.target.value)}
+                  onChange={(val) => setDueAt(val)}
+                  placeholder={TASK_CREATE_STRINGS.fields.dueAtPlaceholder}
+                  ariaLabel={TASK_CREATE_STRINGS.fields.dueAtAriaLabel}
+                  placement="top"
+                  align="right"
                 />
                 <p className={styles.helperText}>{TASK_CREATE_STRINGS.fields.dueAtHelper}</p>
               </div>

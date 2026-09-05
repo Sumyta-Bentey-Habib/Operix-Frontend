@@ -234,3 +234,116 @@ export const PRESET_DATE_RANGES: PresetRange[] = [
     },
   },
 ];
+
+export interface DateTimeParts {
+  date: string; // YYYY-MM-DD
+  hour24: number; // 0 - 23
+  hour12: number; // 1 - 12
+  minute: number; // 0 - 59
+  period: "AM" | "PM";
+}
+
+export const parseDateTimeParts = (value?: string | null): DateTimeParts => {
+  if (!value) {
+    const now = new Date();
+    const h24 = now.getHours();
+    const m = now.getMinutes();
+    const period: "AM" | "PM" = h24 >= 12 ? "PM" : "AM";
+    const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
+    return {
+      date: dateToYmd(now),
+      hour24: h24,
+      hour12: h12,
+      minute: m,
+      period,
+    };
+  }
+
+  // Handle YYYY-MM-DDTHH:mm or ISO format
+  if (value.includes("T")) {
+    const [datePart, timePart] = value.split("T");
+    const [hStr, mStr] = (timePart || "").split(":");
+    const h24 = Math.min(23, Math.max(0, parseInt(hStr || "0", 10) || 0));
+    const m = Math.min(59, Math.max(0, parseInt(mStr || "0", 10) || 0));
+    const period: "AM" | "PM" = h24 >= 12 ? "PM" : "AM";
+    const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
+    return {
+      date: datePart,
+      hour24: h24,
+      hour12: h12,
+      minute: m,
+      period,
+    };
+  }
+
+  // Value is date only (YYYY-MM-DD)
+  return {
+    date: value,
+    hour24: 17, // default to 5:00 PM for task deadlines
+    hour12: 5,
+    minute: 0,
+    period: "PM",
+  };
+};
+
+export const buildDateTimeLocal = (
+  date: string,
+  hour12: number,
+  minute: number,
+  period: "AM" | "PM",
+): string => {
+  let h24 = hour12 % 12;
+  if (period === "PM") {
+    h24 += 12;
+  }
+  const hStr = String(h24).padStart(2, "0");
+  const mStr = String(minute).padStart(2, "0");
+  return `${date}T${hStr}:${mStr}`;
+};
+
+export const formatDateTimeDisplay = (value?: string | null): string => {
+  if (!value) return "";
+  const parts = parseDateTimeParts(value);
+  const dateFormatted = formatCalendarDisplayDate(parts.date);
+  const hStr = String(parts.hour12).padStart(2, "0");
+  const mStr = String(parts.minute).padStart(2, "0");
+  return `${dateFormatted}, ${hStr}:${mStr} ${parts.period}`;
+};
+
+export const getRelativeDayLabel = (dateYmd?: string | null): string | null => {
+  if (!dateYmd) return null;
+  const today = new Date();
+  const todayYmd = dateToYmd(today);
+
+  if (dateYmd === todayYmd) {
+    return "Today";
+  }
+
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  if (dateYmd === dateToYmd(tomorrow)) {
+    return "Tomorrow";
+  }
+
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (dateYmd === dateToYmd(yesterday)) {
+    return "Yesterday";
+  }
+
+  // Calculate day difference
+  const targetDate = new Date(dateYmd);
+  const diffDays = Math.round(
+    (targetDate.getTime() - new Date(todayYmd).getTime()) / (1000 * 60 * 60 * 24),
+  );
+
+  if (diffDays > 1 && diffDays <= 7) {
+    return `In ${diffDays} days`;
+  }
+  if (diffDays < -1 && diffDays >= -7) {
+    return `${Math.abs(diffDays)} days ago`;
+  }
+
+  return null;
+};
+
