@@ -1,0 +1,55 @@
+export const WORKLOAD_TABLE_STRINGS = {
+  heading: "Member Workload",
+  subheading: "Individual task capacity, active assignments, and throughput.",
+  empty: {
+    title: "No Member workload",
+    message: "No Member workload records were returned.",
+    noResultsTitle: "No matching members",
+    noResultsMessage: "No members matched your search criteria.",
+  },
+  stats: {
+    totalMembers: "Total Members",
+    activeTasks: "Active Tasks",
+    overdueTasks: "Overdue",
+    allClear: "All clear",
+  },
+  search: {
+    placeholder: "Search member by name, ID or team...",
+    ariaLabel: "Filter member workload",
+    clear: "Clear search",
+  },
+  columns: {
+    member: "Member",
+    team: "Team",
+    active: "Active",
+    overdue: "Overdue",
+    pending: "Pending",
+    assigned: "Assigned",
+    inProgress: "In Progress",
+    capacity: "Capacity",
+  },
+  badges: {
+    unassigned: "Unassigned",
+    noEmployeeId: "No Employee ID",
+    overdueAlert: "Overdue",
+    allClear: "On Track",
+    activeLoad: "Active",
+  },
+  capacityTiers: {
+    available: "Available",
+    moderate: "Moderate",
+    high: "High Load",
+    overloaded: "At Capacity",
+  },
+  tooltips: {
+    activeTasks: "Tasks currently being worked on or assigned",
+    overdueTasks: "Tasks that have exceeded their scheduled due date",
+    pendingTasks: "Tasks waiting for assignment or initial pickup",
+    assignedTasks: "Tasks allocated to member but not yet in progress",
+    inProgressTasks: "Tasks currently undergoing active execution",
+  },
+  aria: {
+    searchMembers: "Search members by name or ID",
+    workloadTable: "Member workload status table",
+  },
+} as const;
