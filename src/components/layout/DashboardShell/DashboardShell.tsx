@@ -12,6 +12,7 @@ export interface DashboardShellProps {
   className?: string;
   onTabChange?: (tabId: string) => void;
   header?: ReactNode;
+  hideHeader?: boolean;
   title?: string;
 }
 
@@ -21,10 +22,16 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
   className,
   onTabChange,
   header,
+  hideHeader = false,
   title,
 }) => {
   useDynamicDocumentTitle({ activeTab, title });
   const canvasClassName = className ? `${styles.canvas} ${className}` : styles.canvas;
+
+  const renderHeader = () => {
+    if (hideHeader || header === null) return null;
+    return header ?? <DashboardHeader />;
+  };
 
   return (
     <div className={canvasClassName}>
@@ -32,7 +39,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
         <TopNavbar activeTabId={activeTab} onTabChange={onTabChange} />
         <div className={styles.bodyLayout}>
           <main className={styles.mainContent}>
-            {header ?? <DashboardHeader />}
+            {renderHeader()}
             {children}
           </main>
         </div>

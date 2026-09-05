@@ -1,13 +1,108 @@
-.section {
-  display: grid;
-  gap: 20px;
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
 }
 
-.header {
-  align-items: flex-start;
+/* ==========================================================================
+   Breadcrumb & Top Navigation Bar
+   ========================================================================== */
+.topBar {
   display: flex;
-  gap: 16px;
+  align-items: center;
   justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.breadcrumbLink {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.breadcrumbLink:hover {
+  color: var(--primary-emerald);
+}
+
+.breadcrumbSeparator {
+  color: var(--text-muted);
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.breadcrumbCurrent {
+  color: var(--text-primary);
+  font-weight: 700;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background: var(--bg-card-subtle);
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.backButton:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+  transform: translateX(-2px);
+}
+
+.backButton:focus-visible {
+  outline: 2px solid var(--primary-emerald);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Header Section
+   ========================================================================== */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.headerMain {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  min-width: 280px;
+}
+
+.eyebrowRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .eyebrow {
@@ -15,28 +110,127 @@
   font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.08em;
-  margin-bottom: 6px;
   text-transform: uppercase;
+}
+
+.refCodeBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: 9999px;
+  padding: 3px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.refCodeBadge:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
+.refCodeBadge:focus-visible {
+  outline: 2px solid var(--primary-emerald);
+  outline-offset: 2px;
+}
+
+.refPrefix {
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.refValue {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.copyIcon {
+  color: var(--text-muted);
+  transition: color 0.15s ease;
+}
+
+.refCodeBadge:hover .copyIcon {
+  color: var(--primary-emerald);
+}
+
+.copySuccessIcon {
+  color: var(--primary-emerald);
+}
+
+.copiedTooltip {
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text-primary);
+  color: var(--text-inverse);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: var(--shadow-sm);
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 4px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }
 
 .title {
   color: var(--text-primary);
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 800;
+  line-height: 1.25;
+  margin: 0;
+  word-break: break-word;
 }
 
-.description {
-  color: var(--text-secondary);
-  margin-top: 6px;
-  line-height: 1.5;
-}
-
-.actions {
+.badgeRow {
   display: flex;
+  align-items: center;
   gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 2px;
 }
 
-.actions button {
+.overduePill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--negative-bg);
+  color: var(--negative-text);
+  border: 1px solid var(--destructive);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.primaryActionButton {
   background: var(--primary-emerald);
   border: 1px solid var(--primary-emerald);
   border-radius: 12px;
@@ -44,86 +238,643 @@
   cursor: pointer;
   font-weight: 700;
   font-size: 0.875rem;
-  padding: 10px 18px;
+  padding: 10px 20px;
   min-height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   box-shadow: 0 2px 8px var(--primary-emerald-glow);
   transition: all 0.2s ease;
 }
 
-.actions button:hover:not(:disabled) {
+.primaryActionButton:hover:not(:disabled) {
   background: var(--primary-emerald-hover);
   transform: translateY(-1px);
 }
 
-.actions button:focus-visible {
+.primaryActionButton:focus-visible {
   outline: 2px solid var(--primary-emerald);
   outline-offset: 2px;
 }
 
+.errorAlert {
+  background: var(--negative-bg);
+  color: var(--negative-text);
+  border: 1px solid var(--destructive);
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Lifecycle Workflow Stepper Card
+   ========================================================================== */
+.stepperCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: 20px;
+  padding: 22px 24px;
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.stepperHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stepperTitle {
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.cancelledBadge {
+  background: var(--negative-bg);
+  color: var(--negative-text);
+  border: 1px solid var(--destructive);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.stepperTrack {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.stepItem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+  min-width: 110px;
+  gap: 8px;
+}
+
+.stepIndicatorWrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.stepNode {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.stepNumber {
+  line-height: 1;
+}
+
+.stepConnector {
+  flex: 1;
+  height: 3px;
+  background: var(--border-default);
+  margin: 0 8px;
+  border-radius: 2px;
+  transition: background 0.2s ease;
+}
+
+.stepConnectorFilled {
+  background: var(--primary-emerald);
+}
+
+.stepContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stepLabel {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.stepSubtitle {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.25;
+}
+
+/* Step State Modifiers */
+.step_completed .stepNode {
+  background: var(--primary-emerald);
+  color: var(--text-inverse);
+  box-shadow: 0 2px 6px var(--primary-emerald-glow);
+}
+
+.step_current .stepNode {
+  background: var(--bg-card);
+  border: 2px solid var(--primary-emerald);
+  color: var(--primary-emerald);
+  box-shadow: 0 0 0 3px var(--primary-emerald-light);
+}
+
+.step_current .stepLabel {
+  color: var(--primary-emerald);
+}
+
+.step_upcoming .stepNode {
+  background: var(--bg-muted);
+  border: 1px solid var(--border-default);
+  color: var(--text-muted);
+}
+
+.step_upcoming .stepLabel {
+  color: var(--text-muted);
+}
+
+.step_warning .stepNode {
+  background: var(--warning-bg);
+  border: 2px solid var(--warning-text);
+  color: var(--warning-text);
+}
+
+.step_warning .stepLabel {
+  color: var(--warning-text);
+}
+
+/* ==========================================================================
+   2-Column Content Grid
+   ========================================================================== */
+.contentGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 24px;
+  align-items: start;
+}
+
+.mainColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.sidebarColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ==========================================================================
+   Cards (Overview, Sidebar)
+   ========================================================================== */
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border-default);
   border-radius: 20px;
   box-shadow: var(--card-shadow);
-  display: grid;
-  gap: 14px;
   padding: 24px;
-}
-
-.card h2 {
-  color: var(--text-primary);
-  font-size: 1.1rem;
-  font-weight: 800;
-}
-
-.card p {
-  color: var(--text-secondary);
-  line-height: 1.6;
-}
-
-.grid {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 16px;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
 }
 
-.grid dt {
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.cardTitle {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.contentSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sectionSubtitle {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   color: var(--text-muted);
+  margin: 0;
+}
+
+.descriptionText {
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  margin: 0;
+  word-break: break-word;
+}
+
+.emptyText {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 0.875rem;
+}
+
+.remarksSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.remarksCallout {
+  background: var(--bg-card-subtle);
+  border-left: 3px solid var(--primary-emerald);
+  border-radius: 0 12px 12px 0;
+  padding: 14px 18px;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.remarksCallout p {
+  margin: 0;
+}
+
+/* ==========================================================================
+   Workspace Card & Segmented Tabs
+   ========================================================================== */
+.workspaceCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: 20px;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+}
+
+.tabBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--bg-card-subtle);
+  border-bottom: 1px solid var(--border-default);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tabButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.tabButton:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.tabButtonActive {
+  background: var(--bg-card);
+  color: var(--primary-emerald);
+  border-color: var(--border-default);
+  box-shadow: var(--shadow-sm);
+}
+
+.tabButton:focus-visible {
+  outline: 2px solid var(--primary-emerald);
+  outline-offset: 2px;
+}
+
+.tabContent {
+  padding: 20px 24px;
+}
+
+/* ==========================================================================
+   Metadata List in Sidebar
+   ========================================================================== */
+.metaList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.metaItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.metaItemHighlight {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  background: var(--bg-card-subtle);
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+}
+
+.metaLabelRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.metaIcon {
+  color: var(--text-muted);
+}
+
+.metaLabel {
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin: 0;
 }
 
-.grid dd {
-  color: var(--text-primary);
-  margin: 6px 0 0;
+.metaValue {
+  font-size: 0.875rem;
   font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  text-align: right;
+  word-break: break-all;
+}
+
+.metaValueHighlight {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.metaValueWarning {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--negative-text);
+  margin: 0;
+  text-align: right;
+}
+
+.overdueInlineBadge {
+  background: var(--negative-bg);
+  color: var(--negative-text);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  border: 1px solid var(--destructive);
 }
 
 .mono {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
 }
 
-.overdue,
-.error {
-  color: var(--badge-negative-text);
-  font-weight: 700;
+/* ==========================================================================
+   Responsive Breakpoints & Mobile Optimization
+   ========================================================================== */
+@media (max-width: 1080px) {
+  .contentGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebarColumn {
+    order: 2;
+  }
+
+  .mainColumn {
+    order: 1;
+  }
 }
 
 @media (max-width: 720px) {
   .header {
     flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
   }
 
-  .actions {
+  .headerActions {
     width: 100%;
   }
 
-  .actions button {
+  .headerActions button,
+  .primaryActionButton {
     width: 100%;
+    min-height: 48px;
+    font-size: 0.9375rem;
+  }
+
+  .title {
+    font-size: 1.4rem;
+  }
+}
+
+/* Mobile Screens (<= 640px) */
+@media (max-width: 640px) {
+  .container {
+    gap: 18px;
+  }
+
+  /* Top Bar Mobile */
+  .topBar {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .breadcrumbs {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .breadcrumbs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .backButton {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+    font-size: 0.875rem;
+  }
+
+  /* Stepper Mobile: Transforms to clean vertical progress timeline */
+  .stepperCard {
+    padding: 16px;
+    border-radius: 16px;
+    gap: 12px;
+  }
+
+  .stepperTrack {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    overflow-x: visible;
+  }
+
+  .stepItem {
+    flex-direction: row;
+    align-items: flex-start;
+    min-width: 0;
+    width: 100%;
+    gap: 12px;
+    position: relative;
+  }
+
+  .stepIndicatorWrapper {
+    flex-direction: column;
+    align-items: center;
+    width: 32px;
+    flex-shrink: 0;
+  }
+
+  .stepNode {
+    width: 30px;
+    height: 30px;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .stepConnector {
+    width: 2px;
+    height: 24px;
+    margin: 3px 0;
+    border-radius: 1px;
+    flex: none;
+  }
+
+  .stepContent {
+    flex: 1;
+    padding-top: 4px;
+    padding-bottom: 14px;
+  }
+
+  .stepItem:last-child .stepContent {
+    padding-bottom: 2px;
+  }
+
+  .stepLabel {
+    font-size: 0.85rem;
+  }
+
+  .stepSubtitle {
+    font-size: 0.75rem;
+  }
+
+  /* Cards Mobile */
+  .card {
+    padding: 16px;
+    border-radius: 16px;
+    gap: 14px;
+  }
+
+  .cardBody {
+    gap: 16px;
+  }
+
+  .workspaceCard {
+    border-radius: 16px;
+  }
+
+  .tabBar {
+    padding: 6px;
+    gap: 6px;
+  }
+
+  .tabButton {
+    flex: 1;
+    justify-content: center;
+    min-height: 44px;
+    padding: 8px 10px;
+    font-size: 0.8rem;
+    border-radius: 8px;
+  }
+
+  .tabContent {
+    padding: 14px;
+  }
+
+  .metaItem {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .metaValue {
+    font-size: 0.8125rem;
+  }
+}
+
+/* Extra small screens (<= 380px) */
+@media (max-width: 380px) {
+  .metaItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .metaValue {
+    text-align: left;
+  }
+
+  .tabButton {
+    font-size: 0.75rem;
+    padding: 6px 8px;
   }
 }

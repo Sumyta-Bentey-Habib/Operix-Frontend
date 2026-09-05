@@ -54,6 +54,7 @@ export * from "./CheckCircleIcon";
 export * from "./SparklesIcon";
 export * from "./SunIcon";
 export * from "./MoonIcon";
+export * from "./CopyIcon";
 
 // Chart Elements
 export * from "./SparklineSvg";
