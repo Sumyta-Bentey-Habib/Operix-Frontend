@@ -4,6 +4,7 @@ import Link from "next/link";
 import { canEditTeam, canReassignTeamAdmin } from "@/lib/auth/permissions";
 import type { OperixViewer } from "@/types/auth";
 import { formatDisplayDate } from "@/utils/date";
+import { obfuscateId } from "@/utils/id-obfuscator";
 import type { Team } from "../../types/team.types";
 import styles from "./TeamTable.module.css";
 
@@ -20,7 +21,7 @@ export const TeamTable = ({ teams, viewer, onEdit, onReassign }: TeamTableProps)
       <thead>
         <tr>
           <th>Team Name</th>
-          <th>Admin ID</th>
+          <th>Admin Handle</th>
           <th>Created</th>
           <th>Updated</th>
           <th>Actions</th>
@@ -30,7 +31,7 @@ export const TeamTable = ({ teams, viewer, onEdit, onReassign }: TeamTableProps)
         {teams.map((team) => (
           <tr key={team.id}>
             <td>{team.name}</td>
-            <td className={styles.mono}>{team.adminId}</td>
+            <td className={styles.mono}>{obfuscateId(team.adminId, "ADM")}</td>
             <td>{formatDisplayDate(team.createdAt)}</td>
             <td>{formatDisplayDate(team.updatedAt)}</td>
             <td>

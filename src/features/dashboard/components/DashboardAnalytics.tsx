@@ -1,10 +1,10 @@
-"use client";
-
+import { useState } from "react";
 import Link from "next/link";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { Pagination } from "@/components/ui/Pagination";
+import { DatePicker } from "@/components/ui/DatePicker";
 import { useAuth } from "@/context/AuthContext";
 import {
   formatActivityCode,
@@ -13,6 +13,8 @@ import {
 import { resolveActivityTargetHref } from "@/features/activities/utils/activity-target";
 import { formatNotificationType } from "@/features/notifications/utils/notification-display";
 import { resolveNotificationTargetHref } from "@/features/notifications/utils/notification-target";
+import { obfuscateId } from "@/utils/id-obfuscator";
+import { DASHBOARD_STATUS_COLORS, DASHBOARD_PRIORITY_COLORS } from "@/constants/colors";
 import type { TaskPriority, TaskStatus } from "@/features/tasks/types/task.types";
 import { useDashboardOverview } from "../hooks/use-dashboard-overview";
 import { useDashboardTrends } from "../hooks/use-dashboard-trends";
@@ -68,6 +70,230 @@ const REPORT_STATUSES: DashboardManagementReportStatus[] = [
   "APPROVED",
 ];
 
+const STATUS_COLOR_MAP: Record<string, string> = DASHBOARD_STATUS_COLORS;
+
+const PRIORITY_COLOR_MAP: Record<TaskPriority, string> = DASHBOARD_PRIORITY_COLORS;
+
+interface PieSliceData {
+  key: string;
+  label: string;
+  count: number;
+  color: string;
+}
+
+function computePieSlices(
+  items: PieSliceData[],
+  total: number,
+  cx: number,
+  cy: number,
+  outerR: number,
+  innerR: number,
+) {
+  if (total === 0) return [];
+  const activeItems = items.filter((item) => item.count > 0);
+  let currentAngle = -Math.PI / 2;
+
+  return activeItems.map((item) => {
+    const sliceAngle = (item.count / total) * 2 * Math.PI;
+    const startAngle = currentAngle;
+    const endAngle = currentAngle + sliceAngle;
+    currentAngle = endAngle;
+
+    const isSingleSlice = total === item.count;
+
+    if (isSingleSlice) {
+      return {
+        ...item,
+        pathD: `M ${cx} ${cy - outerR} A ${outerR} ${outerR} 0 1 1 ${cx - 0.001} ${cy - outerR} L ${cx - 0.001} ${cy - innerR} A ${innerR} ${innerR} 0 1 0 ${cx} ${cy - innerR} Z`,
+        percentage: 100,
+      };
+    }
+
+    const x1 = cx + outerR * Math.cos(startAngle);
+    const y1 = cy + outerR * Math.sin(startAngle);
+    const x2 = cx + outerR * Math.cos(endAngle);
+    const y2 = cy + outerR * Math.sin(endAngle);
+
+    const ix1 = cx + innerR * Math.cos(endAngle);
+    const iy1 = cy + innerR * Math.sin(endAngle);
+    const ix2 = cx + innerR * Math.cos(startAngle);
+    const iy2 = cy + innerR * Math.sin(startAngle);
+
+    const largeArc = sliceAngle > Math.PI ? 1 : 0;
+
+    const pathD = `M ${x1} ${y1} A ${outerR} ${outerR} 0 ${largeArc} 1 ${x2} ${y2} L ${ix1} ${iy1} A ${innerR} ${innerR} 0 ${largeArc} 0 ${ix2} ${iy2} Z`;
+    const percentage = Math.round((item.count / total) * 100);
+
+    return {
+      ...item,
+      pathD,
+      percentage,
+    };
+  });
+}
+
+export const StatusPieChart = ({
+  items,
+  title,
+  subtitle,
+}: {
+  items: PieSliceData[];
+  title?: string;
+  subtitle?: string;
+}) => {
+  const [hoveredKey, setHoveredKey] = useState<string | null>(null);
+  const total = items.reduce((sum, item) => sum + item.count, 0);
+
+  const cx = 85;
+  const cy = 85;
+  const outerR = 72;
+  const innerR = 46;
+
+  const slices = computePieSlices(items, total, cx, cy, outerR, innerR);
+  const activeSlice = slices.find((s) => s.key === hoveredKey);
+
+  return (
+    <div className={styles.donutCard}>
+      <div className={styles.donutHeader}>
+        <div className={styles.donutTitleRow}>
+          <h3>{title ?? "Task Status Distribution"}</h3>
+          {total === 0 ? <span className={styles.donutZeroBadge}>Awaiting Data</span> : null}
+        </div>
+        {subtitle ? <p className={styles.cardSubtitle}>{subtitle}</p> : null}
+      </div>
+
+      <div className={styles.pieWrapperModern}>
+        <svg viewBox="0 0 170 170" className={styles.pieSvg}>
+          {total === 0 ? (
+            <circle
+              cx={cx}
+              cy={cy}
+              r={(outerR + innerR) / 2}
+              fill="none"
+              stroke="var(--border-default)"
+              strokeWidth={outerR - innerR}
+              strokeDasharray="4 4"
+            />
+          ) : (
+            slices.map((slice) => {
+              const isHovered = hoveredKey === slice.key;
+              return (
+                <path
+                  key={slice.key}
+                  d={slice.pathD}
+                  fill={slice.color}
+                  opacity={hoveredKey && !isHovered ? 0.35 : 1}
+                  className={styles.pieSlice}
+                  style={{
+                    transform: isHovered ? "scale(1.05)" : "scale(1)",
+                    transformOrigin: `${cx}px ${cy}px`,
+                    transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                  }}
+                  onMouseEnter={() => setHoveredKey(slice.key)}
+                  onMouseLeave={() => setHoveredKey(null)}
+                />
+              );
+            })
+          )}
+          <text x={cx} y={cy - 4} textAnchor="middle" className={styles.pieCenterNumber}>
+            {activeSlice ? activeSlice.count : total}
+          </text>
+          <text x={cx} y={cy + 16} textAnchor="middle" className={styles.pieCenterLabel}>
+            {activeSlice ? activeSlice.label : "Total Items"}
+          </text>
+        </svg>
+      </div>
+
+      <div className={styles.pieVerticalList}>
+        {items.map((item) => {
+          const slice = slices.find((s) => s.key === item.key);
+          const pct = slice?.percentage ?? (total > 0 ? Math.round((item.count / total) * 100) : 0);
+          const isHovered = hoveredKey === item.key;
+
+          return (
+            <div
+              key={item.key}
+              className={`${styles.pieVerticalItem} ${isHovered ? styles.pieVerticalItemActive : ""}`}
+              onMouseEnter={() => setHoveredKey(item.key)}
+              onMouseLeave={() => setHoveredKey(null)}
+            >
+              <div className={styles.pieVerticalLeft}>
+                <span className={styles.pieVerticalDot} style={{ backgroundColor: item.color }} />
+                <div className={styles.pieVerticalTextGroup}>
+                  <span className={styles.pieVerticalLabel}>{item.label}</span>
+                  <small className={styles.pieVerticalCount}>
+                    {formatDashboardNumber(item.count)} {item.count === 1 ? "task" : "tasks"}
+                  </small>
+                </div>
+              </div>
+              <div className={styles.pieVerticalRight}>
+                <span className={styles.pieVerticalPct}>{pct}%</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+/* ==========================================================================
+   Modern Grouped 4 KPI Cards
+   ========================================================================== */
+interface ModernKpiMetricItem {
+  label: string;
+  value: string | number;
+  color?: string;
+}
+
+interface ModernKpiCardData {
+  title: string;
+  badge?: string;
+  badgeType?: "emerald" | "blue" | "purple" | "amber";
+  value: string | number;
+  metrics: ModernKpiMetricItem[];
+}
+
+const ModernKpiCard = ({ card }: { card: ModernKpiCardData }) => (
+  <article className={styles.modernKpiCard}>
+    <div className={styles.modernKpiHeader}>
+      <span className={styles.modernKpiTitle}>{card.title}</span>
+      {card.badge ? (
+        <span
+          className={`${styles.modernKpiBadge} ${styles[`badge_${card.badgeType ?? "emerald"}`]}`}
+        >
+          {card.badge}
+        </span>
+      ) : null}
+    </div>
+    <div className={styles.modernKpiMain}>
+      <strong className={styles.modernKpiValue}>{card.value}</strong>
+    </div>
+    <div className={styles.modernKpiList}>
+      {card.metrics.map((metric) => (
+        <div key={metric.label} className={styles.modernKpiItem}>
+          <div className={styles.modernKpiItemLeft}>
+            <span
+              className={styles.modernKpiDot}
+              style={{ backgroundColor: metric.color ?? "var(--primary-emerald)" }}
+            />
+            <span className={styles.modernKpiItemLabel}>{metric.label}</span>
+          </div>
+          <strong className={styles.modernKpiItemValue}>{metric.value}</strong>
+        </div>
+      ))}
+    </div>
+  </article>
+);
+
+const ModernKpiGrid = ({ cards }: { cards: ModernKpiCardData[] }) => (
+  <div className={styles.modernKpiGrid}>
+    {cards.map((card) => (
+      <ModernKpiCard key={card.title} card={card} />
+    ))}
+  </div>
+);
+
 type DashboardWorkloadLike = Partial<MemberWorkloadRow["workload"]> | null | undefined;
 type DashboardMemberLike = Partial<MemberWorkloadRow["member"]> | null | undefined;
 
@@ -103,33 +329,52 @@ const DashboardMetricCard = ({ label, value, hint }: MetricCardProps) => (
   </article>
 );
 
-const DashboardKpiGrid = ({ cards }: { cards: MetricCardProps[] }) => (
-  <div className={styles.kpiGrid}>
-    {cards.map((card) => (
-      <DashboardMetricCard key={card.label} {...card} />
-    ))}
-  </div>
-);
-
 const DashboardAnalyticsHeader = ({
   name,
+  role,
   overview,
+  selectedDate,
+  onDateChange,
 }: {
   name: string;
+  role?: string | null;
   overview: DashboardOverviewResponse | null;
-}) => (
-  <section className={styles.hero}>
-    <div>
-      <p className={styles.eyebrow}>Operational snapshot</p>
-      <h1>Dashboard</h1>
-      <p>Welcome back, {name}. Here is the backend computed snapshot for your account.</p>
-    </div>
-    <div className={styles.contextPill}>
-      <span>Overview as of</span>
-      <strong>{overview ? formatDashboardAsOf(overview.context.asOf) : "Loading..."}</strong>
-    </div>
-  </section>
-);
+  selectedDate?: string;
+  onDateChange?: (date: string) => void;
+}) => {
+  const roleLabel =
+    role === "SUPER_ADMIN" ? "Super Admin / Chief" : role === "ADMIN" ? "Admin" : "Member / Staff";
+  const defaultAsOf = overview ? overview.context.asOf.slice(0, 10) : "";
+  const activeDate = selectedDate || defaultAsOf;
+
+  return (
+    <section className={styles.hero}>
+      <div>
+        <p className={styles.eyebrow}>Operational snapshot</p>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+          <h1>Dashboard</h1>
+          {role ? (
+            <span className={styles.roleBadge} data-role={role}>
+              {roleLabel}
+            </span>
+          ) : null}
+        </div>
+        <p>Welcome back, {name}. Here is the dynamic role-tailored snapshot for your account.</p>
+      </div>
+      <div className={styles.contextPill}>
+        <span>Overview as of</span>
+        <DatePicker
+          mode="single"
+          value={activeDate}
+          onChangeDate={onDateChange}
+          placeholder={overview ? formatDashboardAsOf(overview.context.asOf) : "Loading..."}
+          triggerClassName={styles.contextDatePickerTrigger}
+          ariaLabel="Select overview snapshot date"
+        />
+      </div>
+    </section>
+  );
+};
 
 const SectionShell = ({
   title,
@@ -163,171 +408,722 @@ const SectionShell = ({
   </section>
 );
 
-const TaskStatusBreakdown = ({ counts }: { counts: Record<TaskStatus, number> }) => (
-  <div className={styles.breakdown}>
-    <h3>Task Status Breakdown</h3>
-    <div className={styles.breakdownGrid}>
-      {TASK_STATUSES.map((status) => (
-        <div key={status} className={styles.breakdownRow}>
-          <span>{formatDashboardStatusLabel(status)}</span>
-          <strong>{formatDashboardNumber(counts[status] ?? 0)}</strong>
-        </div>
-      ))}
-    </div>
+const TrendDaysSelector = ({
+  days,
+  onChange,
+}: {
+  days: DashboardTrendDays;
+  onChange: (days: DashboardTrendDays) => void;
+}) => (
+  <div className={styles.segmentedControl} aria-label="Completion Trend period">
+    {DASHBOARD_TREND_DAYS.map((option) => (
+      <button
+        key={option}
+        type="button"
+        className={option === days ? styles.segmentActive : styles.segment}
+        onClick={() => onChange(option)}
+      >
+        {formatTrendDays(option)}
+      </button>
+    ))}
   </div>
 );
 
-const ManagementReportStatusBreakdown = ({ counts }: { counts: ReportStatusCounts }) => (
-  <div className={styles.breakdown}>
-    <h3>Management Report Status Breakdown</h3>
-    <div className={styles.breakdownGrid}>
-      {REPORT_STATUSES.map((status) => (
-        <div key={status} className={styles.breakdownRow}>
-          <span>{formatDashboardStatusLabel(status)}</span>
-          <strong>{formatDashboardNumber(counts[status] ?? 0)}</strong>
-        </div>
-      ))}
-    </div>
-  </div>
-);
+export const CompletionTrendChart = ({
+  points,
+  days,
+  onDaysChange,
+}: {
+  points: CompletionTrendPoint[];
+  days?: DashboardTrendDays;
+  onDaysChange?: (days: DashboardTrendDays) => void;
+}) => {
+  const maxValue = Math.max(0, ...points.map((point) => point.completedTasks));
+  const totalCompleted = points.reduce((sum, point) => sum + point.completedTasks, 0);
 
-const ActivePriorityBreakdown = ({ counts }: { counts: Record<TaskPriority, number> }) => (
-  <div className={styles.breakdownCompact}>
-    <h4>Active Tasks by Priority</h4>
-    <div className={styles.breakdownGrid}>
-      {TASK_PRIORITIES.map((priority) => (
-        <div key={priority} className={styles.breakdownRow}>
-          <span>{priority}</span>
-          <strong>{formatDashboardNumber(counts[priority] ?? 0)}</strong>
+  return (
+    <div className={styles.trendCard}>
+      <div className={styles.trendCardHeader}>
+        <div className={styles.trendTitleGroup}>
+          <h3 className={styles.cardTitle}>Completion Trends</h3>
+          <p className={styles.cardSubtitle}>
+            {totalCompleted > 0
+              ? `${formatDashboardNumber(totalCompleted)} tasks completed in selected window`
+              : "Task completion velocity across recent period"}
+          </p>
         </div>
-      ))}
-    </div>
-  </div>
-);
+        {days && onDaysChange ? <TrendDaysSelector days={days} onChange={onDaysChange} /> : null}
+      </div>
 
-const SuperAdminDashboard = ({ overview }: { overview: SuperAdminDashboardOverview }) => (
-  <div className={styles.stack}>
-    <DashboardKpiGrid
-      cards={[
-        { label: "Admins", value: formatDashboardNumber(overview.kpis.totalAdmins) },
-        { label: "Members", value: formatDashboardNumber(overview.kpis.totalMembers) },
-        { label: "Teams", value: formatDashboardNumber(overview.kpis.totalTeams) },
-        { label: "Total Tasks", value: formatDashboardNumber(overview.kpis.totalTasks) },
-        { label: "Active Tasks", value: formatDashboardNumber(overview.kpis.activeTasks) },
-        { label: "Completed Tasks", value: formatDashboardNumber(overview.kpis.completedTasks) },
-        { label: "Cancelled Tasks", value: formatDashboardNumber(overview.kpis.cancelledTasks) },
-        { label: "Overdue Tasks", value: formatDashboardNumber(overview.kpis.overdueTasks) },
-        { label: "Due Soon", value: formatDashboardNumber(overview.kpis.dueSoonTasks) },
-        { label: "Review Queue", value: formatDashboardNumber(overview.kpis.taskReviewQueue) },
+      {points.length === 0 ? (
+        <EmptyState title="No trend buckets" message="No completion trend buckets returned." />
+      ) : (
+        <div
+          className={styles.chartContainerModern}
+          role="img"
+          aria-label="Completion trends chart"
+        >
+          {totalCompleted === 0 ? (
+            <div className={styles.trendEmptyOverlay}>
+              <div className={styles.trendEmptyBadge}>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="20" x2="18" y2="10" />
+                  <line x1="12" y1="20" x2="12" y2="4" />
+                  <line x1="6" y1="20" x2="6" y2="14" />
+                </svg>
+                <span>No completions in this period</span>
+              </div>
+              <p className={styles.trendEmptyNotice}>
+                Completed tasks will populate daily velocity bars automatically as assignments are
+                finished.
+              </p>
+            </div>
+          ) : null}
+
+          <div className={styles.chartGridLines} aria-hidden="true">
+            <div className={styles.chartGridLine} />
+            <div className={styles.chartGridLine} />
+            <div className={styles.chartGridLine} />
+            <div className={styles.chartGridLine} />
+          </div>
+
+          <div
+            className={`${styles.chartColumnsModern} ${totalCompleted === 0 ? styles.chartColumnsDimmed : ""}`}
+          >
+            {points.map((point) => {
+              const ratio = maxValue === 0 ? 0 : point.completedTasks / maxValue;
+              const height = Math.max(4, Math.round(ratio * 130));
+              const hasData = point.completedTasks > 0;
+
+              return (
+                <div key={point.date} className={styles.chartColumnModern}>
+                  <span
+                    className={`${styles.chartValueBadge} ${hasData ? styles.chartValueBadgeActive : styles.chartValueBadgeGhost}`}
+                  >
+                    {formatDashboardNumber(point.completedTasks)}
+                  </span>
+                  <div className={styles.chartBarTrackModern}>
+                    <div
+                      className={`${styles.chartBarModern} ${hasData ? "" : styles.chartBarGhost}`}
+                      style={{ height }}
+                    />
+                  </div>
+                  <span className={styles.chartDateLabel}>{formatTrendBucketDate(point.date)}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const TaskStatusBreakdown = ({ counts }: { counts: Record<TaskStatus, number> }) => {
+  const pieItems: PieSliceData[] = TASK_STATUSES.map((status) => ({
+    key: status,
+    label: formatDashboardStatusLabel(status),
+    count: counts[status] ?? 0,
+    color: STATUS_COLOR_MAP[status] ?? "#10B981",
+  }));
+
+  return (
+    <StatusPieChart
+      items={pieItems}
+      title="Task Status Distribution"
+      subtitle="Volume proportion by status"
+    />
+  );
+};
+
+const ManagementReportStatusBreakdown = ({ counts }: { counts: ReportStatusCounts }) => {
+  const total = REPORT_STATUSES.reduce((sum, s) => sum + (counts[s] ?? 0), 0);
+
+  return (
+    <div className={styles.priorityCard}>
+      <div className={styles.priorityCardHeader}>
+        <h3>Management Reports Breakdown</h3>
+        <p className={styles.cardSubtitle}>Workflow progress across all submitted reports</p>
+      </div>
+      <div className={styles.priorityList}>
+        {REPORT_STATUSES.map((status) => {
+          const count = counts[status] ?? 0;
+          const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+          const color = STATUS_COLOR_MAP[status] ?? "#10B981";
+
+          return (
+            <div key={status} className={styles.priorityRow}>
+              <div className={styles.priorityHeader}>
+                <span className={styles.priorityLabel}>{formatDashboardStatusLabel(status)}</span>
+                <span className={styles.priorityValue}>
+                  {formatDashboardNumber(count)} ({pct}%)
+                </span>
+              </div>
+              <div className={styles.priorityProgressTrack}>
+                <div
+                  className={styles.priorityProgressBar}
+                  style={{ width: `${Math.max(4, pct)}%`, backgroundColor: color }}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+const ActivePriorityBreakdown = ({ counts }: { counts: Record<TaskPriority, number> }) => {
+  const total = TASK_PRIORITIES.reduce((sum, p) => sum + (counts[p] ?? 0), 0);
+
+  return (
+    <div className={styles.priorityCard}>
+      <div className={styles.priorityCardHeader}>
+        <h3>Active Tasks by Priority</h3>
+        <p className={styles.cardSubtitle}>Urgency distribution across active workload</p>
+      </div>
+      <div className={styles.priorityList}>
+        {TASK_PRIORITIES.map((priority) => {
+          const count = counts[priority] ?? 0;
+          const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+          const color = PRIORITY_COLOR_MAP[priority] ?? "#10B981";
+
+          return (
+            <div key={priority} className={styles.priorityRow}>
+              <div className={styles.priorityHeader}>
+                <span className={styles.priorityLabel}>{priority}</span>
+                <span className={styles.priorityValue}>
+                  {formatDashboardNumber(count)} ({pct}%)
+                </span>
+              </div>
+              <div className={styles.priorityProgressTrack}>
+                <div
+                  className={styles.priorityProgressBar}
+                  style={{ width: `${Math.max(4, pct)}%`, backgroundColor: color }}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+const SuperAdminDashboard = ({
+  overview,
+  trends,
+  days = 30,
+  setDays,
+}: {
+  overview: SuperAdminDashboardOverview;
+  trends?: DashboardTrendsResponse | null;
+  days?: DashboardTrendDays;
+  setDays?: (days: DashboardTrendDays) => void;
+}) => {
+  const modernKpis: ModernKpiCardData[] = [
+    {
+      title: "Active Workload",
+      badge: `Total: ${formatDashboardNumber(overview.kpis.totalTasks)}`,
+      badgeType: "blue",
+      value: formatDashboardNumber(overview.kpis.activeTasks),
+      metrics: [
+        {
+          label: "Total Tasks",
+          value: formatDashboardNumber(overview.kpis.totalTasks),
+          color: "#3B82F6",
+        },
+        {
+          label: "Completed Tasks",
+          value: formatDashboardNumber(overview.kpis.completedTasks),
+          color: "#10B981",
+        },
+        {
+          label: "Overdue Tasks",
+          value: formatDashboardNumber(overview.kpis.overdueTasks),
+          color: "#EF4444",
+        },
+        {
+          label: "Cancelled Tasks",
+          value: formatDashboardNumber(overview.kpis.cancelledTasks),
+          color: "#6B7280",
+        },
+      ],
+    },
+    {
+      title: "Operational Scope",
+      badge: `${formatDashboardNumber(overview.kpis.totalTeams)} Teams`,
+      badgeType: "purple",
+      value: `${formatDashboardNumber(overview.kpis.totalMembers)} Members`,
+      metrics: [
+        {
+          label: "Total Admins",
+          value: formatDashboardNumber(overview.kpis.totalAdmins),
+          color: "#6366F1",
+        },
+        {
+          label: "Total Teams",
+          value: formatDashboardNumber(overview.kpis.totalTeams),
+          color: "#10B981",
+        },
+        {
+          label: "Review Queue",
+          value: formatDashboardNumber(overview.kpis.taskReviewQueue),
+          color: "#EC4899",
+        },
+        {
+          label: "Active Tasks",
+          value: formatDashboardNumber(overview.kpis.activeTasks),
+          color: "#3B82F6",
+        },
+      ],
+    },
+    {
+      title: "Completion Rate",
+      badge: "Quality",
+      badgeType: "emerald",
+      value: formatDashboardRate(overview.kpis.completionRate),
+      metrics: [
+        {
+          label: "On Time Rate",
+          value: formatDashboardRate(overview.kpis.onTimeRate),
+          color: "#3B82F6",
+        },
+        {
+          label: "Due Soon",
+          value: formatDashboardNumber(overview.kpis.dueSoonTasks),
+          color: "#F59E0B",
+        },
         {
           label: "Revision Required",
           value: formatDashboardNumber(overview.kpis.revisionRequiredTasks),
+          color: "#EF4444",
         },
-        { label: "Completion Rate", value: formatDashboardRate(overview.kpis.completionRate) },
-        { label: "On Time Rate", value: formatDashboardRate(overview.kpis.onTimeRate) },
         {
           label: "Average Completion",
           value: formatDashboardAverageMinutes(overview.kpis.averageCompletionMinutes),
+          color: "#9CA3AF",
         },
-        {
-          label: "Pending Reports",
-          value: formatDashboardNumber(overview.kpis.pendingManagementReports),
-        },
+      ],
+    },
+    {
+      title: "Management Reports",
+      badge: `Pending: ${formatDashboardNumber(overview.kpis.pendingManagementReports)}`,
+      badgeType: "amber",
+      value: formatDashboardNumber(overview.kpis.pendingManagementReports),
+      metrics: [
         {
           label: "Reports Needing Revision",
           value: formatDashboardNumber(overview.kpis.revisionRequiredManagementReports),
+          color: "#F59E0B",
         },
-      ]}
-    />
-    <TaskStatusBreakdown counts={overview.taskStatusCounts} />
-    <ManagementReportStatusBreakdown counts={overview.managementReportStatusCounts} />
-    <DashboardRecentActivity activities={overview.recentActivity} />
-  </div>
-);
+        {
+          label: "Revision Required Tasks",
+          value: formatDashboardNumber(overview.kpis.revisionRequiredTasks),
+          color: "#EF4444",
+        },
+        {
+          label: "Review Queue",
+          value: formatDashboardNumber(overview.kpis.taskReviewQueue),
+          color: "#8B5CF6",
+        },
+        {
+          label: "Cancelled Tasks",
+          value: formatDashboardNumber(overview.kpis.cancelledTasks),
+          color: "#6B7280",
+        },
+      ],
+    },
+  ];
 
-const AdminDashboard = ({ overview }: { overview: AdminDashboardOverview }) => (
-  <div className={styles.stack}>
-    <DashboardKpiGrid
-      cards={[
-        { label: "Scoped Teams", value: formatDashboardNumber(overview.kpis.scopedTeams) },
-        { label: "Scoped Members", value: formatDashboardNumber(overview.kpis.scopedMembers) },
-        { label: "Total Tasks", value: formatDashboardNumber(overview.kpis.totalTasks) },
-        { label: "Active Tasks", value: formatDashboardNumber(overview.kpis.activeTasks) },
-        { label: "Completed Tasks", value: formatDashboardNumber(overview.kpis.completedTasks) },
-        { label: "Overdue Tasks", value: formatDashboardNumber(overview.kpis.overdueTasks) },
-        { label: "Due Soon", value: formatDashboardNumber(overview.kpis.dueSoonTasks) },
-        { label: "Review Queue", value: formatDashboardNumber(overview.kpis.taskReviewQueue) },
+  return (
+    <div className={styles.stack}>
+      <div className={styles.directAccessNote}>
+        <span className={styles.directAccessDot} />
+        <span>
+          Direct Operational Data Stream — Exposed directly to eliminate manual spreadsheet
+          collection & calculations.
+        </span>
+      </div>
+      <ModernKpiGrid cards={modernKpis} />
+
+      <div className={styles.modernMiddleGrid}>
+        {trends ? (
+          <CompletionTrendChart
+            points={trends.completionTrend}
+            days={days}
+            onDaysChange={setDays}
+          />
+        ) : (
+          <ManagementReportStatusBreakdown counts={overview.managementReportStatusCounts} />
+        )}
+        <TaskStatusBreakdown counts={overview.taskStatusCounts} />
+      </div>
+
+      <div className={styles.modernBottomGrid}>
+        {trends ? (
+          <ManagementReportStatusBreakdown counts={overview.managementReportStatusCounts} />
+        ) : (
+          <ActivePriorityBreakdown
+            counts={{
+              LOW: 0,
+              MEDIUM: 0,
+              HIGH: 0,
+              URGENT: 0,
+            }}
+          />
+        )}
+        <DashboardRecentActivity activities={overview.recentActivity} />
+      </div>
+    </div>
+  );
+};
+
+const AdminDashboard = ({
+  overview,
+  trends,
+  days = 30,
+  setDays,
+}: {
+  overview: AdminDashboardOverview;
+  trends?: DashboardTrendsResponse | null;
+  days?: DashboardTrendDays;
+  setDays?: (days: DashboardTrendDays) => void;
+}) => {
+  const modernKpis: ModernKpiCardData[] = [
+    {
+      title: "Active Workload",
+      badge: `Total: ${formatDashboardNumber(overview.kpis.totalTasks)}`,
+      badgeType: "blue",
+      value: formatDashboardNumber(overview.kpis.activeTasks),
+      metrics: [
+        {
+          label: "Total Tasks",
+          value: formatDashboardNumber(overview.kpis.totalTasks),
+          color: "#3B82F6",
+        },
+        {
+          label: "Completed Tasks",
+          value: formatDashboardNumber(overview.kpis.completedTasks),
+          color: "#10B981",
+        },
+        {
+          label: "Overdue Tasks",
+          value: formatDashboardNumber(overview.kpis.overdueTasks),
+          color: "#EF4444",
+        },
+        {
+          label: "Review Queue",
+          value: formatDashboardNumber(overview.kpis.taskReviewQueue),
+          color: "#8B5CF6",
+        },
+      ],
+    },
+    {
+      title: "Managed Scope",
+      badge: `${formatDashboardNumber(overview.kpis.scopedTeams)} Teams`,
+      badgeType: "purple",
+      value: `${formatDashboardNumber(overview.kpis.scopedMembers)} Members`,
+      metrics: [
+        {
+          label: "Scoped Teams",
+          value: formatDashboardNumber(overview.kpis.scopedTeams),
+          color: "#10B981",
+        },
+        {
+          label: "Due Soon",
+          value: formatDashboardNumber(overview.kpis.dueSoonTasks),
+          color: "#F59E0B",
+        },
         {
           label: "Revision Required",
           value: formatDashboardNumber(overview.kpis.revisionRequiredTasks),
+          color: "#EF4444",
         },
-        { label: "Completion Rate", value: formatDashboardRate(overview.kpis.completionRate) },
-        { label: "On Time Rate", value: formatDashboardRate(overview.kpis.onTimeRate) },
+        {
+          label: "Total Tasks",
+          value: formatDashboardNumber(overview.kpis.totalTasks),
+          color: "#3B82F6",
+        },
+      ],
+    },
+    {
+      title: "Completion Rate",
+      badge: "Efficiency",
+      badgeType: "emerald",
+      value: formatDashboardRate(overview.kpis.completionRate),
+      metrics: [
+        {
+          label: "On Time Rate",
+          value: formatDashboardRate(overview.kpis.onTimeRate),
+          color: "#3B82F6",
+        },
+        {
+          label: "Due Soon",
+          value: formatDashboardNumber(overview.kpis.dueSoonTasks),
+          color: "#F59E0B",
+        },
+        {
+          label: "Revision Required",
+          value: formatDashboardNumber(overview.kpis.revisionRequiredTasks),
+          color: "#EF4444",
+        },
         {
           label: "Average Completion",
           value: formatDashboardAverageMinutes(overview.kpis.averageCompletionMinutes),
+          color: "#9CA3AF",
         },
-        { label: "My Draft Reports", value: formatDashboardNumber(overview.kpis.myDraftReports) },
+      ],
+    },
+    {
+      title: "My Submitted Reports",
+      badge: "Reports",
+      badgeType: "amber",
+      value: formatDashboardNumber(overview.kpis.mySubmittedReports),
+      metrics: [
         {
-          label: "My Submitted Reports",
-          value: formatDashboardNumber(overview.kpis.mySubmittedReports),
+          label: "Draft Reports",
+          value: formatDashboardNumber(overview.kpis.myDraftReports),
+          color: "#9CA3AF",
         },
         {
-          label: "My Reports Needing Revision",
+          label: "Reports Needing Revision",
           value: formatDashboardNumber(overview.kpis.myRevisionRequiredReports),
+          color: "#F59E0B",
         },
-      ]}
-    />
-    <TaskStatusBreakdown counts={overview.taskStatusCounts} />
-    <DashboardRecentActivity activities={overview.recentActivity} />
-  </div>
-);
+        {
+          label: "Revision Required Tasks",
+          value: formatDashboardNumber(overview.kpis.revisionRequiredTasks),
+          color: "#EF4444",
+        },
+        {
+          label: "Review Queue",
+          value: formatDashboardNumber(overview.kpis.taskReviewQueue),
+          color: "#8B5CF6",
+        },
+      ],
+    },
+  ];
 
-const MemberDashboard = ({ overview }: { overview: MemberDashboardOverview }) => (
-  <div className={styles.stack}>
-    <DashboardKpiGrid
-      cards={[
-        { label: "My Tasks", value: formatDashboardNumber(overview.kpis.myTotalTasks) },
-        { label: "My Active Tasks", value: formatDashboardNumber(overview.kpis.myActiveTasks) },
+  return (
+    <div className={styles.stack}>
+      <ModernKpiGrid cards={modernKpis} />
+
+      <div className={styles.modernMiddleGrid}>
+        {trends ? (
+          <CompletionTrendChart
+            points={trends.completionTrend}
+            days={days}
+            onDaysChange={setDays}
+          />
+        ) : null}
+        <TaskStatusBreakdown counts={overview.taskStatusCounts} />
+      </div>
+
+      <div className={styles.modernBottomGrid}>
+        <ActivePriorityBreakdown
+          counts={{
+            LOW: 0,
+            MEDIUM: 0,
+            HIGH: 0,
+            URGENT: 0,
+          }}
+        />
+        <DashboardRecentActivity activities={overview.recentActivity} />
+      </div>
+    </div>
+  );
+};
+
+const MemberDashboard = ({
+  overview,
+  trends,
+  days = 30,
+  setDays,
+}: {
+  overview: MemberDashboardOverview;
+  trends?: DashboardTrendsResponse | null;
+  days?: DashboardTrendDays;
+  setDays?: (days: DashboardTrendDays) => void;
+}) => {
+  const modernKpis: ModernKpiCardData[] = [
+    {
+      title: "My Active Tasks",
+      badge: `Total: ${formatDashboardNumber(overview.kpis.myTotalTasks)}`,
+      badgeType: "blue",
+      value: formatDashboardNumber(overview.kpis.myActiveTasks),
+      metrics: [
         {
-          label: "My Completed Tasks",
+          label: "Total Tasks",
+          value: formatDashboardNumber(overview.kpis.myTotalTasks),
+          color: "#3B82F6",
+        },
+        {
+          label: "Completed Tasks",
           value: formatDashboardNumber(overview.kpis.myCompletedTasks),
+          color: "#10B981",
         },
-        { label: "My Overdue Tasks", value: formatDashboardNumber(overview.kpis.myOverdueTasks) },
-        { label: "My Due Soon", value: formatDashboardNumber(overview.kpis.myDueSoonTasks) },
         {
-          label: "My Revision Required",
-          value: formatDashboardNumber(overview.kpis.myRevisionRequiredTasks),
+          label: "Overdue Tasks",
+          value: formatDashboardNumber(overview.kpis.myOverdueTasks),
+          color: "#EF4444",
         },
-        { label: "Completion Rate", value: formatDashboardRate(overview.kpis.completionRate) },
-        { label: "On Time Rate", value: formatDashboardRate(overview.kpis.onTimeRate) },
+        {
+          label: "Due Soon",
+          value: formatDashboardNumber(overview.kpis.myDueSoonTasks),
+          color: "#F59E0B",
+        },
+      ],
+    },
+    {
+      title: "Task Quality",
+      badge: "Quality",
+      badgeType: "amber",
+      value: `${formatDashboardNumber(overview.kpis.myRevisionRequiredTasks)} Revisions`,
+      metrics: [
+        {
+          label: "Overdue Tasks",
+          value: formatDashboardNumber(overview.kpis.myOverdueTasks),
+          color: "#EF4444",
+        },
+        {
+          label: "Due Soon",
+          value: formatDashboardNumber(overview.kpis.myDueSoonTasks),
+          color: "#F59E0B",
+        },
+        {
+          label: "Revision Required",
+          value: formatDashboardNumber(overview.kpis.myRevisionRequiredTasks),
+          color: "#EC4899",
+        },
+        {
+          label: "Total Tasks",
+          value: formatDashboardNumber(overview.kpis.myTotalTasks),
+          color: "#3B82F6",
+        },
+      ],
+    },
+    {
+      title: "My Performance",
+      badge: "Score",
+      badgeType: "emerald",
+      value: formatDashboardRate(overview.kpis.completionRate),
+      metrics: [
+        {
+          label: "On Time Rate",
+          value: formatDashboardRate(overview.kpis.onTimeRate),
+          color: "#3B82F6",
+        },
+        {
+          label: "Completed Tasks",
+          value: formatDashboardNumber(overview.kpis.myCompletedTasks),
+          color: "#10B981",
+        },
+        {
+          label: "Due Soon",
+          value: formatDashboardNumber(overview.kpis.myDueSoonTasks),
+          color: "#F59E0B",
+        },
         {
           label: "Average Completion",
           value: formatDashboardAverageMinutes(overview.kpis.averageCompletionMinutes),
+          color: "#9CA3AF",
+        },
+      ],
+    },
+    {
+      title: "Unread Alerts",
+      badge: "Inbox",
+      badgeType: "purple",
+      value: formatDashboardNumber(overview.kpis.unreadNotificationCount),
+      metrics: [
+        {
+          label: "Total Tasks",
+          value: formatDashboardNumber(overview.kpis.myTotalTasks),
+          color: "#3B82F6",
         },
         {
-          label: "Unread Notifications",
-          value: formatDashboardNumber(overview.kpis.unreadNotificationCount),
+          label: "Active Tasks",
+          value: formatDashboardNumber(overview.kpis.myActiveTasks),
+          color: "#10B981",
         },
-      ]}
-    />
-    <TaskStatusBreakdown counts={overview.taskStatusCounts} />
-    <DashboardRecentNotifications notifications={overview.recentNotifications} />
-  </div>
-);
+        {
+          label: "Due Soon",
+          value: formatDashboardNumber(overview.kpis.myDueSoonTasks),
+          color: "#F59E0B",
+        },
+        {
+          label: "Completed Tasks",
+          value: formatDashboardNumber(overview.kpis.myCompletedTasks),
+          color: "#10B981",
+        },
+      ],
+    },
+  ];
 
-const DashboardOverviewContent = ({ overview }: { overview: DashboardOverviewResponse }) => {
+  return (
+    <div className={styles.stack}>
+      <ModernKpiGrid cards={modernKpis} />
+
+      <div className={styles.modernMiddleGrid}>
+        {trends ? (
+          <CompletionTrendChart
+            points={trends.completionTrend}
+            days={days}
+            onDaysChange={setDays}
+          />
+        ) : null}
+        <TaskStatusBreakdown counts={overview.taskStatusCounts} />
+      </div>
+
+      <div className={styles.modernBottomGrid}>
+        <ActivePriorityBreakdown
+          counts={{
+            LOW: 0,
+            MEDIUM: 0,
+            HIGH: 0,
+            URGENT: 0,
+          }}
+        />
+        <DashboardRecentNotifications notifications={overview.recentNotifications} />
+      </div>
+    </div>
+  );
+};
+
+const DashboardOverviewContent = ({
+  overview,
+  trends,
+  days,
+  setDays,
+}: {
+  overview: DashboardOverviewResponse;
+  trends: DashboardTrendsResponse | null;
+  days: DashboardTrendDays;
+  setDays: (days: DashboardTrendDays) => void;
+}) => {
   switch (overview.role) {
     case "SUPER_ADMIN":
-      return <SuperAdminDashboard overview={overview} />;
+      return (
+        <SuperAdminDashboard overview={overview} trends={trends} days={days} setDays={setDays} />
+      );
     case "ADMIN":
-      return <AdminDashboard overview={overview} />;
+      return <AdminDashboard overview={overview} trends={trends} days={days} setDays={setDays} />;
     case "MEMBER":
-      return <MemberDashboard overview={overview} />;
+      return <MemberDashboard overview={overview} trends={trends} days={days} setDays={setDays} />;
   }
 };
 
-const DashboardRecentActivity = ({
+export const DashboardRecentActivity = ({
   activities,
 }: {
   activities: SuperAdminDashboardOverview["recentActivity"];
@@ -351,7 +1147,9 @@ const DashboardRecentActivity = ({
                 <h4>{title}</h4>
                 <p>
                   {getActivityActorName(activity)} · {activity.entityType}
-                  {activity.entityId ? ` ${activity.entityId}` : ""}
+                  {activity.entityId
+                    ? ` ${obfuscateId(activity.entityId, activity.entityType.slice(0, 3))}`
+                    : ""}
                 </p>
                 <small>{formatDashboardAsOf(activity.createdAt)}</small>
               </div>
@@ -364,7 +1162,7 @@ const DashboardRecentActivity = ({
   </div>
 );
 
-const DashboardRecentNotifications = ({
+export const DashboardRecentNotifications = ({
   notifications,
 }: {
   notifications: MemberDashboardOverview["recentNotifications"];
@@ -433,7 +1231,7 @@ const TeamWorkloadTable = ({ teams }: { teams: TeamWorkloadRow[] }) => {
         <thead>
           <tr>
             <th>Team</th>
-            <th>Admin ID</th>
+            <th>Admin Handle</th>
             <th>Active</th>
             <th>Overdue</th>
             <th>Pending</th>
@@ -445,7 +1243,7 @@ const TeamWorkloadTable = ({ teams }: { teams: TeamWorkloadRow[] }) => {
           {teams.map((team) => (
             <tr key={team.teamId}>
               <td>{team.teamName}</td>
-              <td>{team.adminId}</td>
+              <td>{obfuscateId(team.adminId, "ADM")}</td>
               <td>{formatDashboardNumber(team.workload?.activeTasks)}</td>
               <td>{formatDashboardNumber(team.workload?.overdueTasks)}</td>
               <td>{formatDashboardNumber(getWorkloadStatusCount(team.workload, "PENDING"))}</td>
@@ -533,7 +1331,7 @@ const MemberSelfWorkload = ({ row }: { row: MemberWorkloadRow }) => (
   </div>
 );
 
-const DashboardWorkloadContent = ({
+export const DashboardWorkloadContent = ({
   workload,
   setPage,
 }: {
@@ -547,12 +1345,12 @@ const DashboardWorkloadContent = ({
           <div className={styles.contextLine}>
             Workload as of {formatDashboardAsOf(workload.context.asOf)}
           </div>
-          <div>
-            <h3>Team Workload</h3>
+          <div className={styles.workloadSection}>
+            <h3 className={styles.workloadSubheading}>Team Workload</h3>
             <TeamWorkloadTable teams={workload.byTeam} />
           </div>
-          <div>
-            <h3>Member Workload</h3>
+          <div className={styles.workloadSection}>
+            <h3 className={styles.workloadSubheading}>Member Workload</h3>
             <MemberWorkloadTable members={workload.byMember.data} />
             <Pagination meta={workload.byMember.meta} onPageChange={setPage} />
           </div>
@@ -564,8 +1362,8 @@ const DashboardWorkloadContent = ({
           <div className={styles.contextLine}>
             Workload as of {formatDashboardAsOf(workload.context.asOf)}
           </div>
-          <div>
-            <h3>Team Summary</h3>
+          <div className={styles.workloadSection}>
+            <h3 className={styles.workloadSubheading}>Team Summary</h3>
             <div className={styles.identityCard}>
               <div>
                 <span>Team</span>
@@ -577,8 +1375,8 @@ const DashboardWorkloadContent = ({
               counts={getWorkloadPriorityCounts(workload.teamSummary.workload)}
             />
           </div>
-          <div>
-            <h3>Member Workload</h3>
+          <div className={styles.workloadSection}>
+            <h3 className={styles.workloadSubheading}>Member Workload</h3>
             <MemberWorkloadTable members={workload.byMember.data} />
             <Pagination meta={workload.byMember.meta} onPageChange={setPage} />
           </div>
@@ -596,84 +1394,12 @@ const DashboardWorkloadContent = ({
   }
 };
 
-const TrendDaysSelector = ({
-  days,
-  onChange,
-}: {
-  days: DashboardTrendDays;
-  onChange: (days: DashboardTrendDays) => void;
-}) => (
-  <div className={styles.segmentedControl} aria-label="Completion Trend period">
-    {DASHBOARD_TREND_DAYS.map((option) => (
-      <button
-        key={option}
-        type="button"
-        className={option === days ? styles.segmentActive : styles.segment}
-        onClick={() => onChange(option)}
-      >
-        {formatTrendDays(option)}
-      </button>
-    ))}
-  </div>
-);
-
-const CompletionTrendChart = ({ points }: { points: CompletionTrendPoint[] }) => {
-  const maxValue = Math.max(0, ...points.map((point) => point.completedTasks));
-
-  if (points.length === 0) {
-    return <EmptyState title="No trend buckets" message="No completion trend buckets returned." />;
-  }
-
-  return (
-    <div className={styles.chart} role="img" aria-label="Completed Tasks trend chart">
-      {points.map((point) => {
-        const ratio = maxValue === 0 ? 0 : point.completedTasks / maxValue;
-        const height = Math.max(4, Math.round(ratio * 120));
-
-        return (
-          <div key={point.date} className={styles.chartColumn}>
-            <span className={styles.chartValue}>{formatDashboardNumber(point.completedTasks)}</span>
-            <div className={styles.chartTrack}>
-              <div className={styles.chartBar} style={{ height }} />
-            </div>
-            <span className={styles.chartLabel}>{formatTrendBucketDate(point.date)}</span>
-          </div>
-        );
-      })}
-    </div>
-  );
-};
-
-const CompletionTrend = ({
-  trends,
-  days,
-  setDays,
-}: {
-  trends: DashboardTrendsResponse | null;
-  days: DashboardTrendDays;
-  setDays: (days: DashboardTrendDays) => void;
-}) => (
-  <div className={styles.stack}>
-    <div className={styles.trendHeader}>
-      <div>
-        <h3>Completion Trend</h3>
-        <p>
-          {trends
-            ? `Trend snapshot as of ${formatDashboardAsOf(trends.context.asOf)}`
-            : "Backend completion buckets"}
-        </p>
-      </div>
-      <TrendDaysSelector days={days} onChange={setDays} />
-    </div>
-    {trends ? <CompletionTrendChart points={trends.completionTrend} /> : null}
-  </div>
-);
-
 export const DashboardAnalytics = () => {
   const { viewer, profile, hydrationStatus } = useAuth();
   const overviewState = useDashboardOverview();
   const workloadState = useDashboardWorkload(viewer?.role ?? null);
   const trendState = useDashboardTrends();
+  const [selectedSnapshotDate, setSelectedSnapshotDate] = useState<string | undefined>(undefined);
 
   if (hydrationStatus === "IDLE" || hydrationStatus === "LOADING") {
     return <LoadingState message="Loading Dashboard..." />;
@@ -683,27 +1409,41 @@ export const DashboardAnalytics = () => {
     return <ErrorState title="Dashboard unavailable" message="Sign in to view Dashboard." />;
   }
 
-  const displayName = profile?.name ?? profile?.email ?? viewer.userId;
+  const displayName = profile?.name ?? profile?.email ?? obfuscateId(viewer.userId, "USR");
 
   return (
-    <div className={styles.layout}>
-      <DashboardAnalyticsHeader name={displayName} overview={overviewState.overview} />
+    <div className={styles.layout} data-role={viewer.role}>
+      <DashboardAnalyticsHeader
+        name={displayName}
+        role={viewer.role}
+        overview={overviewState.overview}
+        selectedDate={selectedSnapshotDate}
+        onDateChange={setSelectedSnapshotDate}
+      />
       <SectionShell
         title="Overview"
-        description="Role aware KPIs from /dashboard/overview."
-        loading={overviewState.loading}
-        error={overviewState.error}
-        onRetry={overviewState.refresh}
+        description="Executive operational overview and performance trends."
+        loading={overviewState.loading || trendState.loading}
+        error={overviewState.error || trendState.error}
+        onRetry={() => {
+          void overviewState.refresh();
+          void trendState.refresh();
+        }}
       >
         {overviewState.overview ? (
-          <DashboardOverviewContent overview={overviewState.overview} />
+          <DashboardOverviewContent
+            overview={overviewState.overview}
+            trends={trendState.trends}
+            days={trendState.days}
+            setDays={trendState.setDays}
+          />
         ) : (
           <EmptyState title="No Overview data" message="No Dashboard Overview was returned." />
         )}
       </SectionShell>
       <SectionShell
         title="Workload"
-        description="Current workload from /dashboard/workload."
+        description="Current workload distribution and team capacity."
         loading={workloadState.loading}
         error={workloadState.error}
         onRetry={workloadState.refresh}
@@ -717,29 +1457,8 @@ export const DashboardAnalytics = () => {
           <EmptyState title="No Workload data" message="No Dashboard Workload was returned." />
         )}
       </SectionShell>
-      <SectionShell
-        title="Trends"
-        description="Completion trend, scoped to this section only."
-        loading={trendState.loading}
-        error={trendState.error}
-        onRetry={trendState.refresh}
-      >
-        <CompletionTrend
-          trends={trendState.trends}
-          days={trendState.days}
-          setDays={trendState.setDays}
-        />
-      </SectionShell>
     </div>
   );
 };
 
-export {
-  AdminDashboard,
-  CompletionTrendChart,
-  DashboardRecentActivity,
-  DashboardRecentNotifications,
-  DashboardWorkloadContent,
-  MemberDashboard,
-  SuperAdminDashboard,
-};
+export { AdminDashboard, MemberDashboard, SuperAdminDashboard };

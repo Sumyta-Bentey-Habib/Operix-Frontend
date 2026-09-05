@@ -28,6 +28,8 @@ export interface ManagementReport {
   id: string;
   adminId: string;
   teamId: string;
+  adminName?: string;
+  teamName?: string;
   title: string;
   periodStart: string;
   periodEnd: string;

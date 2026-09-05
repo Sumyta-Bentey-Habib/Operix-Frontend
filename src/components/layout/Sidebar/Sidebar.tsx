@@ -12,6 +12,7 @@ import {
   ContactsIcon,
   SettingsIcon,
   LogoutIcon,
+  TodoIcon,
 } from "@/components/icons";
 import { SIDEBAR_NAV_ITEMS, SIDEBAR_LOGOUT_ITEM } from "@/constants/navigation";
 import { APP_STRINGS } from "@/constants/strings";
@@ -34,12 +35,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const visibleNavItems = SIDEBAR_NAV_ITEMS.filter((item) => canSeeNavigationItem(viewer, item.id));
 
   const renderNavIcon = (iconName: string, isActive: boolean) => {
-    const color = isActive ? "#059669" : "#6B7280";
+    const color = isActive ? "var(--primary-emerald)" : "var(--text-secondary)";
     switch (iconName) {
       case "dashboard":
         return <DashboardIcon size={20} color={color} />;
       case "documents":
         return <DocumentsIcon size={20} color={color} />;
+      case "todos":
+        return <TodoIcon size={20} color={color} />;
       case "reports":
         return <ReportsIcon size={20} color={color} />;
       case "workspace":
@@ -101,7 +104,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           onClick={() => {
             void signOut()
               .then(() => {
-                router.replace("/");
+                router.replace("/login");
               })
               .catch(() => {
                 // AuthContext retains the viewer when backend sign out fails.

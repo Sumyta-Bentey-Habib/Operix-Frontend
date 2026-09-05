@@ -12,37 +12,67 @@
   --bg-card-hover: #f3f4f6;
   --bg-dropdown: #ffffff;
   --bg-input: #ffffff;
+  --bg-muted: #f3f4f6;
+  --bg-page: #f4f5f9;
 
   --text-primary: #111827;
   --text-secondary: #4b5563;
   --text-muted: #9ca3af;
   --text-inverse: #ffffff;
+  --text-on-primary: #ffffff;
 
   --border-subtle: #edf0f5;
   --border-default: #e5e7eb;
   --border-hover: #d1d5db;
 
-  --primary-emerald: #059669;
-  --primary-emerald-hover: #047857;
-  --primary-emerald-light: #e6f7f0;
-  --primary-emerald-dark: #065f46;
-  --primary-emerald-muted: #d1fae5;
-  --primary-emerald-glow: rgba(5, 150, 105, 0.25);
+  --primary-emerald: #dc2626;
+  --primary-emerald-hover: #b91c1c;
+  --primary-emerald-light: #fef2f2;
+  --primary-emerald-dark: #991b1b;
+  --primary-emerald-muted: #fee2e2;
+  --primary-emerald-glow: rgba(220, 38, 38, 0.25);
 
-  --badge-positive-bg: #e6f7f0;
-  --badge-positive-text: #059669;
+  --badge-positive-bg: #fef2f2;
+  --badge-positive-text: #dc2626;
   --badge-negative-bg: #fef2f2;
   --badge-negative-text: #dc2626;
   --badge-pending-bg: #fef3c7;
   --badge-pending-text: #d97706;
 
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --warning-bg: #fef3c7;
+  --warning-text: #d97706;
+  --danger-bg: #fef2f2;
+  --danger-text: #dc2626;
+
   --card-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
   --card-hover-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
   --dropdown-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.03);
   --grid-line-color: #f3f4f6;
   --table-row-hover: #fcfdfe;
   --scrollbar-thumb: #d1d5db;
   --scrollbar-thumb-hover: #9ca3af;
+
+  /* Aliases for feature modules compatibility */
+  --card: var(--bg-card);
+  --border: var(--border-default);
+  --color-border: var(--border-default);
+  --color-surface: var(--bg-card);
+  --color-background: var(--bg-card-subtle);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-primary: var(--primary-emerald);
+  --muted: var(--bg-card-subtle);
+  --muted-foreground: var(--text-muted);
+  --input: var(--border-default);
+  --ring: var(--primary-emerald);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
 }
 
 [data-theme="dark"],
@@ -55,37 +85,63 @@
   --bg-card-hover: #1e2942;
   --bg-dropdown: #131b2e;
   --bg-input: #1a233a;
+  --bg-muted: #1e2942;
+  --bg-page: #0b0f17;
 
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
   --text-inverse: #0b0f17;
+  --text-on-primary: #ffffff;
 
   --border-subtle: #1e293b;
   --border-default: #2a374f;
   --border-hover: #3b4b66;
 
-  --primary-emerald: #10b981;
-  --primary-emerald-hover: #059669;
-  --primary-emerald-light: rgba(16, 185, 129, 0.15);
-  --primary-emerald-dark: #047857;
-  --primary-emerald-muted: rgba(16, 185, 129, 0.2);
-  --primary-emerald-glow: rgba(16, 185, 129, 0.35);
+  --primary-emerald: #ef4444;
+  --primary-emerald-hover: #dc2626;
+  --primary-emerald-light: rgba(239, 68, 68, 0.15);
+  --primary-emerald-dark: #b91c1c;
+  --primary-emerald-muted: rgba(239, 68, 68, 0.2);
+  --primary-emerald-glow: rgba(239, 68, 68, 0.35);
 
-  --badge-positive-bg: rgba(16, 185, 129, 0.15);
-  --badge-positive-text: #34d399;
+  --badge-positive-bg: rgba(239, 68, 68, 0.15);
+  --badge-positive-text: #fca5a5;
   --badge-negative-bg: rgba(239, 68, 68, 0.15);
   --badge-negative-text: #f87171;
   --badge-pending-bg: rgba(245, 158, 11, 0.15);
   --badge-pending-text: #fbbf24;
 
+  --destructive: #f87171;
+  --destructive-foreground: #0b0f17;
+  --warning-bg: rgba(245, 158, 11, 0.15);
+  --warning-text: #fbbf24;
+  --danger-bg: rgba(239, 68, 68, 0.15);
+  --danger-text: #f87171;
+
   --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
   --card-hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
   --dropdown-shadow: 0 12px 32px rgba(0, 0, 0, 0.65);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.45);
   --grid-line-color: #1e293b;
   --table-row-hover: rgba(255, 255, 255, 0.03);
   --scrollbar-thumb: #334155;
   --scrollbar-thumb-hover: #475569;
+
+  /* Aliases for feature modules compatibility */
+  --card: var(--bg-card);
+  --border: var(--border-default);
+  --color-border: var(--border-default);
+  --color-surface: var(--bg-card);
+  --color-background: var(--bg-card-subtle);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-primary: var(--primary-emerald);
+  --muted: var(--bg-card-subtle);
+  --muted-foreground: var(--text-muted);
+  --input: var(--border-default);
+  --ring: var(--primary-emerald);
 }
 
 * {
@@ -111,9 +167,85 @@ body {
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
   transition:
     background-color 0.25s ease,
     color 0.25s ease;
+}
+
+/* Typography Hierarchy */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--text-primary);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: 1.75rem;
+  font-weight: 800;
+}
+h2 {
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+h4 {
+  font-size: 1rem;
+  font-weight: 700;
+}
+h5 {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+h6 {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+p {
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+small {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+a {
+  color: var(--primary-emerald);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--primary-emerald-hover);
+}
+
+/* Universal Accessible Focus Rings */
+:focus-visible {
+  outline: 2px solid var(--primary-emerald);
+  outline-offset: 2px;
+}
+
+/* Button Reset and Accessible Tap Targets */
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
 }
 
 /* Custom modern scrollbars */
@@ -134,4 +266,26 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--scrollbar-thumb-hover);
+}
+
+/* Loading skeleton shimmer effect */
+@keyframes skeletonPulse {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-card-subtle) 25%,
+    var(--bg-card-hover) 37%,
+    var(--bg-card-subtle) 63%
+  );
+  background-size: 400% 100%;
+  animation: skeletonPulse 1.4s ease infinite;
+  border-radius: var(--radius-md);
 }

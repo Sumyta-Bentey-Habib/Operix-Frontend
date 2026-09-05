@@ -1,10 +1,17 @@
 .item {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: 18px;
+  box-shadow: var(--card-shadow);
   display: grid;
   gap: 12px;
-  padding: 16px;
+  padding: 18px;
+  transition: all 0.2s ease;
+}
+
+.item:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--card-hover-shadow);
 }
 
 .header {
@@ -16,8 +23,8 @@
 
 .title {
   color: var(--text-primary);
-  font-size: 1rem;
-  font-weight: 900;
+  font-size: 0.95rem;
+  font-weight: 700;
 }
 
 .meta {
@@ -32,7 +39,7 @@
   border-radius: 999px;
   color: var(--text-secondary);
   font-size: 0.68rem;
-  font-weight: 800;
+  font-weight: 700;
   padding: 4px 8px;
   white-space: nowrap;
 }
@@ -46,7 +53,7 @@
 .details dt {
   color: var(--text-muted);
   font-size: 0.72rem;
-  font-weight: 800;
+  font-weight: 700;
   text-transform: uppercase;
 }
 
@@ -58,8 +65,12 @@
 
 .link {
   color: var(--primary-emerald);
-  font-weight: 900;
+  font-weight: 700;
   text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
 }
 
 @media (max-width: 720px) {

@@ -6,6 +6,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { useAuth } from "@/context/AuthContext";
 import { formatDisplayDate } from "@/utils/date";
+import { obfuscateId } from "@/utils/id-obfuscator";
 import { reportApi } from "../../api/report.api";
 import { useReport } from "../../hooks/use-report";
 import {
@@ -141,9 +142,15 @@ export const ReportDetails = ({ reportId }: { reportId: string }) => {
       <section className={styles.card}>
         <h2>Report Details</h2>
         <div className={styles.detailGrid}>
-          <Detail label="Report ID" value={report.id} />
-          <Detail label="Team ID" value={report.teamId} />
-          <Detail label="Admin ID" value={report.adminId} />
+          <Detail label="Report Reference" value={obfuscateId(report.id, "RPT")} />
+          <Detail
+            label="Team Reference"
+            value={report.teamName ?? obfuscateId(report.teamId, "TM")}
+          />
+          <Detail
+            label="Admin Reference"
+            value={report.adminName ?? obfuscateId(report.adminId, "ADM")}
+          />
           <Detail
             label="Submitted At"
             value={report.submittedAt ? formatDisplayDate(report.submittedAt) : "—"}

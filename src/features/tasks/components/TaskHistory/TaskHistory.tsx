@@ -6,6 +6,7 @@ import { LoadingState } from "@/components/ui/LoadingState";
 import { Pagination } from "@/components/ui/Pagination";
 import { useEffect } from "react";
 import { formatDisplayDate } from "@/utils/date";
+import { obfuscateId } from "@/utils/id-obfuscator";
 import { useTaskHistory } from "../../hooks/use-task-history";
 import { getTaskErrorView } from "../task-errors";
 import { TaskStatusBadge } from "../TaskStatusBadge";
@@ -27,7 +28,7 @@ export const TaskHistory = ({ taskId, refreshKey = 0 }: TaskHistoryProps) => {
     <section className={styles.section}>
       <div>
         <h2 className={styles.title}>Status History</h2>
-        <p className={styles.description}>Backend status history with actor IDs only.</p>
+        <p className={styles.description}>Backend status history and transitions.</p>
       </div>
       {loading && <LoadingState message="Loading Task history..." />}
       {error && !loading && (
@@ -51,8 +52,8 @@ export const TaskHistory = ({ taskId, refreshKey = 0 }: TaskHistoryProps) => {
                 <p>{entry.notes ?? "No notes provided."}</p>
                 <dl className={styles.meta}>
                   <div>
-                    <dt>Changed By ID</dt>
-                    <dd>{entry.changedById}</dd>
+                    <dt>Changed By</dt>
+                    <dd className={styles.mono}>{obfuscateId(entry.changedById, "USR")}</dd>
                   </div>
                   <div>
                     <dt>Changed At</dt>

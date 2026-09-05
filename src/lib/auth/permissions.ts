@@ -15,6 +15,7 @@ const NAV_ROLES: Record<string, UserRole[]> = {
   contacts: ["SUPER_ADMIN", "ADMIN"],
   workspace: ["SUPER_ADMIN", "ADMIN", "MEMBER"],
   settings: ["SUPER_ADMIN"],
+  todos: ["SUPER_ADMIN", "ADMIN"],
 };
 
 export const canSeeNavigationItem = (viewer: OperixViewer | null, itemId: string): boolean => {
@@ -46,7 +47,7 @@ export const canReassignTeamAdmin = (viewer: OperixViewer | null): boolean =>
   viewer?.role === "SUPER_ADMIN";
 
 export const canAssignMemberToTeam = (viewer: OperixViewer | null): boolean =>
-  viewer?.role === "SUPER_ADMIN";
+  viewer?.role === "SUPER_ADMIN" || viewer?.role === "ADMIN";
 
 export const canTransferMember = (viewer: OperixViewer | null): boolean =>
   viewer?.role === "SUPER_ADMIN";
@@ -76,4 +77,7 @@ export const canFilterTasksByTeam = (viewer: OperixViewer | null): boolean =>
   viewer?.role === "SUPER_ADMIN";
 
 export const canFilterTasksByAssignedMember = (viewer: OperixViewer | null): boolean =>
+  viewer?.role === "SUPER_ADMIN" || viewer?.role === "ADMIN";
+
+export const canViewAdminTodos = (viewer: OperixViewer | null): boolean =>
   viewer?.role === "SUPER_ADMIN" || viewer?.role === "ADMIN";

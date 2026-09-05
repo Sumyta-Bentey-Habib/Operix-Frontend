@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { formatDisplayDate } from "@/utils/date";
+import { obfuscateId } from "@/utils/id-obfuscator";
 import { formatActivityCode, getActivityActorName } from "../../utils/activity-display";
 import { resolveActivityTargetHref } from "../../utils/activity-target";
 import type { ActivityRecord } from "../../types/activity.types";
@@ -27,14 +28,14 @@ export const ActivityItem = ({ activity }: { activity: ActivityRecord }) => {
           <dd>{activity.entityType}</dd>
         </div>
         <div>
-          <dt>Entity ID</dt>
+          <dt>Entity Ref</dt>
           <dd>
             {href ? (
               <Link className={styles.link} href={href}>
-                {activity.entityId}
+                {obfuscateId(activity.entityId, activity.entityType.slice(0, 3))}
               </Link>
             ) : (
-              (activity.entityId ?? "—")
+              obfuscateId(activity.entityId, activity.entityType.slice(0, 3))
             )}
           </dd>
         </div>

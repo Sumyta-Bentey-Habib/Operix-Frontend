@@ -9,6 +9,7 @@ import {
   WeeklyDayProductivity,
   MonthlyProductivityPoint,
 } from "@/types/analytics";
+import { CSS_VARS } from "@/constants/colors";
 
 // 1. Task Status Distribution
 export const TASK_STATUS_DISTRIBUTION: StatusDistributionPoint[] = [
@@ -17,7 +18,7 @@ export const TASK_STATUS_DISTRIBUTION: StatusDistributionPoint[] = [
     label: "Completed Tasks",
     count: 1180,
     percentage: 83.1,
-    color: "#10b981", // Emerald
+    color: CSS_VARS.primaryEmerald,
   },
   {
     id: "in_progress",

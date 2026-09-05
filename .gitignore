@@ -47,3 +47,5 @@ contexts
 resource
 AGENT.md
 skills-lock.json
+
+.vercel

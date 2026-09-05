@@ -4,6 +4,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { Pagination } from "@/components/ui/Pagination";
 import { formatDisplayDate } from "@/utils/date";
+import { obfuscateId } from "@/utils/id-obfuscator";
 import { useTeams } from "../../hooks/use-teams";
 import type { Team } from "../../types/team.types";
 import styles from "./TeamPicker.module.css";
@@ -43,7 +44,7 @@ export const TeamPicker = ({ selectedTeamId, onSelect }: TeamPickerProps) => {
                 onClick={() => onSelect(team)}
               >
                 <span className={styles.name}>{team.name}</span>
-                <span className={styles.meta}>Admin ID {team.adminId}</span>
+                <span className={styles.meta}>Admin Ref: {obfuscateId(team.adminId, "ADM")}</span>
                 <span className={styles.meta}>Created {formatDisplayDate(team.createdAt)}</span>
               </button>
             );

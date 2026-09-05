@@ -9,6 +9,7 @@ import { Pagination } from "@/components/ui/Pagination";
 import { useAdmins } from "@/features/admins/hooks/use-admins";
 import { useTeams } from "@/features/teams/hooks/use-teams";
 import { formatDisplayDate } from "@/utils/date";
+import { obfuscateId } from "@/utils/id-obfuscator";
 import { useReports } from "../../hooks/use-reports";
 import {
   canCreateManagementReport,
@@ -39,9 +40,35 @@ const ReportAdminFilter = ({
   const admins = useAdmins();
 
   return (
-    <label className={styles.field}>
-      <span>Admin</span>
+    <div className={styles.field}>
+      <div className={styles.fieldHeader}>
+        <label htmlFor="admin-filter">Admin</label>
+        <div className={styles.compactPager}>
+          <span>
+            Page {admins.meta.page}/{admins.meta.totalPages || 1}
+          </span>
+          <button
+            type="button"
+            className={styles.compactPagerBtn}
+            disabled={admins.loading || admins.meta.page <= 1}
+            onClick={() => admins.setPage(admins.meta.page - 1)}
+            title="Previous Admins"
+          >
+            ‹
+          </button>
+          <button
+            type="button"
+            className={styles.compactPagerBtn}
+            disabled={admins.loading || admins.meta.page >= admins.meta.totalPages}
+            onClick={() => admins.setPage(admins.meta.page + 1)}
+            title="Next Admins"
+          >
+            ›
+          </button>
+        </div>
+      </div>
       <select
+        id="admin-filter"
         className={styles.select}
         value={value}
         onChange={(event) => onChange(event.target.value)}
@@ -53,29 +80,8 @@ const ReportAdminFilter = ({
           </option>
         ))}
       </select>
-      <span className={styles.hint}>
-        Admin page {admins.meta.page} of {admins.meta.totalPages}
-      </span>
-      <div className={styles.actions}>
-        <button
-          type="button"
-          className={styles.secondaryButton}
-          disabled={admins.loading || admins.meta.page <= 1}
-          onClick={() => admins.setPage(admins.meta.page - 1)}
-        >
-          Previous Admins
-        </button>
-        <button
-          type="button"
-          className={styles.secondaryButton}
-          disabled={admins.loading || admins.meta.page >= admins.meta.totalPages}
-          onClick={() => admins.setPage(admins.meta.page + 1)}
-        >
-          Next Admins
-        </button>
-      </div>
-      {admins.error && <span className={styles.error}>Unable to load Admin filter options.</span>}
-    </label>
+      {admins.error && <span className={styles.error}>Unable to load Admin options.</span>}
+    </div>
   );
 };
 
@@ -95,21 +101,28 @@ const ReportFilters = ({
   const teams = useTeams();
 
   return (
-    <section className={styles.card}>
-      <div className={styles.filters}>
-        <label className={styles.field}>
-          <span>Search report title</span>
+    <section className={styles.filterCard}>
+      <div className={styles.filterGrid}>
+        <div className={styles.field}>
+          <div className={styles.fieldHeader}>
+            <label htmlFor="report-search">Search Report Title</label>
+          </div>
           <input
+            id="report-search"
             className={styles.input}
             value={filters.q}
             maxLength={100}
             onChange={(event) => setFilters({ ...filters, q: event.target.value })}
-            placeholder="Search report title"
+            placeholder="Filter by report title..."
           />
-        </label>
-        <label className={styles.field}>
-          <span>Status</span>
+        </div>
+
+        <div className={styles.field}>
+          <div className={styles.fieldHeader}>
+            <label htmlFor="status-filter">Status</label>
+          </div>
           <select
+            id="status-filter"
             className={styles.select}
             value={filters.status}
             onChange={(event) =>
@@ -119,17 +132,44 @@ const ReportFilters = ({
               })
             }
           >
-            <option value="ALL">All statuses</option>
+            <option value="ALL">All Statuses</option>
             {REPORT_STATUSES.map((status) => (
               <option key={status} value={status}>
                 {status.replaceAll("_", " ")}
               </option>
             ))}
           </select>
-        </label>
-        <label className={styles.field}>
-          <span>Team</span>
+        </div>
+
+        <div className={styles.field}>
+          <div className={styles.fieldHeader}>
+            <label htmlFor="team-filter">Team</label>
+            <div className={styles.compactPager}>
+              <span>
+                Page {teams.meta.page}/{teams.meta.totalPages || 1}
+              </span>
+              <button
+                type="button"
+                className={styles.compactPagerBtn}
+                disabled={teams.loading || teams.meta.page <= 1}
+                onClick={() => teams.setPage(teams.meta.page - 1)}
+                title="Previous Teams"
+              >
+                ‹
+              </button>
+              <button
+                type="button"
+                className={styles.compactPagerBtn}
+                disabled={teams.loading || teams.meta.page >= teams.meta.totalPages}
+                onClick={() => teams.setPage(teams.meta.page + 1)}
+                title="Next Teams"
+              >
+                ›
+              </button>
+            </div>
+          </div>
           <select
+            id="team-filter"
             className={styles.select}
             value={filters.teamId}
             onChange={(event) => setFilters({ ...filters, teamId: event.target.value })}
@@ -141,46 +181,25 @@ const ReportFilters = ({
               </option>
             ))}
           </select>
-          <span className={styles.hint}>
-            Team page {teams.meta.page} of {teams.meta.totalPages}
-          </span>
-          <div className={styles.actions}>
-            <button
-              type="button"
-              className={styles.secondaryButton}
-              disabled={teams.loading || teams.meta.page <= 1}
-              onClick={() => teams.setPage(teams.meta.page - 1)}
-            >
-              Previous Teams
-            </button>
-            <button
-              type="button"
-              className={styles.secondaryButton}
-              disabled={teams.loading || teams.meta.page >= teams.meta.totalPages}
-              onClick={() => teams.setPage(teams.meta.page + 1)}
-            >
-              Next Teams
-            </button>
-          </div>
-          {teams.error && <span className={styles.error}>Unable to load Team filter options.</span>}
-        </label>
+          {teams.error && <span className={styles.error}>Unable to load Team options.</span>}
+        </div>
+
         {showAdminFilter && (
           <ReportAdminFilter
             value={filters.adminId}
             onChange={(adminId) => setFilters({ ...filters, adminId })}
           />
         )}
-        <button type="button" className={styles.primaryButton} onClick={onApply}>
-          Apply
-        </button>
+      </div>
+
+      <div className={styles.filterActionsRow}>
         <button type="button" className={styles.secondaryButton} onClick={onReset}>
-          Reset
+          Reset Filters
+        </button>
+        <button type="button" className={styles.primaryButton} onClick={onApply}>
+          Apply Filters
         </button>
       </div>
-      <p className={styles.hint}>
-        Team and Admin filters use paginated picker data as conveniences. Report visibility remains
-        backend-authoritative.
-      </p>
     </section>
   );
 };
@@ -206,15 +225,15 @@ export const ReportsPageContent = () => {
     <section className={styles.section}>
       <header className={styles.hero}>
         <div>
-          <p className={styles.eyebrow}>Management Reports</p>
-          <h1>Reports</h1>
+          <p className={styles.eyebrow}>OPERATIONAL GOVERNANCE & ANALYTICS</p>
+          <h1>Management Reports</h1>
           <p className={styles.description}>
             Create, submit, and review Admin-authored operational reports using live backend data.
           </p>
         </div>
         {canCreateManagementReport(viewer) && (
           <Link className={styles.primaryButton} href="/reports/new">
-            Create Draft
+            + Create Draft
           </Link>
         )}
       </header>
@@ -244,8 +263,8 @@ export const ReportsPageContent = () => {
                     <th>Title</th>
                     <th>Period</th>
                     <th>Status</th>
-                    <th>Team ID</th>
-                    <th>Admin ID</th>
+                    <th>Team Reference</th>
+                    <th>Admin Reference</th>
                     <th>Latest Version</th>
                     <th>Last Updated</th>
                     <th>Actions</th>
@@ -254,13 +273,15 @@ export const ReportsPageContent = () => {
                 <tbody>
                   {reports.map((report) => (
                     <tr key={report.id}>
-                      <td>{report.title}</td>
+                      <td>
+                        <strong>{report.title}</strong>
+                      </td>
                       <td>{formatReportPeriod(report.periodStart, report.periodEnd)}</td>
                       <td>
                         <ReportStatusBadge status={report.status} />
                       </td>
-                      <td>{report.teamId}</td>
-                      <td>{report.adminId}</td>
+                      <td>{report.teamName ?? obfuscateId(report.teamId, "TM")}</td>
+                      <td>{report.adminName ?? obfuscateId(report.adminId, "ADM")}</td>
                       <td>
                         {report.latestSubmittedVersion
                           ? `V${report.latestSubmittedVersion.version}`
@@ -269,7 +290,7 @@ export const ReportsPageContent = () => {
                       <td>{formatDisplayDate(report.updatedAt)}</td>
                       <td>
                         <Link className={styles.link} href={`/reports/${report.id}`}>
-                          View
+                          View Details →
                         </Link>
                       </td>
                     </tr>

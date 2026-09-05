@@ -1,0 +1,319 @@
+.calendarWrapper {
+  display: flex;
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  box-shadow: var(--dropdown-shadow);
+  overflow: hidden;
+  user-select: none;
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  max-width: 100%;
+}
+
+.presetsPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 12px;
+  background: var(--bg-card-subtle);
+  border-right: 1px solid var(--border-subtle);
+  min-width: 140px;
+}
+
+.presetTitle {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  padding: 4px 8px 8px;
+  margin: 0;
+}
+
+.presetButton {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 7px 10px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.presetButton:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.presetButtonActive {
+  background: var(--primary-emerald-light);
+  color: var(--primary-emerald);
+  font-weight: 700;
+}
+
+.calendarBody {
+  padding: 16px 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 290px;
+}
+
+.calendarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.headerTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.headerMonthYear {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.todayBadgeBtn {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--primary-emerald);
+  background: var(--primary-emerald-light);
+  border: 1px solid var(--primary-emerald-muted);
+  border-radius: 6px;
+  padding: 2px 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.todayBadgeBtn:hover {
+  background: var(--primary-emerald);
+  color: var(--text-inverse);
+}
+
+.navButtons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.navBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.navBtn:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+}
+
+.weekdaysGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  text-align: center;
+}
+
+.weekdayLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding-bottom: 4px;
+}
+
+.daysGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  row-gap: 4px;
+  column-gap: 0;
+}
+
+.dayCellWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+}
+
+.dayCell {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dayCell:hover:not(.dayDisabled) {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.dayOtherMonth {
+  color: var(--text-muted);
+  opacity: 0.45;
+}
+
+.dayToday {
+  font-weight: 800;
+  border: 1.5px solid var(--primary-emerald);
+}
+
+.daySelected {
+  background: var(--primary-emerald) !important;
+  color: var(--text-on-primary) !important;
+  font-weight: 700;
+  box-shadow: 0 2px 8px var(--primary-emerald-glow);
+}
+
+.dayDisabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.rangeTrack {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  background: var(--primary-emerald-muted);
+  opacity: 0.4;
+}
+
+.rangeTrackStart {
+  left: 50%;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.rangeTrackEnd {
+  right: 50%;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.rangeTrackMiddle {
+  left: 0;
+  right: 0;
+}
+
+.calendarFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+  gap: 8px;
+}
+
+.selectedRangeSummary {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.footerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.clearBtn {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.clearBtn:hover {
+  color: var(--text-primary);
+  background: var(--bg-card-hover);
+}
+
+.applyBtn {
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-inverse);
+  background: var(--primary-emerald);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.applyBtn:hover {
+  background: var(--primary-emerald-hover);
+}
+
+@media (max-width: 640px) {
+  .calendarWrapper {
+    flex-direction: column;
+  }
+
+  .presetsPanel {
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-right: none;
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 10px 14px;
+  }
+
+  .presetTitle {
+    display: none;
+  }
+
+  .presetButton {
+    width: auto;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+  }
+
+  .calendarBody {
+    padding: 14px;
+    min-width: unset;
+  }
+}

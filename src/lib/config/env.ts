@@ -21,4 +21,4 @@ export const parseApiBaseUrl = (value: string | undefined): string => {
   return value;
 };
 
-export const API_BASE_URL = parseApiBaseUrl(process.env.NEXT_PUBLIC_API_BASE_URL);
+export const getApiBaseUrl = (): string => parseApiBaseUrl(process.env.NEXT_PUBLIC_API_BASE_URL);

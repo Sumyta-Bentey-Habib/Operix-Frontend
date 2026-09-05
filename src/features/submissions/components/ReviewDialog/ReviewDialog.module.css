@@ -1,70 +1,125 @@
 .form {
   display: grid;
-  gap: 12px;
+  gap: 14px;
 }
 
 .fieldset {
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border: 1px solid var(--border-default);
+  border-radius: 14px;
   display: grid;
-  gap: 8px;
-  padding: 12px;
+  gap: 10px;
+  padding: 14px;
+  background: var(--bg-card-subtle);
 }
 
 .fieldset legend,
 .label {
   color: var(--text-primary);
-  font-weight: 900;
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 0 4px;
 }
 
 .fieldset label {
   align-items: center;
   color: var(--text-primary);
   display: flex;
-  gap: 8px;
+  gap: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 36px;
 }
 
 .form textarea {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--bg-input);
+  border: 1px solid var(--border-default);
   border-radius: 12px;
   color: var(--text-primary);
-  padding: 10px;
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 12px 14px;
+  min-height: 100px;
   resize: vertical;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.form textarea:focus {
+  border-color: var(--primary-emerald);
+  box-shadow: 0 0 0 3px var(--primary-emerald-glow);
 }
 
 .error {
-  color: var(--destructive);
-  font-weight: 800;
+  color: var(--badge-negative-text);
+  font-size: 0.84rem;
+  font-weight: 600;
 }
 
 .actions {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   justify-content: flex-end;
+  margin-top: 8px;
 }
 
 .primaryButton,
 .secondaryButton {
-  border: 0;
+  border: 1px solid transparent;
   border-radius: 12px;
   cursor: pointer;
-  font-weight: 800;
-  padding: 9px 12px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  padding: 11px 20px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
 }
 
 .primaryButton {
   background: var(--primary-emerald);
   color: var(--text-inverse);
+  box-shadow: 0 2px 8px var(--primary-emerald-glow);
+}
+
+.primaryButton:hover:not(:disabled) {
+  background: var(--primary-emerald-hover);
+  transform: translateY(-1px);
 }
 
 .secondaryButton {
-  background: var(--surface);
+  background: var(--bg-card-subtle);
+  border-color: var(--border-default);
   color: var(--text-primary);
+}
+
+.secondaryButton:hover:not(:disabled) {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+}
+
+.primaryButton:focus-visible,
+.secondaryButton:focus-visible {
+  outline: 2px solid var(--primary-emerald);
+  outline-offset: 2px;
 }
 
 .primaryButton:disabled,
 .secondaryButton:disabled {
   cursor: not-allowed;
-  opacity: 0.65;
+  opacity: 0.6;
+}
+
+@media (max-width: 480px) {
+  .actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
 }

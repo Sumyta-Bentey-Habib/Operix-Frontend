@@ -1,14 +1,18 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import styles from "./ReportsHeader.module.css";
-import { CalendarIcon, ChevronDownIcon, ExportIcon } from "@/components/icons";
+import { ExportIcon } from "@/components/icons";
+import { DatePicker } from "@/components/ui/DatePicker";
 import { APP_STRINGS } from "@/constants/strings";
+import type { DateRange } from "@/utils/calendar";
 
 export interface ReportsHeaderProps {
   title?: string;
   dateFilterLabel?: string;
   className?: string;
+  dateRange?: DateRange;
+  onDateRangeChange?: (range: DateRange) => void;
   onDateFilterClick?: () => void;
   onExportClick?: () => void;
 }
@@ -17,9 +21,22 @@ export const ReportsHeader: React.FC<ReportsHeaderProps> = ({
   title = APP_STRINGS.headers.reports,
   dateFilterLabel = APP_STRINGS.actions.last6Months,
   className,
-  onDateFilterClick,
+  dateRange: controlledDateRange,
+  onDateRangeChange,
   onExportClick,
 }) => {
+  const [internalRange, setInternalRange] = useState<DateRange>({
+    startDate: "2026-03-01",
+    endDate: "2026-08-29",
+  });
+
+  const activeRange = controlledDateRange || internalRange;
+
+  const handleRangeChange = (range: DateRange) => {
+    setInternalRange(range);
+    onDateRangeChange?.(range);
+  };
+
   const containerClassName = className
     ? `${styles.headerContainer} ${className}`
     : styles.headerContainer;
@@ -29,20 +46,13 @@ export const ReportsHeader: React.FC<ReportsHeaderProps> = ({
       <h1 className={styles.title}>{title}</h1>
 
       <div className={styles.actionGroup}>
-        <button
-          type="button"
-          className={styles.dateFilterButton}
-          aria-label={APP_STRINGS.ariaLabels.dateRangeSelector}
-          onClick={onDateFilterClick}
-        >
-          <span className={styles.calendarIcon}>
-            <CalendarIcon size={16} />
-          </span>
-          <span>{dateFilterLabel}</span>
-          <span className={styles.chevronIcon}>
-            <ChevronDownIcon size={14} />
-          </span>
-        </button>
+        <DatePicker
+          mode="range"
+          range={activeRange}
+          onChangeRange={handleRangeChange}
+          placeholder={dateFilterLabel}
+          ariaLabel={APP_STRINGS.ariaLabels.dateRangeSelector}
+        />
 
         <button
           type="button"

@@ -1,6 +1,12 @@
 export const APP_STRINGS = {
   appName: "Operix",
   appDescription: "Super Admin Financial & Operations Dashboard",
+  dashboardTitles: {
+    superAdmin: "Operix - Super Admin Dashboard",
+    admin: "Operix - Admin Dashboard",
+    member: "Operix - Member Dashboard",
+    default: "Operix - Dashboard",
+  },
   welcomePrefix: "Welcome Back,",
   actions: {
     addNewWallet: "Add New Wallet",
@@ -56,6 +62,13 @@ export const APP_STRINGS = {
     revenue: "Revenue",
     expenses: "Expenses",
   },
+  navigation: {
+    people: "People",
+    operations: "Operations",
+    overview: "Overview",
+    management: "People & Teams",
+    tools: "Operations & Tools",
+  },
   ariaLabels: {
     userProfile: "User Profile Menu",
     notifications: "View notifications",
@@ -72,6 +85,8 @@ export const APP_STRINGS = {
     addMandatoryPayee: "Add new mandatory payee",
     mainNavigation: "Main navigation sidebar",
     topNavigation: "Top navigation tabs",
+    peopleDropdown: "People management menu",
+    operationsDropdown: "Operations menu",
     downloadReport: "Download report document",
     reportOptions: "Report item options",
   },

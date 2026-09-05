@@ -76,7 +76,7 @@ export default function EditReportPage() {
                   <p className={styles.eyebrow}>Management Reports</p>
                   <h1>Edit Report</h1>
                   <p className={styles.description}>
-                    Team ID is historical report data and cannot be changed after creation.
+                    Team Reference is historical report data and cannot be changed after creation.
                   </p>
                 </div>
               </header>

@@ -1,9 +1,11 @@
 .item {
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-default);
   border-radius: 14px;
   display: grid;
   gap: 10px;
   padding: 14px;
+  background: var(--bg-card);
+  transition: all 0.2s ease;
 }
 
 .unread {
@@ -20,8 +22,8 @@
 
 .title {
   color: var(--text-primary);
-  font-size: 0.95rem;
-  font-weight: 900;
+  font-size: 0.92rem;
+  font-weight: 700;
 }
 
 .body,
@@ -37,7 +39,7 @@
   border-radius: 999px;
   color: var(--text-secondary);
   font-size: 0.68rem;
-  font-weight: 800;
+  font-weight: 700;
   padding: 4px 8px;
   white-space: nowrap;
 }
@@ -53,15 +55,33 @@
   border: 1px solid var(--border-default);
   border-radius: 10px;
   color: var(--text-primary);
-  font-size: 0.78rem;
-  font-weight: 800;
-  padding: 7px 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 7px 12px;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
+  transition: all 0.2s ease;
 }
 
 .button {
-  background: var(--bg-surface);
+  background: var(--bg-card-subtle);
   cursor: pointer;
+}
+
+.button:hover:not(:disabled),
+.link:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--primary-emerald);
+  color: var(--primary-emerald);
+}
+
+.button:focus-visible,
+.link:focus-visible {
+  outline: 2px solid var(--primary-emerald);
+  outline-offset: 2px;
 }
 
 .button:disabled {

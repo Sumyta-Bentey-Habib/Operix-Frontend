@@ -4,6 +4,7 @@ import React, { ReactNode } from "react";
 import styles from "./DashboardShell.module.css";
 import { TopNavbar } from "../TopNavbar";
 import { DashboardHeader } from "../DashboardHeader";
+import { useDynamicDocumentTitle } from "@/hooks/useDynamicDocumentTitle";
 
 export interface DashboardShellProps {
   children: ReactNode;
@@ -11,6 +12,8 @@ export interface DashboardShellProps {
   className?: string;
   onTabChange?: (tabId: string) => void;
   header?: ReactNode;
+  hideHeader?: boolean;
+  title?: string;
 }
 
 export const DashboardShell: React.FC<DashboardShellProps> = ({
@@ -19,8 +22,16 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
   className,
   onTabChange,
   header,
+  hideHeader = false,
+  title,
 }) => {
+  useDynamicDocumentTitle({ activeTab, title });
   const canvasClassName = className ? `${styles.canvas} ${className}` : styles.canvas;
+
+  const renderHeader = () => {
+    if (hideHeader || header === null) return null;
+    return header ?? <DashboardHeader />;
+  };
 
   return (
     <div className={canvasClassName}>
@@ -28,7 +39,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
         <TopNavbar activeTabId={activeTab} onTabChange={onTabChange} />
         <div className={styles.bodyLayout}>
           <main className={styles.mainContent}>
-            {header ?? <DashboardHeader />}
+            {renderHeader()}
             {children}
           </main>
         </div>

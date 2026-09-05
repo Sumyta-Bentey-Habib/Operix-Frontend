@@ -55,6 +55,8 @@
 .tableWrapper {
   width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
 }
 
 .table {
@@ -78,7 +80,7 @@
 }
 
 .tr:hover {
-  background-color: var(--bg-card-hover);
+  background-color: var(--table-row-hover);
 }
 
 .td {
@@ -131,7 +133,7 @@
   align-items: center;
   gap: 0.25rem;
   font-weight: 700;
-  color: #f59e0b;
+  color: var(--badge-pending-text);
 }
 
 .rankBadge {
@@ -149,5 +151,5 @@
 .topBadge {
   background-color: var(--primary-emerald-light);
   color: var(--primary-emerald);
-  border-color: rgba(16, 185, 129, 0.3);
+  border-color: rgba(239, 68, 68, 0.3);
 }

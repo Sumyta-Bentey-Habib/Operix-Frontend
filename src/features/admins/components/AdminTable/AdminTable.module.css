@@ -1,5 +1,7 @@
 .tableWrapper {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
   border: 1px solid var(--border-default);
   border-radius: 18px;
   background: var(--bg-card);
@@ -15,22 +17,31 @@
 .table th,
 .table td {
   border-bottom: 1px solid var(--border-subtle);
-  padding: 15px 18px;
+  padding: 14px 18px;
   text-align: left;
   vertical-align: middle;
 }
 
 .table th {
-  color: var(--text-secondary);
-  font-size: 0.76rem;
-  font-weight: 800;
-  letter-spacing: 0.02em;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
+  background: var(--bg-card);
 }
 
 .table td {
   color: var(--text-primary);
-  font-size: 0.88rem;
+  font-size: 0.875rem;
+}
+
+.table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.table tbody tr:hover {
+  background-color: var(--table-row-hover);
 }
 
 .table tr:last-child td {
@@ -53,13 +64,24 @@
   background: var(--bg-card-subtle);
   color: var(--text-primary);
   cursor: pointer;
-  font-size: 0.78rem;
-  font-weight: 800;
-  padding: 8px 10px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  padding: 8px 12px;
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
+  transition: all 0.2s ease;
 }
 
 .button:hover {
   border-color: var(--primary-emerald);
   color: var(--primary-emerald);
+  background: var(--primary-emerald-light);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--primary-emerald);
+  outline-offset: 2px;
 }

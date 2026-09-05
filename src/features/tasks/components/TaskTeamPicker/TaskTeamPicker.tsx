@@ -6,6 +6,7 @@ import { LoadingState } from "@/components/ui/LoadingState";
 import { Pagination } from "@/components/ui/Pagination";
 import { useTeams } from "@/features/teams/hooks/use-teams";
 import type { Team } from "@/features/teams/types/team.types";
+import { obfuscateId } from "@/utils/id-obfuscator";
 import styles from "./TaskTeamPicker.module.css";
 
 export interface TaskTeamPickerProps {
@@ -53,7 +54,7 @@ export const TaskTeamPicker = ({
                 onClick={() => onSelect(team)}
               >
                 <strong>{team.name}</strong>
-                <span>Admin ID: {team.adminId}</span>
+                <span>Admin Handle: {obfuscateId(team.adminId, "ADM")}</span>
               </button>
             ))}
           </div>

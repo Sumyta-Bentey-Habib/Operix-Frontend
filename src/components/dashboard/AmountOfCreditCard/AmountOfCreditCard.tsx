@@ -5,6 +5,7 @@ import styles from "./AmountOfCreditCard.module.css";
 import { CreditCardIcon } from "@/components/icons";
 import { AMOUNT_OF_CREDIT_DATA } from "@/data/dashboardData";
 import { APP_STRINGS } from "@/constants/strings";
+import { CSS_VARS } from "@/constants/colors";
 import type { MetricCardData } from "@/types/dashboard";
 
 export interface AmountOfCreditCardProps {
@@ -26,7 +27,7 @@ export const AmountOfCreditCard: React.FC<AmountOfCreditCardProps> = ({
     <section className={cardClassName} aria-label={APP_STRINGS.headers.amountOfCredit}>
       <div className={styles.header}>
         <div className={styles.iconWrapper} aria-hidden="true">
-          <CreditCardIcon size={16} color="#059669" />
+          <CreditCardIcon size={16} color={CSS_VARS.primaryEmerald} />
         </div>
         <span className={styles.label}>{data.label}</span>
       </div>

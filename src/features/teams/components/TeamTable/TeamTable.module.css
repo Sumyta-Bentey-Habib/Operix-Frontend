@@ -1,8 +1,11 @@
 .tableWrap {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
   border: 1px solid var(--border-default);
   border-radius: 18px;
   background: var(--bg-card);
+  box-shadow: var(--card-shadow);
 }
 
 .table {
@@ -21,12 +24,20 @@
 }
 
 .table th {
-  background: var(--bg-card-subtle);
-  color: var(--text-secondary);
-  font-size: 0.78rem;
-  font-weight: 900;
-  letter-spacing: 0.04em;
+  background: var(--bg-card);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+
+.table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.table tbody tr:hover {
+  background-color: var(--table-row-hover);
 }
 
 .table tr:last-child td {
@@ -47,17 +58,28 @@
 .button {
   border: 1px solid var(--border-default);
   border-radius: 10px;
-  background: var(--bg-card);
+  background: var(--bg-card-subtle);
   color: var(--text-primary);
   cursor: pointer;
   font: inherit;
-  font-size: 0.82rem;
-  font-weight: 800;
-  padding: 8px 10px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  padding: 8px 12px;
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
+  transition: all 0.2s ease;
 }
 
 .button:hover {
   border-color: var(--primary-emerald);
   color: var(--primary-emerald);
+  background: var(--primary-emerald-light);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--primary-emerald);
+  outline-offset: 2px;
 }

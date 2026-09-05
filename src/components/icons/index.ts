@@ -20,12 +20,15 @@ export * from "./HistoryIcon";
 export * from "./ContactsIcon";
 export * from "./SettingsIcon";
 export * from "./LogoutIcon";
+export * from "./TodoIcon";
 
 // Action & UI Icons
 export * from "./SearchIcon";
 export * from "./BellIcon";
 export * from "./CalendarIcon";
 export * from "./ChevronDownIcon";
+export * from "./ChevronLeftIcon";
+export * from "./ChevronRightIcon";
 export * from "./PlusIcon";
 export * from "./SendIcon";
 export * from "./ReceiveIcon";
@@ -51,6 +54,7 @@ export * from "./CheckCircleIcon";
 export * from "./SparklesIcon";
 export * from "./SunIcon";
 export * from "./MoonIcon";
+export * from "./CopyIcon";
 
 // Chart Elements
 export * from "./SparklineSvg";

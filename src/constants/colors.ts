@@ -8,42 +8,51 @@ export const THEME_COLORS = {
   light: {
     // Canvas & Surface Backgrounds
     bgCanvas: "#f4f5f9",
+    bgSurface: "#ffffff",
     bgCard: "#ffffff",
     bgCardSubtle: "#f9fafb",
     bgCardHover: "#f3f4f6",
     bgDropdown: "#ffffff",
     bgInput: "#ffffff",
+    bgMuted: "#f3f4f6",
+    bgPage: "#f4f5f9",
 
     // Typography Colors
     textPrimary: "#111827",
     textSecondary: "#4b5563",
     textMuted: "#9ca3af",
     textInverse: "#ffffff",
+    textOnPrimary: "#ffffff",
 
     // Borders & Dividers
     borderSubtle: "#edf0f5",
     borderDefault: "#e5e7eb",
     borderHover: "#d1d5db",
 
-    // Primary Emerald Brand Accent
-    primaryEmerald: "#059669",
-    primaryEmeraldHover: "#047857",
-    primaryEmeraldLight: "#e6f7f0",
-    primaryEmeraldDark: "#065f46",
-    primaryEmeraldMuted: "#d1fae5",
+    // Primary Red Brand Accent (Operix)
+    primaryEmerald: "#dc2626",
+    primaryEmeraldHover: "#b91c1c",
+    primaryEmeraldLight: "#fef2f2",
+    primaryEmeraldDark: "#991b1b",
+    primaryEmeraldMuted: "#fee2e2",
+    primaryEmeraldGlow: "rgba(220, 38, 38, 0.25)",
 
     // Status Badges & Alerts
-    positiveBg: "#e6f7f0",
-    positiveText: "#059669",
+    positiveBg: "#fef2f2",
+    positiveText: "#dc2626",
     negativeBg: "#fef2f2",
     negativeText: "#dc2626",
     pendingBg: "#fef3c7",
     pendingText: "#d97706",
+    destructive: "#dc2626",
+    warningBg: "#fef3c7",
+    warningText: "#d97706",
 
     // Cards & Elements
     cardShadow: "0 2px 10px rgba(0, 0, 0, 0.03)",
     cardHoverShadow: "0 4px 16px rgba(0, 0, 0, 0.05)",
     dropdownShadow: "0 10px 25px rgba(0, 0, 0, 0.1)",
+    shadowSm: "0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03)",
     gridLineColor: "#f3f4f6",
     tableRowHover: "#fcfdfe",
     scrollbarThumb: "#d1d5db",
@@ -52,42 +61,51 @@ export const THEME_COLORS = {
   dark: {
     // Canvas & Surface Backgrounds
     bgCanvas: "#0b0f17",
+    bgSurface: "#131b2e",
     bgCard: "#131b2e",
     bgCardSubtle: "#1a233a",
     bgCardHover: "#1e2942",
     bgDropdown: "#131b2e",
     bgInput: "#1a233a",
+    bgMuted: "#1e2942",
+    bgPage: "#0b0f17",
 
     // Typography Colors
     textPrimary: "#f1f5f9",
     textSecondary: "#94a3b8",
     textMuted: "#64748b",
     textInverse: "#0b0f17",
+    textOnPrimary: "#ffffff",
 
     // Borders & Dividers
     borderSubtle: "#1e293b",
     borderDefault: "#2a374f",
     borderHover: "#3b4b66",
 
-    // Primary Emerald Brand Accent
-    primaryEmerald: "#10b981",
-    primaryEmeraldHover: "#059669",
-    primaryEmeraldLight: "rgba(16, 185, 129, 0.15)",
-    primaryEmeraldDark: "#047857",
-    primaryEmeraldMuted: "rgba(16, 185, 129, 0.2)",
+    // Primary Red Brand Accent (Operix)
+    primaryEmerald: "#ef4444",
+    primaryEmeraldHover: "#dc2626",
+    primaryEmeraldLight: "rgba(239, 68, 68, 0.15)",
+    primaryEmeraldDark: "#b91c1c",
+    primaryEmeraldMuted: "rgba(239, 68, 68, 0.2)",
+    primaryEmeraldGlow: "rgba(239, 68, 68, 0.35)",
 
     // Status Badges & Alerts
-    positiveBg: "rgba(16, 185, 129, 0.15)",
-    positiveText: "#34d399",
+    positiveBg: "rgba(239, 68, 68, 0.15)",
+    positiveText: "#fca5a5",
     negativeBg: "rgba(239, 68, 68, 0.15)",
     negativeText: "#f87171",
     pendingBg: "rgba(245, 158, 11, 0.15)",
     pendingText: "#fbbf24",
+    destructive: "#f87171",
+    warningBg: "rgba(245, 158, 11, 0.15)",
+    warningText: "#fbbf24",
 
     // Cards & Elements
     cardShadow: "0 4px 20px rgba(0, 0, 0, 0.45)",
     cardHoverShadow: "0 8px 24px rgba(0, 0, 0, 0.6)",
     dropdownShadow: "0 12px 32px rgba(0, 0, 0, 0.65)",
+    shadowSm: "0 2px 8px rgba(0, 0, 0, 0.35)",
     gridLineColor: "#1e293b",
     tableRowHover: "rgba(255, 255, 255, 0.03)",
     scrollbarThumb: "#334155",
@@ -107,12 +125,15 @@ export const CSS_VARS = {
   bgCardHover: "var(--bg-card-hover)",
   bgDropdown: "var(--bg-dropdown)",
   bgInput: "var(--bg-input)",
+  bgMuted: "var(--bg-muted)",
+  bgPage: "var(--bg-page)",
 
   // Text
   textPrimary: "var(--text-primary)",
   textSecondary: "var(--text-secondary)",
   textMuted: "var(--text-muted)",
   textInverse: "var(--text-inverse)",
+  textOnPrimary: "var(--text-on-primary)",
 
   // Borders
   borderSubtle: "var(--border-subtle)",
@@ -134,11 +155,15 @@ export const CSS_VARS = {
   negativeText: "var(--badge-negative-text)",
   pendingBg: "var(--badge-pending-bg)",
   pendingText: "var(--badge-pending-text)",
+  destructive: "var(--destructive)",
+  warningBg: "var(--warning-bg)",
+  warningText: "var(--warning-text)",
 
   // Shadows & Effects
   cardShadow: "var(--card-shadow)",
   cardHoverShadow: "var(--card-hover-shadow)",
   dropdownShadow: "var(--dropdown-shadow)",
+  shadowSm: "var(--shadow-sm)",
   gridLineColor: "var(--grid-line-color)",
   tableRowHover: "var(--table-row-hover)",
   scrollbarThumb: "var(--scrollbar-thumb)",
@@ -148,3 +173,55 @@ export const CSS_VARS = {
 export type ThemeMode = "light" | "dark";
 export type ThemeColors = typeof THEME_COLORS.light;
 export type CssVars = typeof CSS_VARS;
+
+/**
+ * Standardized status colors for dashboard charts and metrics
+ */
+export const DASHBOARD_STATUS_COLORS: Record<string, string> = {
+  PENDING: "#9CA3AF",
+  ASSIGNED: "#6366F1",
+  IN_PROGRESS: "#3B82F6",
+  SUBMITTED: "#06B6D4",
+  UNDER_REVIEW: "#8B5CF6",
+  COMPLETED: "#10B981",
+  REVISION_REQUIRED: "#F59E0B",
+  RESUBMITTED: "#EC4899",
+  CANCELLED: "#EF4444",
+  DRAFT: "#9CA3AF",
+  APPROVED: "#10B981",
+  REJECTED: "#EF4444",
+};
+
+/**
+ * Standardized priority colors for task breakdown charts
+ */
+export const DASHBOARD_PRIORITY_COLORS: Record<string, string> = {
+  URGENT: "#EF4444",
+  HIGH: "#F59E0B",
+  MEDIUM: "#3B82F6",
+  LOW: "#10B981",
+};
+
+/**
+ * Role-Based Dashboard Theme Configurations
+ */
+export const ROLE_DASHBOARD_THEMES = {
+  SUPER_ADMIN: {
+    name: "Executive Analytics Theme",
+    badge: "Super Admin / Chief",
+    accentColor: "#6366F1",
+    themeClass: "super-admin-theme",
+  },
+  ADMIN: {
+    name: "Management Control Theme",
+    badge: "Admin",
+    accentColor: "#0284C7",
+    themeClass: "admin-theme",
+  },
+  MEMBER: {
+    name: "Personal Workspace Theme",
+    badge: "Member / Staff",
+    accentColor: "#10B981",
+    themeClass: "member-theme",
+  },
+} as const;
