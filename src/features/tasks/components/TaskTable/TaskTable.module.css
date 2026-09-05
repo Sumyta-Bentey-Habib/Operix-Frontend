@@ -54,6 +54,14 @@
   max-width: 260px;
 }
 
+.taskTitle {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  line-height: 1.4;
+}
+
 .mono {
   color: var(--text-secondary);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -71,13 +79,15 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: rgba(239, 68, 68, 0.12);
-  color: var(--destructive);
+  background: var(--negative-bg);
+  color: var(--negative-text);
   font-weight: 800;
   font-size: 0.72rem;
   padding: 3px 8px;
-  border-radius: 999px;
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 9999px;
+  border: 1px solid var(--destructive);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .notOverdue {
@@ -126,4 +136,131 @@
 .button:focus-visible {
   outline: 2px solid var(--primary-emerald);
   outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Mobile Responsive Transformation (<= 768px)
+   Transforms the wide <table> into a sleek, accessible card list on mobile.
+   ========================================================================== */
+@media (max-width: 768px) {
+  .tableWrap {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  .table {
+    display: block;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .thead {
+    display: none;
+  }
+
+  .tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+  }
+
+  .row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: var(--card-shadow);
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+  }
+
+  .row:hover {
+    border-color: var(--border-hover);
+    box-shadow: var(--card-hover-shadow);
+    background-color: var(--bg-card);
+  }
+
+  .table td {
+    border: none;
+    padding: 0;
+    width: 100%;
+  }
+
+  .teamCell::before,
+  .dueCell::before,
+  .createdCell::before {
+    content: attr(data-label);
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-right: 8px;
+    min-width: 54px;
+    display: inline-block;
+  }
+
+  /* Reference in top row */
+  .refCell {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2px;
+  }
+
+  .taskTitleCell {
+    max-width: 100%;
+    font-size: 1.05rem;
+    line-height: 1.35;
+    padding-bottom: 4px !important;
+  }
+
+  .taskTitle {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--text-primary);
+  }
+
+  .priorityCell,
+  .statusCell {
+    display: flex;
+    align-items: center;
+  }
+
+  .teamCell,
+  .dueCell,
+  .overdueCell,
+  .createdCell {
+    display: flex;
+    align-items: center;
+    font-size: 0.8125rem;
+  }
+
+  /* Actions at bottom of mobile card */
+  .actionsCell {
+    padding-top: 12px !important;
+    border-top: 1px solid var(--border-subtle) !important;
+    margin-top: 4px;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .actions .button {
+    flex: 1;
+    min-height: 44px;
+    font-size: 0.875rem;
+    border-radius: 10px;
+  }
 }
