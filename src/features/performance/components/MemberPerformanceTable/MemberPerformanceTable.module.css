@@ -1,0 +1,332 @@
+/* ==========================================================================
+   Member Performance Table - Desktop & Mobile Responsive Card Layout
+   ========================================================================== */
+
+.tableWrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  border: 1px solid var(--border-default);
+  border-radius: 18px;
+  background: var(--bg-card);
+  box-shadow: var(--card-shadow);
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 980px;
+}
+
+.thead th {
+  padding: 14px 16px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-subtle);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.tbody tr:hover {
+  background-color: var(--table-row-hover);
+}
+
+.tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  box-sizing: border-box;
+}
+
+.numCell {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.memberCell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #ffffff;
+  background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.avatarAlt {
+  background: linear-gradient(135deg, #0ea5e9 0%, #10b981 100%);
+}
+
+.avatarWarm {
+  background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+}
+
+.avatarPurple {
+  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+}
+
+.memberInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.memberName {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.memberMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.idBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-default);
+  font-size: 0.72rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.noIdBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: transparent;
+  border: 1px dashed var(--border-default);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.teamBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-default);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.teamBadgeUnassigned {
+  border-style: dashed;
+  color: var(--text-muted);
+  background: transparent;
+}
+
+.desktopActionLink {
+  color: var(--primary-emerald);
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color 0.15s ease;
+}
+
+.desktopActionLink:hover {
+  text-decoration: underline;
+  color: var(--primary-emerald-hover);
+}
+
+/* Hidden elements on desktop */
+.mobileCardHeader,
+.mobileTeamRow,
+.mobileMetricsGrid,
+.mobileActions {
+  display: none;
+}
+
+/* ==========================================================================
+   Mobile Responsive Transformation (<= 768px)
+   Converts wide 11-column table into modern, readable performance cards.
+   ========================================================================== */
+@media (max-width: 768px) {
+  .tableWrap {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  .table {
+    display: block;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .thead {
+    display: none;
+  }
+
+  .tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+  }
+
+  .row {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: var(--card-shadow);
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+  }
+
+  .row:hover {
+    border-color: var(--border-hover);
+    box-shadow: var(--card-hover-shadow);
+  }
+
+  /* Hide raw desktop table cells on mobile */
+  .desktopCell {
+    display: none;
+  }
+
+  /* Show mobile card layout sections */
+  .mobileCardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .mobileTeamRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .mobileTeamLabel {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+  }
+
+  /* 2-Column Responsive KPI Grid for Mobile Card */
+  .mobileMetricsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 14px;
+    background: var(--bg-card-subtle);
+    border-radius: 14px;
+    border: 1px solid var(--border-subtle);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .metricTile {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .metricLabel {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .metricValue {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Mobile Touch-Friendly Action Button */
+  .mobileActions {
+    display: flex;
+    width: 100%;
+    padding-top: 4px;
+  }
+
+  .mobileActionBtn {
+    width: 100%;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: var(--bg-card-subtle);
+    border: 1px solid var(--border-default);
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 0.88rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+  }
+
+  .mobileActionBtn:hover {
+    background: var(--primary-emerald-light);
+    color: var(--primary-emerald);
+    border-color: var(--primary-emerald);
+    text-decoration: none;
+  }
+}
