@@ -5,6 +5,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { Pagination } from "@/components/ui/Pagination";
 import { DatePicker } from "@/components/ui/DatePicker";
+import { MemberWorkloadTable } from "./MemberWorkloadTable";
 import { useAuth } from "@/context/AuthContext";
 import {
   formatActivityCode,
@@ -308,9 +309,6 @@ const getWorkloadPriorityCounts = (
   HIGH: workload?.activePriorityCounts?.HIGH ?? 0,
   URGENT: workload?.activePriorityCounts?.URGENT ?? 0,
 });
-
-const getMemberRowKey = (row: MemberWorkloadRow, index: number): string =>
-  row.member?.id ?? `member-workload-${index}`;
 
 const getMemberDisplayName = (member: DashboardMemberLike, fallbackId: string): string =>
   member?.name ?? fallbackId;
@@ -1257,50 +1255,6 @@ const TeamWorkloadTable = ({ teams }: { teams: TeamWorkloadRow[] }) => {
   );
 };
 
-const MemberWorkloadTable = ({ members }: { members: MemberWorkloadRow[] }) => {
-  if (members.length === 0) {
-    return (
-      <EmptyState title="No Member workload" message="No Member workload records were returned." />
-    );
-  }
-
-  return (
-    <div className={styles.tableWrap}>
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>Member</th>
-            <th>Team</th>
-            <th>Active</th>
-            <th>Overdue</th>
-            <th>Pending</th>
-            <th>Assigned</th>
-            <th>In Progress</th>
-          </tr>
-        </thead>
-        <tbody>
-          {members.map((row, index) => (
-            <tr key={getMemberRowKey(row, index)}>
-              <td>
-                <strong>{getMemberDisplayName(row.member, getMemberRowKey(row, index))}</strong>
-                <span className={styles.cellHint}>
-                  {row.member?.employeeId ?? "No employee ID"}
-                </span>
-              </td>
-              <td>{row.member?.teamName ?? "Unassigned"}</td>
-              <td>{formatDashboardNumber(row.workload?.activeTasks)}</td>
-              <td>{formatDashboardNumber(row.workload?.overdueTasks)}</td>
-              <td>{formatDashboardNumber(getWorkloadStatusCount(row.workload, "PENDING"))}</td>
-              <td>{formatDashboardNumber(getWorkloadStatusCount(row.workload, "ASSIGNED"))}</td>
-              <td>{formatDashboardNumber(getWorkloadStatusCount(row.workload, "IN_PROGRESS"))}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-};
-
 const MemberSelfWorkload = ({ row }: { row: MemberWorkloadRow }) => (
   <div className={styles.stack}>
     <div className={styles.identityCard}>
@@ -1350,9 +1304,10 @@ export const DashboardWorkloadContent = ({
             <TeamWorkloadTable teams={workload.byTeam} />
           </div>
           <div className={styles.workloadSection}>
-            <h3 className={styles.workloadSubheading}>Member Workload</h3>
-            <MemberWorkloadTable members={workload.byMember.data} />
-            <Pagination meta={workload.byMember.meta} onPageChange={setPage} />
+            <MemberWorkloadTable
+              members={workload.byMember.data}
+              pagination={<Pagination meta={workload.byMember.meta} onPageChange={setPage} />}
+            />
           </div>
         </div>
       );
@@ -1376,9 +1331,10 @@ export const DashboardWorkloadContent = ({
             />
           </div>
           <div className={styles.workloadSection}>
-            <h3 className={styles.workloadSubheading}>Member Workload</h3>
-            <MemberWorkloadTable members={workload.byMember.data} />
-            <Pagination meta={workload.byMember.meta} onPageChange={setPage} />
+            <MemberWorkloadTable
+              members={workload.byMember.data}
+              pagination={<Pagination meta={workload.byMember.meta} onPageChange={setPage} />}
+            />
           </div>
         </div>
       );
