@@ -57,6 +57,7 @@ export const DASHBOARD_STRINGS = {
     scopedTeams: "Scoped Teams",
     totalTeams: "Total Teams",
     totalAdmins: "Total Admins",
+    totalMembers: "Total Members",
     dueSoon: "Due Soon",
     revisionRequired: "Revision Required",
     onTimeRate: "On Time Rate",
@@ -101,6 +102,8 @@ export const DASHBOARD_STRINGS = {
   units: {
     team: "Team",
     teams: "Teams",
+    admin: "Admin",
+    admins: "Admins",
     member: "Member",
     members: "Members",
     revision: "Revision",
@@ -108,6 +111,9 @@ export const DASHBOARD_STRINGS = {
     task: "task",
     tasks: "tasks",
     min: "min",
+  },
+  symbols: {
+    separatorBullet: " · ",
   },
   workload: {
     asOfPrefix: "Workload as of ",

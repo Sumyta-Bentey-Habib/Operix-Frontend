@@ -24,6 +24,7 @@ export const DASHBOARD_METRIC_ITEM_COLORS = {
   scopedTeams: DASHBOARD_METRIC_COLORS.emerald,
   totalTeams: DASHBOARD_METRIC_COLORS.emerald,
   totalAdmins: DASHBOARD_METRIC_COLORS.indigo,
+  totalMembers: DASHBOARD_METRIC_COLORS.cyan,
   activeTasks: DASHBOARD_METRIC_COLORS.blue,
   dueSoon: DASHBOARD_METRIC_COLORS.amber,
   revisionRequired: DASHBOARD_METRIC_COLORS.red,
