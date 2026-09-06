@@ -9,7 +9,7 @@ import {
 } from "../types/dashboard.types";
 import { dashboardApi } from "../api/dashboard.api";
 
-export const useDashboardTrends = (initialDays: DashboardTrendDays = 30) => {
+export const useDashboardTrends = (initialDays: DashboardTrendDays = 7) => {
   const [days, setDaysState] = useState<DashboardTrendDays>(initialDays);
   const [trends, setTrends] = useState<DashboardTrendsResponse | null>(null);
   const [loading, setLoading] = useState(true);

@@ -1,14 +1,34 @@
 import { formatDisplayDate } from "@/utils/date";
 import type { DashboardTrendDays } from "../types/dashboard.types";
 
-export const formatDashboardNumber = (value: number | null | undefined): string =>
-  value === null || value === undefined ? "—" : value.toLocaleString();
+/**
+ * Formats a metric quantity with comma grouping.
+ * Defaults to "0" when null or undefined to provide user-friendly KPI counters.
+ */
+export const formatDashboardNumber = (
+  value: number | null | undefined,
+  fallback = "0",
+): string => (value === null || value === undefined ? fallback : value.toLocaleString());
 
-export const formatDashboardRate = (value: number | null | undefined): string =>
-  value === null || value === undefined ? "—" : `${Number(value.toFixed(2))}%`;
+/**
+ * Formats a metric percentage.
+ * Defaults to "0%" when null or undefined to prevent unhelpful dash representations.
+ */
+export const formatDashboardRate = (
+  value: number | null | undefined,
+  fallback = "0%",
+): string =>
+  value === null || value === undefined ? fallback : `${Number(value.toFixed(2))}%`;
 
-export const formatDashboardAverageMinutes = (minutes: number | null | undefined): string => {
-  if (minutes === null || minutes === undefined) return "—";
+/**
+ * Formats average completion minutes into human-readable duration (e.g., "45 min", "2h", "1h 30m").
+ * Defaults to "0 min" when null, undefined, or zero.
+ */
+export const formatDashboardAverageMinutes = (
+  minutes: number | null | undefined,
+  fallback = "0 min",
+): string => {
+  if (minutes === null || minutes === undefined || minutes === 0) return fallback;
   if (minutes < 60) return `${Math.round(minutes)} min`;
 
   const rounded = Math.round(minutes);
@@ -16,6 +36,18 @@ export const formatDashboardAverageMinutes = (minutes: number | null | undefined
   const remainingMinutes = rounded % 60;
 
   return remainingMinutes === 0 ? `${hours}h` : `${hours}h ${remainingMinutes}m`;
+};
+
+/**
+ * Formats a numeric quantity with singular/plural unit labeling (e.g., "0 Teams", "1 Member", "4 Members").
+ */
+export const formatDashboardQuantity = (
+  count: number | null | undefined,
+  singular: string,
+  plural: string,
+): string => {
+  const safe = count ?? 0;
+  return `${formatDashboardNumber(safe)} ${safe === 1 ? singular : plural}`;
 };
 
 export const formatDashboardAsOf = (asOf: string): string => formatDisplayDate(asOf);

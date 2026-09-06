@@ -1,6 +1,7 @@
 export * from "./api/dashboard.api";
 export * from "./components/DashboardAnalytics";
 export * from "./components/MemberWorkloadTable";
+export * from "./hooks/use-dashboard-analytics";
 export * from "./hooks/use-dashboard-overview";
 export * from "./hooks/use-dashboard-trends";
 export * from "./hooks/use-dashboard-workload";
