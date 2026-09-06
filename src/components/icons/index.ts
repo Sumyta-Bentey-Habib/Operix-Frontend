@@ -37,6 +37,7 @@ export * from "./ArrowUpRightIcon";
 export * from "./ArrowRightIcon";
 export * from "./FilterEditIcon";
 export * from "./BarChartIcon";
+export * from "./TrendBarChartIcon";
 export * from "./ContactlessIcon";
 export * from "./TrendUpIcon";
 export * from "./ExportIcon";

@@ -82,6 +82,11 @@ export const DASHBOARD_STRINGS = {
     tasksCompletedWindow: "tasks completed in selected window",
     noTrendBucketsTitle: "No trend buckets",
     noTrendBucketsMessage: "No completion trend buckets returned.",
+    noCompletionsPeriod: "No completions in this period",
+    trendEmptyNotice:
+      "Completed tasks will populate daily velocity bars automatically as assignments are finished.",
+    trendPeriodAria: "Completion Trend period",
+    completionChartAria: "Completion trends chart",
   },
   activities: {
     recentActivityTitle: "Recent Activity",

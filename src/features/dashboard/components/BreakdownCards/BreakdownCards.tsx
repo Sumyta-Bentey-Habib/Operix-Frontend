@@ -99,9 +99,8 @@ export const ActivePriorityBreakdown = ({
   );
 };
 
-/* -------------------------------------------------------------------------- */
 /*  ManagementReportStatusBreakdown                                             */
-/* -------------------------------------------------------------------------- */
+
 
 export const ManagementReportStatusBreakdown = ({
   counts,

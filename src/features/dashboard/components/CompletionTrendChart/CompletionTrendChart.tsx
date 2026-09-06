@@ -3,11 +3,10 @@ import type { DashboardTrendDays } from "../../types/dashboard.types";
 import { DASHBOARD_TREND_DAYS } from "../../types/dashboard.types";
 import type { CompletionTrendPoint } from "../../types/dashboard.types";
 import { formatDashboardNumber, formatTrendBucketDate, formatTrendDays } from "../../utils/dashboard-format";
+import { DASHBOARD_STRINGS } from "@/utils/dashboard-strings";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { TrendBarChartIcon } from "@/components/icons";
 
-/* -------------------------------------------------------------------------- */
-/*  TrendDaysSelector                                                           */
-/* -------------------------------------------------------------------------- */
 
 const TrendDaysSelector = ({
   days,
@@ -16,7 +15,7 @@ const TrendDaysSelector = ({
   days: DashboardTrendDays;
   onChange: (days: DashboardTrendDays) => void;
 }) => (
-  <div className={styles.segmentedControl} aria-label="Completion Trend period">
+  <div className={styles.segmentedControl} aria-label={DASHBOARD_STRINGS.charts.trendPeriodAria}>
     {DASHBOARD_TREND_DAYS.map((option) => (
       <button
         key={option}
@@ -30,9 +29,7 @@ const TrendDaysSelector = ({
   </div>
 );
 
-/* -------------------------------------------------------------------------- */
-/*  CompletionTrendChart                                                        */
-/* -------------------------------------------------------------------------- */
+
 
 export const CompletionTrendChart = ({
   points,
@@ -50,46 +47,35 @@ export const CompletionTrendChart = ({
     <div className={styles.trendCard}>
       <div className={styles.trendCardHeader}>
         <div className={styles.trendTitleGroup}>
-          <h3 className={styles.cardTitle}>Completion Trends</h3>
+          <h3 className={styles.cardTitle}>{DASHBOARD_STRINGS.charts.completionTrends}</h3>
           <p className={styles.cardSubtitle}>
             {totalCompleted > 0
-              ? `${formatDashboardNumber(totalCompleted)} tasks completed in selected window`
-              : "Task completion velocity across recent period"}
+              ? `${formatDashboardNumber(totalCompleted)} ${DASHBOARD_STRINGS.charts.tasksCompletedWindow}`
+              : DASHBOARD_STRINGS.charts.completionTrendsSubtitle}
           </p>
         </div>
         {days && onDaysChange ? <TrendDaysSelector days={days} onChange={onDaysChange} /> : null}
       </div>
 
       {points.length === 0 ? (
-        <EmptyState title="No trend buckets" message="No completion trend buckets returned." />
+        <EmptyState
+          title={DASHBOARD_STRINGS.charts.noTrendBucketsTitle}
+          message={DASHBOARD_STRINGS.charts.noTrendBucketsMessage}
+        />
       ) : (
         <div
           className={styles.chartContainerModern}
           role="img"
-          aria-label="Completion trends chart"
+          aria-label={DASHBOARD_STRINGS.charts.completionChartAria}
         >
           {totalCompleted === 0 ? (
             <div className={styles.trendEmptyOverlay}>
               <div className={styles.trendEmptyBadge}>
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <line x1="18" y1="20" x2="18" y2="10" />
-                  <line x1="12" y1="20" x2="12" y2="4" />
-                  <line x1="6" y1="20" x2="6" y2="14" />
-                </svg>
-                <span>No completions in this period</span>
+                <TrendBarChartIcon />
+                <span>{DASHBOARD_STRINGS.charts.noCompletionsPeriod}</span>
               </div>
               <p className={styles.trendEmptyNotice}>
-                Completed tasks will populate daily velocity bars automatically as assignments are
-                finished.
+                {DASHBOARD_STRINGS.charts.trendEmptyNotice}
               </p>
             </div>
           ) : null}
