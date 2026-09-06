@@ -9,7 +9,6 @@
 .hero,
 .card,
 .modernKpiCard,
-.trendCard,
 .donutCard,
 .preview,
 .identityCard {
@@ -324,201 +323,6 @@
     grid-template-columns: 1fr;
     gap: 16px;
   }
-}
-
-.trendCard {
-  background: var(--bg-card);
-  border: 1px solid var(--border-default);
-  border-radius: 18px;
-  padding: 20px 22px;
-  box-shadow: var(--card-shadow);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  box-sizing: border-box;
-  min-width: 0;
-}
-
-.trendCardHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.trendTitleGroup {
-  min-width: 0;
-}
-
-.chartContainerModern {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  min-height: 220px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.trendEmptyOverlay {
-  position: absolute;
-  top: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  z-index: 3;
-  width: 90%;
-  max-width: 420px;
-  pointer-events: none;
-}
-
-.trendEmptyBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: var(--bg-card-subtle);
-  border: 1px solid var(--border-default);
-  color: var(--text-primary);
-  font-size: 0.78rem;
-  font-weight: 700;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.trendEmptyBadge svg {
-  color: var(--primary-emerald);
-}
-
-.trendEmptyNotice {
-  margin: 8px 0 0;
-  font-size: 0.74rem;
-  color: var(--text-muted);
-  line-height: 1.4;
-}
-
-.chartGridLines {
-  position: absolute;
-  top: 8px;
-  left: 0;
-  right: 0;
-  bottom: 28px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  pointer-events: none;
-}
-
-.chartGridLine {
-  width: 100%;
-  height: 1px;
-  background: var(--border-subtle);
-  border-top: 1px dashed var(--border-subtle);
-}
-
-.chartColumnsModern {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-around;
-  gap: 8px;
-  height: 180px;
-  padding-bottom: 4px;
-  overflow-x: auto;
-  scrollbar-width: thin;
-}
-
-.chartColumnsDimmed {
-  opacity: 0.35;
-  transition: opacity 0.25s ease;
-}
-
-.chartColumnModern {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 6px;
-  height: 100%;
-  flex: 1;
-  max-width: 48px;
-  min-width: 28px;
-  cursor: default;
-}
-
-.chartValueBadge {
-  font-size: 0.7rem;
-  font-weight: 700;
-  transition: all 0.2s ease;
-}
-
-.chartValueBadgeActive {
-  color: var(--primary-emerald);
-  font-weight: 800;
-  opacity: 1;
-}
-
-.chartValueBadgeGhost {
-  opacity: 0;
-  color: var(--text-muted);
-  transition: opacity 0.2s ease;
-}
-
-.chartColumnModern:hover .chartValueBadgeGhost {
-  opacity: 1;
-  color: var(--text-secondary);
-}
-
-.chartBarTrackModern {
-  width: 100%;
-  max-width: 30px;
-  height: 130px;
-  display: flex;
-  align-items: flex-end;
-  background: var(--bg-card-subtle);
-  border-radius: 6px 6px 0 0;
-  overflow: hidden;
-  border: 1px solid var(--border-subtle);
-}
-
-.chartBarModern {
-  width: 100%;
-  min-height: 4px;
-  background: linear-gradient(180deg, var(--primary-emerald) 0%, #b91c1c 100%);
-  border-radius: 5px 5px 0 0;
-  box-shadow: 0 2px 8px var(--primary-emerald-glow);
-  transition:
-    height 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-    filter 0.2s ease;
-}
-
-.chartBarGhost {
-  background: var(--border-default) !important;
-  box-shadow: none !important;
-}
-
-.chartColumnModern:hover .chartBarModern {
-  filter: brightness(1.25);
-}
-
-.chartColumnModern:hover .chartValueBadge {
-  color: var(--primary-emerald);
-  font-weight: 800;
-}
-
-.chartDateLabel {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  text-align: center;
-  white-space: nowrap;
 }
 
 /* ==========================================================================
@@ -1009,7 +813,6 @@
   }
 
   .modernKpiCard,
-  .trendCard,
   .donutCard,
   .preview {
     padding: 16px;
@@ -1018,14 +821,6 @@
 
   .modernKpiValue {
     font-size: 1.5rem;
-  }
-
-  .chartColumnsModern {
-    height: 150px;
-  }
-
-  .chartBarTrackModern {
-    height: 100px;
   }
 }
 
