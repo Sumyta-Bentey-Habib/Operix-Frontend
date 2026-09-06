@@ -73,6 +73,7 @@ describe("DashboardAnalytics components", () => {
     render(<SuperAdminDashboard overview={superAdminOverview} />);
 
     expect(screen.getByText("47.25%")).toBeInTheDocument();
+    expect(screen.getByText("33 Members")).toBeInTheDocument();
     expect(screen.queryByText("10%")).not.toBeInTheDocument();
     expect(screen.getAllByText("17")[0]).toBeInTheDocument();
     expect(screen.getAllByText("11")[0]).toBeInTheDocument();

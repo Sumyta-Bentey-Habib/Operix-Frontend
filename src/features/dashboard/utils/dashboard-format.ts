@@ -50,6 +50,24 @@ export const formatDashboardQuantity = (
   return `${formatDashboardNumber(safe)} ${safe === 1 ? singular : plural}`;
 };
 
+/**
+ * Formats two numeric quantities with singular/plural unit labeling joined by a separator.
+ * E.g., "1 Admin · 1 Member"
+ */
+export const formatDashboardDualQuantity = (
+  countA: number | null | undefined,
+  singularA: string,
+  pluralA: string,
+  countB: number | null | undefined,
+  singularB: string,
+  pluralB: string,
+  separator = " · ",
+): string => {
+  const partA = formatDashboardQuantity(countA, singularA, pluralA);
+  const partB = formatDashboardQuantity(countB, singularB, pluralB);
+  return `${partA}${separator}${partB}`;
+};
+
 export const formatDashboardAsOf = (asOf: string): string => formatDisplayDate(asOf);
 
 export const formatTrendDays = (days: DashboardTrendDays): string => `${days} Days`;

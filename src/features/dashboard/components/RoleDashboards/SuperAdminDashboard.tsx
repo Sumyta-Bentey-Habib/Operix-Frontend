@@ -1,5 +1,5 @@
 import { DASHBOARD_STRINGS } from "@/utils/dashboard-strings";
-import { DASHBOARD_METRIC_COLORS, DASHBOARD_METRIC_ITEM_COLORS } from "@/utils/dashboard-colors";
+import { DASHBOARD_METRIC_ITEM_COLORS } from "@/utils/dashboard-colors";
 import type { SuperAdminDashboardOverview, DashboardTrendsResponse, DashboardTrendDays } from "../../types/dashboard.types";
 import {
   formatDashboardAverageMinutes,
@@ -70,7 +70,7 @@ export const SuperAdminDashboard = ({
       ),
       badgeType: "purple",
       value: formatDashboardQuantity(
-        overview.kpis.totalMembers,
+        (overview.kpis.totalAdmins ?? 0) + (overview.kpis.totalMembers ?? 0),
         DASHBOARD_STRINGS.units.member,
         DASHBOARD_STRINGS.units.members,
       ),
@@ -81,14 +81,14 @@ export const SuperAdminDashboard = ({
           color: DASHBOARD_METRIC_ITEM_COLORS.totalAdmins,
         },
         {
+          label: DASHBOARD_STRINGS.metrics.totalMembers,
+          value: formatDashboardNumber(overview.kpis.totalMembers),
+          color: DASHBOARD_METRIC_ITEM_COLORS.totalMembers,
+        },
+        {
           label: DASHBOARD_STRINGS.metrics.totalTeams,
           value: formatDashboardNumber(overview.kpis.totalTeams),
           color: DASHBOARD_METRIC_ITEM_COLORS.totalTeams,
-        },
-        {
-          label: DASHBOARD_STRINGS.metrics.reviewQueue,
-          value: formatDashboardNumber(overview.kpis.taskReviewQueue),
-          color: DASHBOARD_METRIC_COLORS.pink,
         },
         {
           label: DASHBOARD_STRINGS.metrics.activeTasks,

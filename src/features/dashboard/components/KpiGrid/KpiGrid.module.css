@@ -98,12 +98,13 @@
 }
 
 .modernKpiValue {
-  font-size: 1.75rem;
+  font-size: clamp(1.35rem, 1.6vw, 1.75rem);
   font-weight: 800;
   color: var(--text-primary);
   letter-spacing: -0.02em;
   display: block;
-  line-height: 1.2;
+  line-height: 1.25;
+  word-break: break-word;
 }
 
 .modernKpiList {
