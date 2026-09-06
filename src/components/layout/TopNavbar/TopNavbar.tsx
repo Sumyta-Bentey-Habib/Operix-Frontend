@@ -99,7 +99,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
     name: profile?.name || viewer?.userId || USER_PROFILE_DATA.name,
     email: profile?.email || viewer?.userId || "Authenticated user",
     roleLabel: getRoleLabel(viewer?.role ?? null),
-    avatarUrl: USER_PROFILE_DATA.avatarUrl,
+    avatarUrl: profile?.image || null,
   };
 
   // Determine active tab from pathname or activeTabId prop
@@ -360,14 +360,16 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
             <span className={styles.userRoleBadge}>{currentUser.roleLabel}</span>
           </div>
 
-          <Image
-            src={currentUser.avatarUrl}
-            alt={currentUser.name}
-            width={38}
-            height={38}
-            className={styles.avatarImage}
-            unoptimized
-          />
+          {currentUser.avatarUrl && (
+            <Image
+              src={currentUser.avatarUrl}
+              alt={currentUser.name}
+              width={38}
+              height={38}
+              className={styles.avatarImage}
+              unoptimized
+            />
+          )}
 
           {isMenuOpen && (
             <div className={styles.userDropdownMenu}>
@@ -438,14 +440,16 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
           >
             <div className={styles.mobileNavHeader}>
               <div className={styles.mobileNavUserSection}>
-                <Image
-                  src={currentUser.avatarUrl}
-                  alt={currentUser.name}
-                  width={42}
-                  height={42}
-                  className={styles.mobileNavAvatar}
-                  unoptimized
-                />
+                {currentUser.avatarUrl && (
+                  <Image
+                    src={currentUser.avatarUrl}
+                    alt={currentUser.name}
+                    width={42}
+                    height={42}
+                    className={styles.mobileNavAvatar}
+                    unoptimized
+                  />
+                )}
                 <div className={styles.mobileNavUserInfo}>
                   <span className={styles.mobileNavUserName}>{currentUser.name}</span>
                   <span className={styles.mobileNavUserRole}>{currentUser.roleLabel}</span>

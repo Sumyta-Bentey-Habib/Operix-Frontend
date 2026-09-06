@@ -71,7 +71,7 @@ export interface MandatoryPaymentsData {
 export interface UserProfile {
   name: string;
   greeting: string;
-  avatarUrl: string;
+  avatarUrl?: string;
   role: string;
 }
 
