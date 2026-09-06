@@ -73,7 +73,7 @@ export const DASHBOARD_STRINGS = {
     activeTasksByPriority: "Active Tasks by Priority",
     activePrioritySubtitle: "Urgency distribution across active workload",
     managementReportsBreakdown: "Management Reports Breakdown",
-    managementReportsSubtitle: "Approval funnel & report status pipeline",
+    managementReportsSubtitle: "Workflow progress across all submitted reports",
     taskStatusDistribution: "Task Status Distribution",
     taskStatusSubtitle: "Volume proportion by status",
     completionTrends: "Completion Trends",

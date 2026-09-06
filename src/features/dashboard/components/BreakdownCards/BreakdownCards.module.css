@@ -1,0 +1,83 @@
+.priorityCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: 18px;
+  padding: 20px 22px;
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.priorityCardHeader {
+  margin-bottom: 14px;
+}
+
+.priorityCardHeader h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.cardSubtitle {
+  margin: 4px 0 0;
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+.priorityList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.priorityRow {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.priorityHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.priorityLabel {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.priorityValue {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+
+.priorityProgressTrack {
+  width: 100%;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--bg-card-subtle);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+}
+
+.priorityProgressBar {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+@media (max-width: 768px) {
+  .priorityCard {
+    padding: 16px;
+    border-radius: 16px;
+  }
+}
