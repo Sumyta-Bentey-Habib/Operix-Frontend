@@ -2,12 +2,16 @@ import { render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { TaskPriority, TaskStatus } from "@/features/tasks/types/task.types";
 import {
+  AdminDashboard,
   CompletionTrendChart,
   DashboardRecentActivity,
   DashboardRecentNotifications,
   SuperAdminDashboard,
 } from "@/features/dashboard/components/DashboardAnalytics";
-import type { SuperAdminDashboardOverview } from "@/features/dashboard/types/dashboard.types";
+import type {
+  AdminDashboardOverview,
+  SuperAdminDashboardOverview,
+} from "@/features/dashboard/types/dashboard.types";
 
 const statusCounts: Record<TaskStatus, number> = {
   PENDING: 1,
@@ -65,14 +69,41 @@ describe("DashboardAnalytics components", () => {
     vi.restoreAllMocks();
   });
 
-  it("displays backend KPI values directly without recomputing analytics", () => {
+  it("displays backend KPI values directly without recomputing analytics and uses user-friendly zero defaults for nulls", () => {
     render(<SuperAdminDashboard overview={superAdminOverview} />);
 
     expect(screen.getByText("47.25%")).toBeInTheDocument();
     expect(screen.queryByText("10%")).not.toBeInTheDocument();
     expect(screen.getAllByText("17")[0]).toBeInTheDocument();
     expect(screen.getAllByText("11")[0]).toBeInTheDocument();
-    expect(screen.getAllByText("—")).toHaveLength(2);
+    expect(screen.getAllByText("0%")[0]).toBeInTheDocument();
+    expect(screen.getByText("0 min")).toBeInTheDocument();
+    expect(screen.queryByText("—")).not.toBeInTheDocument();
+  });
+
+  it("renders Admin dashboard without any broken dash symbols when metrics are zero or omitted", () => {
+    const adminOverview = {
+      role: "ADMIN" as const,
+      context: { role: "ADMIN" as const, asOf: "2026-09-06T00:00:00.000Z" },
+      kpis: {
+        completedTasks: 0,
+        overdueTasks: 0,
+        dueSoonTasks: 0,
+        revisionRequiredTasks: 0,
+        myDraftReports: 0,
+        mySubmittedReports: 0,
+        myRevisionRequiredReports: 0,
+      },
+      taskStatusCounts: statusCounts,
+      recentActivity: [],
+    } as unknown as AdminDashboardOverview;
+
+    render(<AdminDashboard overview={adminOverview} />);
+
+    expect(screen.getByText("0 Teams")).toBeInTheDocument();
+    expect(screen.getByText("0 Members")).toBeInTheDocument();
+    expect(screen.getByText("Total: 0")).toBeInTheDocument();
+    expect(screen.queryByText("—")).not.toBeInTheDocument();
   });
 
   it("renders embedded Activity preview without fetching Activity data", () => {
