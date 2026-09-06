@@ -1,7 +1,3 @@
-/**
- * Centralized string constants for Dashboard Analytics and KPI cards.
- * Avoids hardcoded strings in components and adheres to design system rules.
- */
 export const DASHBOARD_STRINGS = {
   hero: {
     eyebrow: "Operational snapshot",
@@ -112,5 +108,24 @@ export const DASHBOARD_STRINGS = {
     task: "task",
     tasks: "tasks",
     min: "min",
+  },
+  workload: {
+    asOfPrefix: "Workload as of ",
+    teamWorkloadHeading: "Team Workload",
+    teamSummaryHeading: "Team Summary",
+    noTeamWorkloadTitle: "No Team workload",
+    noTeamWorkloadMessage: "No Team workload records were returned.",
+    currentMember: "Current member",
+    unassigned: "Unassigned",
+    scopedTeam: "Scoped Team",
+    table: {
+      team: "Team",
+      adminHandle: "Admin Handle",
+      active: "Active",
+      overdue: "Overdue",
+      pending: "Pending",
+      inProgress: "In Progress",
+      completed: "Completed",
+    },
   },
 } as const;
