@@ -13,8 +13,6 @@ export const USER_PROFILE_DATA: UserProfile = {
   name: "Sujon",
   greeting: "Welcome Back,",
   role: "Super Admin",
-  avatarUrl:
-    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
 };
 
 export const DATE_FILTER_DATA: DateFilterRange = {
