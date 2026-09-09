@@ -277,7 +277,7 @@
   padding: 6px 14px;
   font-size: 0.8rem;
   font-weight: 700;
-  color: var(--text-inverse);
+  color: var(--text-on-primary);
   background: var(--primary-emerald);
   border: none;
   border-radius: 6px;
@@ -287,6 +287,7 @@
 
 .applyBtn:hover {
   background: var(--primary-emerald-hover);
+  color: var(--text-on-primary);
 }
 
 @media (max-width: 640px) {

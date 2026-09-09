@@ -40,7 +40,7 @@ describe("DateTimePicker Component", () => {
     });
     fireEvent.click(trigger);
 
-    const day10Btn = screen.getByRole("button", { name: "2026-09-10" });
+    const day10Btn = screen.getByRole("button", { name: /2026-09-10/ });
     fireEvent.click(day10Btn);
 
     expect(handleChange).toHaveBeenCalledWith("2026-09-10T17:00");

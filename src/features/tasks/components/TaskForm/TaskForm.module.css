@@ -406,7 +406,7 @@
   background: var(--primary-emerald);
   border: 1px solid var(--primary-emerald);
   border-radius: 10px;
-  color: var(--text-inverse);
+  color: var(--text-on-primary);
   cursor: pointer;
   font-weight: 700;
   font-size: 0.875rem;
@@ -422,6 +422,8 @@
 
 .primaryButton:hover:not(:disabled) {
   background: var(--primary-emerald-hover);
+  border-color: var(--primary-emerald-hover);
+  color: var(--text-on-primary);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px var(--primary-emerald-glow);
 }
@@ -439,7 +441,7 @@
 .spinner {
   width: 16px;
   height: 16px;
-  border: 2px solid var(--text-inverse);
+  border: 2px solid var(--text-on-primary);
   border-top-color: transparent;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
