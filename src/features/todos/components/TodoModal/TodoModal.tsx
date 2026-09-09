@@ -16,9 +16,10 @@ interface TodoFormProps {
   initialData?: TodoItem | null;
   onClose: () => void;
   onSubmit: (data: CreateTodoInput | UpdateTodoInput) => void;
+  isSubmitting?: boolean;
 }
 
-const TodoForm: React.FC<TodoFormProps> = ({ initialData, onClose, onSubmit }) => {
+const TodoForm: React.FC<TodoFormProps> = ({ initialData, onClose, onSubmit, isSubmitting }) => {
   const [title, setTitle] = useState(initialData?.title || "");
   const [description, setDescription] = useState(initialData?.description || "");
   const [priority, setPriority] = useState<TodoPriority>(initialData?.priority || "MEDIUM");
@@ -29,8 +30,10 @@ const TodoForm: React.FC<TodoFormProps> = ({ initialData, onClose, onSubmit }) =
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) {
-      setError(TODO_STRINGS.errors.titleRequired);
+    if (!title.trim() || isSubmitting) {
+      if (!title.trim()) {
+        setError(TODO_STRINGS.errors.titleRequired);
+      }
       return;
     }
 
@@ -69,6 +72,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ initialData, onClose, onSubmit }) =
             setTitle(e.target.value);
             if (error) setError(null);
           }}
+          disabled={isSubmitting}
           autoFocus
         />
         {error && <span className={styles.errorText}>{error}</span>}
@@ -84,6 +88,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ initialData, onClose, onSubmit }) =
           placeholder={TODO_STRINGS.modal.descriptionPlaceholder}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
+          disabled={isSubmitting}
           rows={3}
         />
       </div>
@@ -98,6 +103,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ initialData, onClose, onSubmit }) =
             className={styles.select}
             value={priority}
             onChange={(e) => setPriority(e.target.value as TodoPriority)}
+            disabled={isSubmitting}
           >
             {PRIORITY_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -116,6 +122,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ initialData, onClose, onSubmit }) =
             className={styles.select}
             value={category}
             onChange={(e) => setCategory(e.target.value as TodoCategory)}
+            disabled={isSubmitting}
           >
             {CATEGORY_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -137,6 +144,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ initialData, onClose, onSubmit }) =
             className={styles.input}
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
+            disabled={isSubmitting}
           />
         </div>
 
@@ -151,16 +159,30 @@ const TodoForm: React.FC<TodoFormProps> = ({ initialData, onClose, onSubmit }) =
             placeholder={TODO_STRINGS.modal.tagsPlaceholder}
             value={tagsInput}
             onChange={(e) => setTagsInput(e.target.value)}
+            disabled={isSubmitting}
           />
         </div>
       </div>
 
       <div className={styles.footer}>
-        <button type="button" className={styles.cancelButton} onClick={onClose}>
+        <button
+          type="button"
+          className={styles.cancelButton}
+          onClick={onClose}
+          disabled={isSubmitting}
+        >
           {TODO_STRINGS.actions.cancel}
         </button>
-        <button type="submit" className={styles.submitButton} disabled={!title.trim()}>
-          {isEditing ? TODO_STRINGS.actions.save : TODO_STRINGS.actions.create}
+        <button
+          type="submit"
+          className={styles.submitButton}
+          disabled={!title.trim() || isSubmitting}
+        >
+          {isSubmitting
+            ? TODO_STRINGS.saving
+            : isEditing
+              ? TODO_STRINGS.actions.save
+              : TODO_STRINGS.actions.create}
         </button>
       </div>
     </form>
@@ -172,9 +194,16 @@ export interface TodoModalProps {
   onClose: () => void;
   onSubmit: (data: CreateTodoInput | UpdateTodoInput) => void;
   initialData?: TodoItem | null;
+  isSubmitting?: boolean;
 }
 
-export const TodoModal: React.FC<TodoModalProps> = ({ isOpen, onClose, onSubmit, initialData }) => {
+export const TodoModal: React.FC<TodoModalProps> = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  initialData,
+  isSubmitting,
+}) => {
   const isEditing = Boolean(initialData);
 
   return (
@@ -188,6 +217,7 @@ export const TodoModal: React.FC<TodoModalProps> = ({ isOpen, onClose, onSubmit,
         initialData={initialData}
         onClose={onClose}
         onSubmit={onSubmit}
+        isSubmitting={isSubmitting}
       />
     </Modal>
   );

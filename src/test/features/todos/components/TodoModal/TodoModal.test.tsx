@@ -9,7 +9,6 @@ describe("TodoModal", () => {
 
   const mockTodo: TodoItem = {
     id: "todo-test-1",
-    userId: "admin-1",
     title: "Test Existing Title",
     description: "Test Existing Description",
     completed: false,
@@ -20,6 +19,7 @@ describe("TodoModal", () => {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     completedAt: null,
+    isOverdue: false,
   };
 
   it("renders create mode when no initialData is provided", () => {

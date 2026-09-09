@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { AuthGuard, PermissionGuard } from "@/components/auth";
 import { DashboardShell } from "@/components/layout/DashboardShell";
@@ -13,7 +14,9 @@ export default function AdminTodosPage() {
     <AuthGuard>
       <DashboardShell activeTab="todos">
         <PermissionGuard allowedRoles={["SUPER_ADMIN", "ADMIN"]}>
-          <TodoList />
+          <Suspense fallback={null}>
+            <TodoList />
+          </Suspense>
         </PermissionGuard>
       </DashboardShell>
     </AuthGuard>

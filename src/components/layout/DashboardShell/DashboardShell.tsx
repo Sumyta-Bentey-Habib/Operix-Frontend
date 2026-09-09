@@ -5,6 +5,7 @@ import styles from "./DashboardShell.module.css";
 import { TopNavbar } from "../TopNavbar";
 import { DashboardHeader } from "../DashboardHeader";
 import { useDynamicDocumentTitle } from "@/hooks/useDynamicDocumentTitle";
+import { TodoFloatingButton } from "@/features/todos";
 
 export interface DashboardShellProps {
   children: ReactNode;
@@ -44,6 +45,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
           </main>
         </div>
       </div>
+      <TodoFloatingButton />
     </div>
   );
 };
