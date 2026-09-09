@@ -7,11 +7,15 @@ import type {
 
 export const TODO_STRINGS = {
   pageTitle: "Admin Todo List",
-  pageSubtitle: "Session-scoped tasks and operational checklist for administrators.",
+  pageSubtitle: "Operational tasks and execution checklist for administrators.",
   quickAddPlaceholder: "What needs to be done next? (Press Enter to add)",
   quickAddButton: "Add Task",
   openNewTaskModal: "New Todo",
   searchPlaceholder: "Search todos by title, note, or tag...",
+  loading: "Loading todos...",
+  saving: "Saving...",
+  clearing: "Clearing completed...",
+  retry: "Retry",
   filters: {
     all: "All Tasks",
     active: "In Progress",
@@ -27,6 +31,14 @@ export const TODO_STRINGS = {
     urgent: "Urgent & High",
     overdue: "Overdue",
     completionRate: "Completion Rate",
+    activeSubtext: "Pending admin actions",
+    completedSubtext: "Finished operational tasks",
+    urgentSubtextDefault: "High priority items",
+    overdueItemsSuffix: "overdue items",
+  },
+  labels: {
+    overdue: "Overdue",
+    duePrefix: "Due:",
   },
   actions: {
     create: "Create Task",
@@ -43,6 +55,8 @@ export const TODO_STRINGS = {
     noTasksSubtitle: "You have no active todos in this view. Add one above to get started!",
     noSearchResultsTitle: "No matching todos",
     noSearchResultsSubtitle: "Try changing your search keywords or clearing your filters.",
+    fetchErrorTitle: "Failed to load todos",
+    fetchErrorSubtitle: "Could not retrieve your operational tasks from the server.",
   },
   modal: {
     createTitle: "Create Admin Task",
@@ -59,13 +73,25 @@ export const TODO_STRINGS = {
   },
   widget: {
     title: "Admin Checklist",
-    subtitle: "Your local operational queue",
+    subtitle: "Your operational queue",
     viewAll: "View All Todos",
-    empty: "All admin todos completed! 🎉",
+    empty: "All  todos completed! 🎉",
+  },
+  floatingButton: {
+    fabLabel: "Quick Todos",
+    panelTitle: "Quick Tasks",
+    panelSubtitle: "Your operational queue",
+    viewMore: "View More",
+    createTodo: "Create Todo",
+    empty: "All  todos completed! 🎉",
+    close: "Close quick tasks",
+    activeBadgeSuffix: "active",
   },
   errors: {
     titleRequired: "Task title is required.",
     unauthorized: "Only administrators can access the admin todo list.",
+    rateLimited: "Too many requests. Please wait a moment before trying again.",
+    genericFailed: "An error occurred while updating todos.",
   },
 } as const;
 
@@ -111,47 +137,4 @@ export const STATUS_FILTER_TABS: Array<{
   { value: "ALL", label: "All" },
   { value: "ACTIVE", label: "In Progress" },
   { value: "COMPLETED", label: "Completed" },
-];
-
-export const DEFAULT_ADMIN_TODO_TEMPLATES = [
-  {
-    idSuffix: "1",
-    title: "Review and approve pending team expense reports",
-    description: "Check Q3 regional travel vouchers and equipment requisitions before cutoff.",
-    completed: false,
-    priority: "URGENT" as TodoPriority,
-    category: "FINANCE" as TodoCategory,
-    offsetDays: 1,
-    tags: ["finance", "approval", "q3"],
-  },
-  {
-    idSuffix: "2",
-    title: "Audit member role permissions and 2FA compliance",
-    description: "Ensure all newly joined team leads have completed security onboarding.",
-    completed: false,
-    priority: "HIGH" as TodoPriority,
-    category: "SECURITY" as TodoCategory,
-    offsetDays: 3,
-    tags: ["security", "audit", "compliance"],
-  },
-  {
-    idSuffix: "3",
-    title: "Assign sprint milestones for operations redesign",
-    description: "Coordinate with engineering and product leads on phase 2 delivery.",
-    completed: false,
-    priority: "MEDIUM" as TodoPriority,
-    category: "OPERATIONS" as TodoCategory,
-    offsetDays: 5,
-    tags: ["operations", "milestones"],
-  },
-  {
-    idSuffix: "4",
-    title: "Schedule bi-weekly regional team sync",
-    description: "Send calendar invites and prepare presentation deck on performance KPIs.",
-    completed: true,
-    priority: "LOW" as TodoPriority,
-    category: "TEAM" as TodoCategory,
-    offsetDays: -1,
-    tags: ["team", "meeting"],
-  },
 ];

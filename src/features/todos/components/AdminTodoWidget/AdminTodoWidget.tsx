@@ -9,21 +9,25 @@ import type { TodoPriority } from "../../types/todo.types";
 import styles from "./AdminTodoWidget.module.css";
 
 export const AdminTodoWidget: React.FC = () => {
-  const { todos, addTodo, toggleTodo, isAdmin, isLoading } = useAdminTodos();
+  const { todos, addTodo, toggleTodo, isAdmin, isLoading, isSubmitting } = useAdminTodos();
   const [quickTitle, setQuickTitle] = useState("");
 
   if (!isAdmin || isLoading) return null;
 
-  const handleQuickAdd = (e: React.FormEvent) => {
+  const handleQuickAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!quickTitle.trim()) return;
+    if (!quickTitle.trim() || isSubmitting) return;
 
-    addTodo({
-      title: quickTitle.trim(),
-      priority: "MEDIUM",
-      category: "OPERATIONS",
-    });
-    setQuickTitle("");
+    try {
+      await addTodo({
+        title: quickTitle.trim(),
+        priority: "MEDIUM",
+        category: "OPERATIONS",
+      });
+      setQuickTitle("");
+    } catch {
+      // Handled in hook
+    }
   };
 
   const activeTodos = todos.filter((t) => !t.completed).slice(0, 4);
@@ -63,15 +67,16 @@ export const AdminTodoWidget: React.FC = () => {
           placeholder={TODO_STRINGS.quickAddPlaceholder}
           value={quickTitle}
           onChange={(e) => setQuickTitle(e.target.value)}
+          disabled={isSubmitting}
         />
         <button
           type="submit"
           className={styles.quickAddButton}
-          disabled={!quickTitle.trim()}
+          disabled={!quickTitle.trim() || isSubmitting}
           aria-label={TODO_STRINGS.quickAddButton}
         >
           <PlusIcon size={14} />
-          <span>{TODO_STRINGS.quickAddButton}</span>
+          <span>{isSubmitting ? TODO_STRINGS.saving : TODO_STRINGS.quickAddButton}</span>
         </button>
       </form>
 
@@ -87,6 +92,7 @@ export const AdminTodoWidget: React.FC = () => {
                   className={styles.checkbox}
                   checked={item.completed}
                   onChange={() => toggleTodo(item.id)}
+                  disabled={isSubmitting}
                   aria-label={`Toggle completion for ${item.title}`}
                 />
                 <span

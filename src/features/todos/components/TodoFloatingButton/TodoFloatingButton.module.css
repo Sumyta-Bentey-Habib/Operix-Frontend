@@ -1,0 +1,328 @@
+.floatingWrapper {
+  position: fixed;
+  bottom: 1.75rem;
+  right: 1.75rem;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.fabButton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--primary-emerald);
+  color: var(--text-on-primary);
+  cursor: pointer;
+  box-shadow: 0 4px 16px var(--primary-emerald-glow);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fabButton:hover {
+  background-color: var(--primary-emerald-hover);
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 8px 24px var(--primary-emerald-glow);
+}
+
+.fabButton:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.fabButtonOpen {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+  box-shadow: var(--card-shadow);
+}
+
+.fabButtonOpen:hover {
+  background-color: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 11px;
+  background-color: var(--danger-text);
+  color: var(--text-on-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-canvas);
+  box-shadow: 0 2px 6px var(--card-shadow);
+}
+
+/* Popover Panel */
+.panel {
+  position: absolute;
+  bottom: calc(100% + 1rem);
+  right: 0;
+  width: 360px;
+  max-width: calc(100vw - 2rem);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 12px 36px var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUpFade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-subtle);
+  background-color: var(--bg-card);
+}
+
+.headerTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.headerTitle {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.headerCountBadge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-full);
+  background-color: var(--primary-emerald-glow);
+  color: var(--primary-emerald);
+}
+
+.closeButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.closeButton:hover {
+  background-color: var(--bg-muted);
+  color: var(--text-primary);
+}
+
+/* List Content */
+.todoList {
+  padding: 0.5rem 0;
+  max-height: 320px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.todoItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  transition: background-color 0.15s ease;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.todoItem:last-child {
+  border-bottom: none;
+}
+
+.todoItem:hover {
+  background-color: var(--bg-card-hover);
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  accent-color: var(--primary-emerald);
+  margin-top: 0.125rem;
+  flex-shrink: 0;
+}
+
+.todoBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.todoTitle {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.todoTitleCompleted {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.todoMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.priorityBadge {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 0.1rem 0.375rem;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.priorityUrgent {
+  background-color: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.priorityHigh {
+  background-color: var(--warning-bg);
+  color: var(--warning-text);
+}
+
+.priorityMedium {
+  background-color: var(--bg-muted);
+  color: var(--text-secondary);
+}
+
+.priorityLow {
+  background-color: var(--bg-muted);
+  color: var(--text-muted);
+}
+
+.dueDateBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+}
+
+.dueDateOverdue {
+  color: var(--danger-text);
+  font-weight: 600;
+}
+
+.emptyState {
+  padding: 2.25rem 1.25rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Footer Actions */
+.panelFooter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.25rem;
+  border-top: 1px solid var(--border-subtle);
+  background-color: var(--bg-muted);
+}
+
+.viewMoreBtn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.viewMoreBtn:hover {
+  background-color: var(--bg-card-hover);
+  border-color: var(--border-subtle);
+}
+
+.createBtn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: none;
+  background-color: var(--primary-emerald);
+  color: var(--text-on-primary);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.createBtn:hover {
+  background-color: var(--primary-emerald-hover);
+}
+
+@media (max-width: 480px) {
+  .floatingWrapper {
+    bottom: 1rem;
+    right: 1rem;
+  }
+
+  .panel {
+    width: calc(100vw - 2rem);
+    right: 0;
+  }
+}

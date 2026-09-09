@@ -1,22 +1,17 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { isAbortError } from "@/lib/api";
 import { canViewAdminTodos } from "@/lib/auth/permissions";
-import {
-  clearCompletedTodos,
-  createTodo,
-  deleteTodo,
-  getStoredTodos,
-  TODOS_SYNC_EVENT,
-  toggleTodo,
-  updateTodo,
-} from "../utils/todo-storage";
+import { todoApi } from "../api/todo.api";
+import { TODO_STRINGS } from "../constants/todo-strings";
 import type {
   CreateTodoInput,
   TodoFilterState,
   TodoItem,
-  TodoPriority,
+  TodoListQuery,
+  TodoSort,
   TodoStats,
   UpdateTodoInput,
 } from "../types/todo.types";
@@ -30,195 +25,233 @@ const DEFAULT_FILTER_STATE: TodoFilterState = {
   sortOrder: "desc",
 };
 
-const PRIORITY_WEIGHT: Record<TodoPriority, number> = {
-  URGENT: 4,
-  HIGH: 3,
-  MEDIUM: 2,
-  LOW: 1,
+const DEFAULT_STATS: TodoStats = {
+  total: 0,
+  active: 0,
+  completed: 0,
+  urgent: 0,
+  overdue: 0,
+  completionRate: 0,
+};
+
+const mapFilterToSort = (
+  sortBy: TodoFilterState["sortBy"],
+  sortOrder: TodoFilterState["sortOrder"],
+): TodoSort => {
+  if (sortBy === "dueDate") {
+    return sortOrder === "asc" ? "DUE_ON_ASC" : "DUE_ON_DESC";
+  }
+  if (sortBy === "priority") {
+    return sortOrder === "asc" ? "PRIORITY_ASC" : "PRIORITY_DESC";
+  }
+  if (sortBy === "title") {
+    return sortOrder === "asc" ? "TITLE_ASC" : "TITLE_DESC";
+  }
+  return sortOrder === "asc" ? "CREATED_AT_ASC" : "CREATED_AT_DESC";
 };
 
 export const useAdminTodos = () => {
   const { viewer, isLoading: isAuthLoading } = useAuth();
   const isAdmin = canViewAdminTodos(viewer);
-  const userId = viewer?.userId || "admin-default";
 
-  const [todos, setTodos] = useState<TodoItem[]>(() => {
-    if (!isAdmin) return [];
-    return getStoredTodos(userId);
-  });
+  const [todos, setTodos] = useState<TodoItem[]>([]);
+  const [stats, setStats] = useState<TodoStats>(DEFAULT_STATS);
   const [filterState, setFilterState] = useState<TodoFilterState>(DEFAULT_FILTER_STATE);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const reloadTodos = useCallback(() => {
-    if (!isAdmin) {
-      setTodos([]);
-      return;
+  const buildQuery = useCallback((filters: TodoFilterState): TodoListQuery => {
+    const query: TodoListQuery = {};
+
+    if (filters.status !== "ALL") {
+      query.status = filters.status;
     }
-    const stored = getStoredTodos(userId);
-    setTodos(stored);
-  }, [isAdmin, userId]);
+    if (filters.priority !== "ALL") {
+      query.priority = filters.priority;
+    }
+    if (filters.category !== "ALL") {
+      query.category = filters.category;
+    }
+    if (filters.search.trim()) {
+      query.q = filters.search.trim();
+    }
+    query.sort = mapFilterToSort(filters.sortBy, filters.sortOrder);
+
+    return query;
+  }, []);
+
+  const loadData = useCallback(
+    async (filters: TodoFilterState, signal?: AbortSignal) => {
+      if (!isAdmin) {
+        setTodos([]);
+        setStats(DEFAULT_STATS);
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const query = buildQuery(filters);
+        const [listResponse, summaryResponse] = await Promise.all([
+          todoApi.list(query, { signal }),
+          todoApi.summary({ signal }),
+        ]);
+
+        if (signal?.aborted) return;
+        setTodos(listResponse.data);
+        setStats(summaryResponse);
+      } catch (err) {
+        if (!isAbortError(err) && !signal?.aborted) {
+          const message = err instanceof Error ? err.message : TODO_STRINGS.errors.genericFailed;
+          setError(message);
+        }
+      } finally {
+        if (!signal?.aborted) {
+          setIsLoading(false);
+        }
+      }
+    },
+    [buildQuery, isAdmin],
+  );
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (isAuthLoading) return;
 
-    const handleSync = (e: Event) => {
-      const customEvent = e as CustomEvent<{ userId?: string }>;
-      if (!customEvent.detail?.userId || customEvent.detail.userId === userId) {
-        reloadTodos();
-      }
-    };
-
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key && e.key.includes(userId)) {
-        reloadTodos();
-      }
-    };
-
-    window.addEventListener(TODOS_SYNC_EVENT, handleSync);
-    window.addEventListener("storage", handleStorageChange);
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => {
+      void loadData(filterState, controller.signal);
+    }, 0);
 
     return () => {
-      window.removeEventListener(TODOS_SYNC_EVENT, handleSync);
-      window.removeEventListener("storage", handleStorageChange);
+      window.clearTimeout(timeoutId);
+      controller.abort();
     };
-  }, [reloadTodos, userId]);
+  }, [filterState, isAuthLoading, loadData]);
+
+  const reloadTodos = useCallback(async () => {
+    await loadData(filterState);
+  }, [filterState, loadData]);
 
   const handleAddTodo = useCallback(
-    (input: CreateTodoInput): TodoItem | null => {
+    async (input: CreateTodoInput): Promise<TodoItem | null> => {
       if (!isAdmin) return null;
-      const created = createTodo(userId, input);
-      reloadTodos();
-      return created;
+      setIsSubmitting(true);
+      setError(null);
+      try {
+        const created = await todoApi.create(input);
+        await reloadTodos();
+        return created;
+      } catch (err) {
+        const message = err instanceof Error ? err.message : TODO_STRINGS.errors.genericFailed;
+        setError(message);
+        throw err;
+      } finally {
+        setIsSubmitting(false);
+      }
     },
-    [isAdmin, reloadTodos, userId],
+    [isAdmin, reloadTodos],
   );
 
   const handleUpdateTodo = useCallback(
-    (id: string, updates: Partial<UpdateTodoInput>): TodoItem | null => {
+    async (id: string, updates: UpdateTodoInput): Promise<TodoItem | null> => {
       if (!isAdmin) return null;
-      const updated = updateTodo(userId, id, updates);
-      reloadTodos();
-      return updated;
+      setIsSubmitting(true);
+      setError(null);
+      try {
+        const updated = await todoApi.update(id, updates);
+        await reloadTodos();
+        return updated;
+      } catch (err) {
+        const message = err instanceof Error ? err.message : TODO_STRINGS.errors.genericFailed;
+        setError(message);
+        throw err;
+      } finally {
+        setIsSubmitting(false);
+      }
     },
-    [isAdmin, reloadTodos, userId],
+    [isAdmin, reloadTodos],
   );
 
   const handleToggleTodo = useCallback(
-    (id: string): TodoItem | null => {
+    async (id: string): Promise<TodoItem | null> => {
       if (!isAdmin) return null;
-      const updated = toggleTodo(userId, id);
-      reloadTodos();
-      return updated;
+      const target = todos.find((t) => t.id === id);
+      setIsSubmitting(true);
+      setError(null);
+      try {
+        const updated = target?.completed ? await todoApi.reopen(id) : await todoApi.complete(id);
+        await reloadTodos();
+        return updated;
+      } catch (err) {
+        const message = err instanceof Error ? err.message : TODO_STRINGS.errors.genericFailed;
+        setError(message);
+        throw err;
+      } finally {
+        setIsSubmitting(false);
+      }
     },
-    [isAdmin, reloadTodos, userId],
+    [isAdmin, reloadTodos, todos],
   );
 
   const handleDeleteTodo = useCallback(
-    (id: string): boolean => {
+    async (id: string): Promise<boolean> => {
       if (!isAdmin) return false;
-      const success = deleteTodo(userId, id);
-      reloadTodos();
-      return success;
+      setIsSubmitting(true);
+      setError(null);
+      try {
+        await todoApi.delete(id);
+        await reloadTodos();
+        return true;
+      } catch (err) {
+        const message = err instanceof Error ? err.message : TODO_STRINGS.errors.genericFailed;
+        setError(message);
+        throw err;
+      } finally {
+        setIsSubmitting(false);
+      }
     },
-    [isAdmin, reloadTodos, userId],
+    [isAdmin, reloadTodos],
   );
 
-  const handleClearCompleted = useCallback(() => {
+  const handleClearCompleted = useCallback(async () => {
     if (!isAdmin) return;
-    clearCompletedTodos(userId);
-    reloadTodos();
-  }, [isAdmin, reloadTodos, userId]);
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      await todoApi.clearCompleted();
+      await reloadTodos();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : TODO_STRINGS.errors.genericFailed;
+      setError(message);
+      throw err;
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [isAdmin, reloadTodos]);
 
   const resetFilters = useCallback(() => {
     setFilterState(DEFAULT_FILTER_STATE);
   }, []);
 
-  const stats: TodoStats = useMemo(() => {
-    const total = todos.length;
-    const active = todos.filter((t) => !t.completed).length;
-    const completed = todos.filter((t) => t.completed).length;
-    const urgent = todos.filter(
-      (t) => !t.completed && (t.priority === "URGENT" || t.priority === "HIGH"),
-    ).length;
-
-    const todayStr = new Date().toISOString().split("T")[0];
-    const overdue = todos.filter((t) => !t.completed && t.dueDate && t.dueDate < todayStr).length;
-
-    const completionRate = total === 0 ? 0 : Math.round((completed / total) * 100);
-
-    return {
-      total,
-      active,
-      completed,
-      urgent,
-      overdue,
-      completionRate,
-    };
-  }, [todos]);
-
-  const filteredTodos = useMemo(() => {
-    return todos
-      .filter((item) => {
-        // Status filter
-        if (filterState.status === "ACTIVE" && item.completed) return false;
-        if (filterState.status === "COMPLETED" && !item.completed) return false;
-
-        // Priority filter
-        if (filterState.priority !== "ALL" && item.priority !== filterState.priority) return false;
-
-        // Category filter
-        if (filterState.category !== "ALL" && item.category !== filterState.category) return false;
-
-        // Search query
-        if (filterState.search.trim()) {
-          const query = filterState.search.toLowerCase().trim();
-          const matchTitle = item.title.toLowerCase().includes(query);
-          const matchDesc = (item.description || "").toLowerCase().includes(query);
-          const matchTags = item.tags.some((tag) => tag.toLowerCase().includes(query));
-          const matchCategory = item.category.toLowerCase().includes(query);
-          if (!matchTitle && !matchDesc && !matchTags && !matchCategory) {
-            return false;
-          }
-        }
-
-        return true;
-      })
-      .sort((a, b) => {
-        const orderFactor = filterState.sortOrder === "asc" ? 1 : -1;
-
-        if (filterState.sortBy === "priority") {
-          const pA = PRIORITY_WEIGHT[a.priority] || 0;
-          const pB = PRIORITY_WEIGHT[b.priority] || 0;
-          if (pA !== pB) return (pA - pB) * orderFactor;
-        }
-
-        if (filterState.sortBy === "dueDate") {
-          const dateA = a.dueDate || "9999-99-99";
-          const dateB = b.dueDate || "9999-99-99";
-          if (dateA !== dateB) return dateA.localeCompare(dateB) * orderFactor;
-        }
-
-        if (filterState.sortBy === "title") {
-          return a.title.localeCompare(b.title) * orderFactor;
-        }
-
-        // Default: createdAt
-        return a.createdAt.localeCompare(b.createdAt) * orderFactor;
-      });
-  }, [filterState, todos]);
-
   return {
     todos,
-    filteredTodos,
+    filteredTodos: todos,
     stats,
     filterState,
     setFilterState,
     resetFilters,
+    reloadTodos,
     addTodo: handleAddTodo,
     updateTodo: handleUpdateTodo,
     toggleTodo: handleToggleTodo,
     deleteTodo: handleDeleteTodo,
     clearCompleted: handleClearCompleted,
     isAdmin,
-    isLoading: isAuthLoading,
+    isLoading: isAuthLoading || isLoading,
+    isSubmitting,
+    error,
   };
 };
