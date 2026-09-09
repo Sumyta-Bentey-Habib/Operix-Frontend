@@ -61,6 +61,8 @@ export const TASK_DETAILS_STRINGS = {
     team: "Team Reference",
     category: "Category Reference",
     createdBy: "Created By",
+    assignedTo: "Assigned To",
+    unassigned: "Unassigned",
     dueDate: "Due Date",
     startedAt: "Started",
     completedAt: "Completed",
@@ -81,7 +83,9 @@ export const TASK_TABLE_STRINGS = {
     title: "Title",
     priority: "Priority",
     status: "Status",
-    team: "Team Reference",
+    assignee: "Assigned To",
+    createdBy: "Created By",
+    team: "Team",
     due: "Due",
     overdue: "Overdue",
     created: "Created",
@@ -91,10 +95,13 @@ export const TASK_TABLE_STRINGS = {
     teamPrefix: "Team:",
     duePrefix: "Due:",
     createdPrefix: "Created:",
+    assigneePrefix: "Assigned To:",
+    creatorPrefix: "Created By:",
   },
   badges: {
     overdue: "Overdue",
     notOverdue: "No",
+    unassigned: "Unassigned",
   },
   actions: {
     view: "View",
@@ -102,6 +109,12 @@ export const TASK_TABLE_STRINGS = {
     start: "Start",
   },
 } as const;
+
+export const TASK_ROLE_LABELS: Record<string, string> = {
+  SUPER_ADMIN: "Super Admin",
+  ADMIN: "Admin",
+  MEMBER: "Member",
+};
 
 export const TASK_CREATE_STRINGS = {
   eyebrow: "Operations",

@@ -55,7 +55,8 @@ export const canTransferMember = (viewer: OperixViewer | null): boolean =>
 export const canViewTaskCore = (viewer: OperixViewer | null): boolean =>
   viewer?.role === "SUPER_ADMIN" || viewer?.role === "ADMIN" || viewer?.role === "MEMBER";
 
-export const canCreateTask = (viewer: OperixViewer | null): boolean => viewer?.role === "ADMIN";
+export const canCreateTask = (viewer: OperixViewer | null): boolean =>
+  viewer?.role === "SUPER_ADMIN" || viewer?.role === "ADMIN";
 
 export const canAssignTask = (viewer: OperixViewer | null): boolean => viewer?.role === "ADMIN";
 

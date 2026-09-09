@@ -7,7 +7,7 @@ export default function NewTaskPage() {
   return (
     <AuthGuard>
       <DashboardShell activeTab="tasks" hideHeader title={TASK_CREATE_STRINGS.title}>
-        <PermissionGuard allowedRoles={["ADMIN"]}>
+        <PermissionGuard allowedRoles={["SUPER_ADMIN", "ADMIN"]}>
           <TaskCreatePage />
         </PermissionGuard>
       </DashboardShell>

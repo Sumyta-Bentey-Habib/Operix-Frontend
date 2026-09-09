@@ -21,6 +21,19 @@ export type TaskSort =
   | "PRIORITY_DESC"
   | "PRIORITY_ASC";
 
+export interface TaskUserSummary {
+  id: string;
+  name: string;
+  role: string;
+  employeeId?: string | null;
+  designation?: string | null;
+}
+
+export interface TaskTeamSummary {
+  id: string;
+  name: string;
+}
+
 export interface Task {
   id: string;
   referenceCode: string;
@@ -34,8 +47,11 @@ export interface Task {
   completedAt: string | null;
   cancelledAt: string | null;
   teamId: string;
+  team?: TaskTeamSummary;
   categoryId: string | null;
   createdById: string;
+  owner?: TaskUserSummary;
+  responsible?: TaskUserSummary | null;
   createdAt: string;
   updatedAt: string;
   isOverdue: boolean;

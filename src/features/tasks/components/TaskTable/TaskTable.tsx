@@ -5,7 +5,7 @@ import { canAssignTask, canStartTask } from "@/lib/auth/permissions";
 import type { OperixViewer } from "@/types/auth";
 import { formatDisplayDate } from "@/utils/date";
 import { obfuscateId } from "@/utils/id-obfuscator";
-import { TASK_TABLE_STRINGS } from "@/utils/task-strings";
+import { TASK_ROLE_LABELS, TASK_TABLE_STRINGS } from "@/utils/task-strings";
 import type { Task } from "../../types/task.types";
 import { TaskPriorityBadge } from "../TaskPriorityBadge";
 import { TaskStatusBadge } from "../TaskStatusBadge";
@@ -30,6 +30,8 @@ export const TaskTable = ({ tasks, viewer, onAssign, onStart }: TaskTableProps) 
           <th>{TASK_TABLE_STRINGS.columns.title}</th>
           <th>{TASK_TABLE_STRINGS.columns.priority}</th>
           <th>{TASK_TABLE_STRINGS.columns.status}</th>
+          <th>{TASK_TABLE_STRINGS.columns.assignee}</th>
+          <th>{TASK_TABLE_STRINGS.columns.createdBy}</th>
           <th>{TASK_TABLE_STRINGS.columns.team}</th>
           <th>{TASK_TABLE_STRINGS.columns.due}</th>
           <th>{TASK_TABLE_STRINGS.columns.overdue}</th>
@@ -38,23 +40,54 @@ export const TaskTable = ({ tasks, viewer, onAssign, onStart }: TaskTableProps) 
         </tr>
       </thead>
       <tbody className={styles.tbody}>
-        {tasks.map((task) => (
-          <tr key={task.id} className={styles.row}>
-            <td className={styles.refCell} data-label={TASK_TABLE_STRINGS.columns.reference}>
-              <span className={styles.mono}>{task.referenceCode}</span>
-            </td>
-            <td className={styles.taskTitleCell} data-label={TASK_TABLE_STRINGS.columns.title}>
-              <span className={styles.taskTitle}>{task.title}</span>
-            </td>
-            <td className={styles.priorityCell} data-label={TASK_TABLE_STRINGS.columns.priority}>
-              <TaskPriorityBadge priority={task.priority} />
-            </td>
-            <td className={styles.statusCell} data-label={TASK_TABLE_STRINGS.columns.status}>
-              <TaskStatusBadge status={task.status} />
-            </td>
-            <td className={styles.teamCell} data-label={TASK_TABLE_STRINGS.labels.teamPrefix}>
-              <span className={styles.mono}>{obfuscateId(task.teamId, "TM")}</span>
-            </td>
+        {tasks.map((task) => {
+          const creatorRole = task.owner?.role
+            ? (TASK_ROLE_LABELS[task.owner.role] ?? task.owner.role)
+            : null;
+
+          return (
+            <tr key={task.id} className={styles.row}>
+              <td className={styles.refCell} data-label={TASK_TABLE_STRINGS.columns.reference}>
+                <span className={styles.mono}>{task.referenceCode}</span>
+              </td>
+              <td className={styles.taskTitleCell} data-label={TASK_TABLE_STRINGS.columns.title}>
+                <span className={styles.taskTitle}>{task.title}</span>
+              </td>
+              <td className={styles.priorityCell} data-label={TASK_TABLE_STRINGS.columns.priority}>
+                <TaskPriorityBadge priority={task.priority} />
+              </td>
+              <td className={styles.statusCell} data-label={TASK_TABLE_STRINGS.columns.status}>
+                <TaskStatusBadge status={task.status} />
+              </td>
+              <td className={styles.assigneeCell} data-label={TASK_TABLE_STRINGS.labels.assigneePrefix}>
+                {task.responsible ? (
+                  <div className={styles.personInfo}>
+                    <span className={styles.personName}>{task.responsible.name}</span>
+                    {task.responsible.designation && (
+                      <span className={styles.personMeta}>{task.responsible.designation}</span>
+                    )}
+                  </div>
+                ) : (
+                  <span className={styles.unassignedBadge}>
+                    {TASK_TABLE_STRINGS.badges.unassigned}
+                  </span>
+                )}
+              </td>
+              <td className={styles.creatorCell} data-label={TASK_TABLE_STRINGS.labels.creatorPrefix}>
+                <div className={styles.personInfo}>
+                  <span className={styles.personName}>
+                    {task.owner?.name ?? obfuscateId(task.createdById, "USR")}
+                  </span>
+                  {creatorRole && (
+                    <span className={styles.roleBadge}>{creatorRole}</span>
+                  )}
+                </div>
+              </td>
+              <td className={styles.teamCell} data-label={TASK_TABLE_STRINGS.labels.teamPrefix}>
+                <span className={styles.teamName}>
+                  {task.team?.name ?? obfuscateId(task.teamId, "TM")}
+                </span>
+              </td>
             <td className={styles.dueCell} data-label={TASK_TABLE_STRINGS.labels.duePrefix}>
               <span className={styles.dateCell}>{formatOptionalDate(task.dueAt)}</span>
             </td>
@@ -93,8 +126,9 @@ export const TaskTable = ({ tasks, viewer, onAssign, onStart }: TaskTableProps) 
                 )}
               </div>
             </td>
-          </tr>
-        ))}
+            </tr>
+          );
+        })}
       </tbody>
     </table>
   </div>
