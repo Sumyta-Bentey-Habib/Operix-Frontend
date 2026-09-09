@@ -41,4 +41,28 @@ describe("DatePicker Component", () => {
 
     expect(handleRangeChange).toHaveBeenCalled();
   });
+
+  it("renders single date mode and calls onChangeDate on day click", () => {
+    const handleChangeDate = vi.fn();
+    render(
+      <DatePicker
+        mode="single"
+        value="2026-09-10"
+        onChangeDate={handleChangeDate}
+        closeOnSelect
+      />,
+    );
+
+    expect(screen.getByText("10 Sep 2026")).toBeInTheDocument();
+
+    const trigger = screen.getByRole("button", { name: /Select date or range/i });
+    fireEvent.click(trigger);
+    expect(screen.getByTestId("dynamic-calendar")).toBeInTheDocument();
+
+    const day15Btn = screen.getByRole("button", { name: /2026-09-15/ });
+    fireEvent.click(day15Btn);
+
+    expect(handleChangeDate).toHaveBeenCalledWith("2026-09-15");
+    expect(screen.queryByTestId("dynamic-calendar")).not.toBeInTheDocument();
+  });
 });

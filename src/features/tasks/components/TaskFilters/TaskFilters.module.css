@@ -102,12 +102,13 @@
 
 .primaryButton {
   background: var(--primary-emerald);
-  color: var(--text-inverse);
+  color: var(--text-on-primary);
   box-shadow: 0 2px 8px var(--primary-emerald-glow);
 }
 
 .primaryButton:hover:not(:disabled) {
   background: var(--primary-emerald-hover);
+  color: var(--text-on-primary);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px var(--primary-emerald-glow);
 }

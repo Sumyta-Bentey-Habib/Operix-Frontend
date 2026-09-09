@@ -6,6 +6,7 @@ import { obfuscateId } from "@/utils/id-obfuscator";
 import type { ManagementReport, ManagementReportFormValues } from "../../types/report.types";
 import { reportToFormValues } from "../../utils/report-form";
 import { validateReportPeriod } from "../../utils/report-date";
+import { DatePicker } from "@/components/ui/DatePicker";
 import { ReportTeamPicker } from "../ReportTeamPicker";
 import styles from "../Reports.module.css";
 
@@ -95,24 +96,36 @@ export const ReportForm = ({
             />
           </label>
           <div className={styles.grid}>
-            <label className={styles.field}>
+            <div className={styles.field}>
               <span>Period Start *</span>
-              <input
-                className={styles.input}
-                type="date"
+              <DatePicker
+                mode="single"
                 value={values.periodStart}
-                onChange={(event) => update("periodStart", event.target.value)}
+                onChangeDate={(date) => update("periodStart", date)}
+                placeholder="Select start date"
+                ariaLabel="Period Start Date"
+                align="left"
+                maxDate={values.periodEnd || undefined}
+                disabled={pending}
+                fullWidth
+                closeOnSelect
               />
-            </label>
-            <label className={styles.field}>
+            </div>
+            <div className={styles.field}>
               <span>Period End *</span>
-              <input
-                className={styles.input}
-                type="date"
+              <DatePicker
+                mode="single"
                 value={values.periodEnd}
-                onChange={(event) => update("periodEnd", event.target.value)}
+                onChangeDate={(date) => update("periodEnd", date)}
+                placeholder="Select end date"
+                ariaLabel="Period End Date"
+                align="left"
+                minDate={values.periodStart || undefined}
+                disabled={pending}
+                fullWidth
+                closeOnSelect
               />
-            </label>
+            </div>
           </div>
         </div>
       </section>
