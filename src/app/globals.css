@@ -236,7 +236,7 @@ a {
   transition: color 0.2s ease;
 }
 
-a:not([class*="Button"]):not([class*="button"]):not([class*="btn"]):not([role="button"]):hover {
+a:hover {
   color: var(--primary-emerald-hover);
 }
 

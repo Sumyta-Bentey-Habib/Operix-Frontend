@@ -39,11 +39,10 @@
   max-width: 780px;
 }
 
-a.primaryButton,
 .primaryButton {
   background: var(--primary-emerald);
   border-radius: 12px;
-  color: var(--text-on-primary);
+  color: var(--text-inverse);
   font-weight: 800;
   font-size: 0.85rem;
   padding: 10px 20px;
@@ -56,10 +55,8 @@ a.primaryButton,
   gap: 8px;
 }
 
-a.primaryButton:hover,
 .primaryButton:hover {
   background: var(--primary-emerald-hover);
-  color: var(--text-on-primary);
   transform: translateY(-1px);
   box-shadow: 0 4px 16px var(--primary-emerald-glow);
 }

@@ -14,18 +14,12 @@ export interface DatePickerProps {
   onChangeRange?: (range: DateRange) => void;
   placeholder?: string;
   align?: "left" | "right";
-  placement?: "bottom" | "top" | "auto";
   className?: string;
   triggerClassName?: string;
   showPresets?: boolean;
-  showFooter?: boolean;
   minDate?: string;
   maxDate?: string;
   ariaLabel?: string;
-  id?: string;
-  disabled?: boolean;
-  fullWidth?: boolean;
-  closeOnSelect?: boolean;
 }
 
 export const DatePicker: React.FC<DatePickerProps> = ({
@@ -36,50 +30,15 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   onChangeRange,
   placeholder = "Select Date",
   align = "right",
-  placement = "auto",
   className = "",
   triggerClassName = "",
   showPresets = mode === "range",
-  showFooter = true,
   minDate,
   maxDate,
   ariaLabel = "Select date or range",
-  id,
-  disabled = false,
-  fullWidth = false,
-  closeOnSelect = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [autoPlacement, setAutoPlacement] = useState<"top" | "bottom">("bottom");
-  const resolvedPlacement = placement === "auto" ? autoPlacement : placement;
-
-  const calculateAutoPlacement = useCallback((): "top" | "bottom" => {
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect) return "bottom";
-
-    const dialog = containerRef.current?.closest("[role='dialog']");
-    if (dialog) {
-      const dialogRect = dialog.getBoundingClientRect();
-      const spaceBelowInDialog = dialogRect.bottom - rect.bottom;
-      const spaceAboveInDialog = rect.top - dialogRect.top;
-      return spaceBelowInDialog < 340 && spaceAboveInDialog > spaceBelowInDialog
-        ? "top"
-        : "bottom";
-    }
-
-    const spaceBelow = window.innerHeight - rect.bottom;
-    const spaceAbove = rect.top;
-    return spaceBelow < 360 && spaceAbove > spaceBelow ? "top" : "bottom";
-  }, []);
-
-  const handleToggle = () => {
-    if (disabled) return;
-    if (!isOpen && placement === "auto") {
-      setAutoPlacement(calculateAutoPlacement());
-    }
-    setIsOpen((prev) => !prev);
-  };
 
   const [uncontrolledDate, setUncontrolledDate] = useState<string | undefined>(value);
   const [uncontrolledRange, setUncontrolledRange] = useState<DateRange | undefined>(range);
@@ -115,11 +74,6 @@ export const DatePicker: React.FC<DatePickerProps> = ({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, closeDropdown]);
 
-  const hasValue =
-    mode === "single"
-      ? Boolean(activeDate)
-      : Boolean(activeRange?.startDate);
-
   const displayLabel = (() => {
     if (mode === "single") {
       return activeDate ? formatCalendarDisplayDate(activeDate) : placeholder;
@@ -136,9 +90,6 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   const handleSelectDate = (d: string) => {
     setUncontrolledDate(d);
     onChangeDate?.(d);
-    if (closeOnSelect) {
-      closeDropdown();
-    }
   };
 
   const handleSelectRange = (r: DateRange) => {
@@ -169,31 +120,21 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`${styles.datePickerContainer} ${fullWidth ? styles.fullWidth : ""} ${
-        isOpen ? styles.datePickerContainerOpen : ""
-      } ${className}`}
+      className={`${styles.datePickerContainer} ${className}`}
       data-testid="operix-datepicker"
     >
       <button
         type="button"
-        id={id}
-        disabled={disabled}
-        className={`${styles.triggerButton} ${isOpen ? styles.triggerButtonOpen : ""} ${
-          disabled ? styles.triggerDisabled : ""
-        } ${fullWidth ? styles.fullWidthTrigger : ""} ${triggerClassName}`}
-        onClick={handleToggle}
+        className={`${styles.triggerButton} ${isOpen ? styles.triggerButtonOpen : ""} ${triggerClassName}`}
+        onClick={() => setIsOpen((prev) => !prev)}
         aria-expanded={isOpen}
         aria-haspopup="dialog"
         aria-label={ariaLabel}
       >
-        <span className={styles.triggerContent}>
-          <span className={styles.calendarIcon}>
-            <CalendarIcon size={16} />
-          </span>
-          <span className={hasValue ? styles.displayValue : styles.placeholder}>
-            {displayLabel}
-          </span>
+        <span className={styles.calendarIcon}>
+          <CalendarIcon size={16} />
         </span>
+        <span>{displayLabel}</span>
         <span className={`${styles.chevronIcon} ${isOpen ? styles.chevronIconRotated : ""}`}>
           <ChevronDownIcon size={14} />
         </span>
@@ -204,8 +145,8 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           <div className={styles.mobileBackdrop} onClick={closeDropdown} role="presentation" />
           <div
             className={`${styles.popoverDropdown} ${
-              resolvedPlacement === "top" ? styles.popoverTop : styles.popoverBottom
-            } ${align === "left" ? styles.popoverAlignLeft : styles.popoverAlignRight}`}
+              align === "left" ? styles.popoverAlignLeft : ""
+            }`}
             role="dialog"
             aria-modal="true"
             aria-label="Calendar Selector"
@@ -217,7 +158,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
               onSelectDate={handleSelectDate}
               onSelectRange={handleSelectRange}
               showPresets={showPresets}
-              showFooter={showFooter}
+              showFooter={true}
               onApply={handleApply}
               onClear={handleClear}
               minDate={minDate}

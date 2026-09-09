@@ -37,18 +37,11 @@
   border: 0;
   border-radius: 12px;
   background: var(--primary-emerald);
-  color: var(--text-on-primary);
+  color: var(--text-inverse);
   cursor: pointer;
   font-weight: 800;
   padding: 12px 18px;
   white-space: nowrap;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.primaryButton:hover:not(:disabled) {
-  background: var(--primary-emerald-hover);
-  color: var(--text-on-primary);
-  transform: translateY(-1px);
 }
 
 @media (max-width: 720px) {

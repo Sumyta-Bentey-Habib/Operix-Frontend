@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { DatePicker } from "@/components/ui/DatePicker";
 import { Modal } from "@/components/ui/Modal";
 import { CATEGORY_OPTIONS, PRIORITY_OPTIONS, TODO_STRINGS } from "../../constants/todo-strings";
 import type {
@@ -139,18 +138,13 @@ const TodoForm: React.FC<TodoFormProps> = ({ initialData, onClose, onSubmit, isS
           <label htmlFor="todo-due-date" className={styles.label}>
             {TODO_STRINGS.modal.dueDateLabel}
           </label>
-          <DatePicker
+          <input
             id="todo-due-date"
-            mode="single"
+            type="date"
+            className={styles.input}
             value={dueDate}
-            onChangeDate={(date) => setDueDate(date)}
-            placeholder="Select due date"
-            ariaLabel={TODO_STRINGS.modal.dueDateLabel}
+            onChange={(e) => setDueDate(e.target.value)}
             disabled={isSubmitting}
-            align="left"
-            placement="top"
-            fullWidth
-            closeOnSelect
           />
         </div>
 
