@@ -9,7 +9,7 @@ import { TaskSubmissions } from "@/features/submissions";
 import { canAssignTask, canStartTask } from "@/lib/auth/permissions";
 import { formatDisplayDate } from "@/utils/date";
 import { obfuscateId } from "@/utils/id-obfuscator";
-import { TASK_DETAILS_STRINGS } from "@/utils/task-strings";
+import { TASK_DETAILS_STRINGS, TASK_ROLE_LABELS } from "@/utils/task-strings";
 import { taskApi } from "../../api/task.api";
 import { useTask } from "../../hooks/use-task";
 import type { TaskStatus } from "../../types/task.types";
@@ -516,10 +516,38 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
             <dl className={styles.metaList}>
               <div className={styles.metaItem}>
                 <dt className={styles.metaLabel}>
+                  {TASK_DETAILS_STRINGS.metadata.assignedTo}
+                </dt>
+                <dd className={styles.metaValue}>
+                  {task.responsible ? (
+                    <span>
+                      {task.responsible.name}
+                      {task.responsible.designation ? ` (${task.responsible.designation})` : ""}
+                    </span>
+                  ) : (
+                    <span>{TASK_DETAILS_STRINGS.metadata.unassigned}</span>
+                  )}
+                </dd>
+              </div>
+
+              <div className={styles.metaItem}>
+                <dt className={styles.metaLabel}>
+                  {TASK_DETAILS_STRINGS.metadata.createdBy}
+                </dt>
+                <dd className={styles.metaValue}>
+                  {task.owner?.name ?? obfuscateId(task.createdById, "USR")}
+                  {task.owner?.role
+                    ? ` (${TASK_ROLE_LABELS[task.owner.role] ?? task.owner.role})`
+                    : ""}
+                </dd>
+              </div>
+
+              <div className={styles.metaItem}>
+                <dt className={styles.metaLabel}>
                   {TASK_DETAILS_STRINGS.metadata.team}
                 </dt>
                 <dd className={`${styles.metaValue} ${styles.mono}`}>
-                  {obfuscateId(task.teamId, "TM")}
+                  {task.team?.name ?? obfuscateId(task.teamId, "TM")}
                 </dd>
               </div>
 
@@ -531,15 +559,6 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
                   {task.categoryId
                     ? obfuscateId(task.categoryId, "CAT")
                     : TASK_DETAILS_STRINGS.metadata.notApplicable}
-                </dd>
-              </div>
-
-              <div className={styles.metaItem}>
-                <dt className={styles.metaLabel}>
-                  {TASK_DETAILS_STRINGS.metadata.createdBy}
-                </dt>
-                <dd className={`${styles.metaValue} ${styles.mono}`}>
-                  {obfuscateId(task.createdById, "USR")}
                 </dd>
               </div>
             </dl>

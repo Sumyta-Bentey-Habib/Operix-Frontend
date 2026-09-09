@@ -133,9 +133,55 @@
   transform: translateY(-1px);
 }
 
-.button:focus-visible {
-  outline: 2px solid var(--primary-emerald);
-  outline-offset: 2px;
+.personInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.personName {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.personMeta {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.roleBadge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  width: fit-content;
+}
+
+.unassignedBadge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--warning-text);
+  background: var(--warning-bg);
+  border: 1px dashed var(--border-default);
+  padding: 2px 8px;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+}
+
+.teamName {
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
 }
 
 /* ==========================================================================
@@ -193,6 +239,8 @@
     width: 100%;
   }
 
+  .assigneeCell::before,
+  .creatorCell::before,
   .teamCell::before,
   .dueCell::before,
   .createdCell::before {
@@ -234,6 +282,8 @@
     align-items: center;
   }
 
+  .assigneeCell,
+  .creatorCell,
   .teamCell,
   .dueCell,
   .overdueCell,

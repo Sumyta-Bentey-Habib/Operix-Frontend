@@ -96,4 +96,58 @@ describe("TaskTable", () => {
     expect(screen.getByText("No")).toBeInTheDocument();
     expect(screen.queryByText("Overdue", { selector: "span" })).not.toBeInTheDocument();
   });
+
+  it("displays assigned member and creator info when available", () => {
+    const assignedTask: Task = {
+      ...task("ASSIGNED"),
+      owner: {
+        id: "creator-uuid",
+        name: "Super Boss",
+        role: "SUPER_ADMIN",
+      },
+      responsible: {
+        id: "member-uuid",
+        name: "Alex Dev",
+        role: "MEMBER",
+        designation: "Senior Engineer",
+      },
+      team: {
+        id: "team-uuid",
+        name: "Frontend Core",
+      },
+    };
+
+    render(
+      <TaskTable
+        tasks={[assignedTask]}
+        viewer={viewer("SUPER_ADMIN")}
+        onAssign={vi.fn()}
+        onStart={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("Alex Dev")).toBeInTheDocument();
+    expect(screen.getByText("Senior Engineer")).toBeInTheDocument();
+    expect(screen.getByText("Super Boss")).toBeInTheDocument();
+    expect(screen.getByText("Super Admin")).toBeInTheDocument();
+    expect(screen.getByText("Frontend Core")).toBeInTheDocument();
+  });
+
+  it("displays Unassigned badge when task has no assigned member", () => {
+    const unassignedTask: Task = {
+      ...task("PENDING"),
+      responsible: null,
+    };
+
+    render(
+      <TaskTable
+        tasks={[unassignedTask]}
+        viewer={viewer("SUPER_ADMIN")}
+        onAssign={vi.fn()}
+        onStart={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("Unassigned")).toBeInTheDocument();
+  });
 });
