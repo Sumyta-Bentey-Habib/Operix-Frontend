@@ -5,6 +5,16 @@
   display: grid;
   gap: 10px;
   padding: 16px;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.dragOver {
+  background: color-mix(in srgb, var(--primary-emerald) 15%, transparent);
+  border-style: solid;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-emerald) 30%, transparent);
 }
 
 .label {
@@ -46,6 +56,17 @@
   overflow-wrap: anywhere;
 }
 
+.fileInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fileSize {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
 .selectionItem button,
 .uploadButton {
   border: 0;
@@ -53,6 +74,9 @@
   cursor: pointer;
   font-weight: 800;
   padding: 9px 12px;
+  transition:
+    opacity 0.2s ease,
+    transform 0.1s ease;
 }
 
 .selectionItem button {
@@ -60,10 +84,22 @@
   color: var(--text-primary);
 }
 
+.selectionItem button:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
 .uploadButton {
   background: var(--primary-emerald);
   color: var(--text-inverse);
   justify-self: start;
+}
+
+.uploadButton:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.uploadButton:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 .selectionItem button:disabled,
