@@ -213,6 +213,18 @@ export const Calendar: React.FC<CalendarProps> = ({
             >
               Today
             </button>
+            {onClear && (internalDate || internalRange?.startDate) && (
+              <button
+                type="button"
+                className={styles.clearBadgeBtn}
+                onClick={handleClear}
+                aria-label="Clear selection"
+                title="Clear selection"
+                data-testid="clear-selection-btn"
+              >
+                Clear
+              </button>
+            )}
           </div>
 
           <div className={styles.navButtons}>

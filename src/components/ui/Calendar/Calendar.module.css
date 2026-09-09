@@ -59,12 +59,12 @@
 }
 
 .calendarBody {
-  padding: 16px 20px;
+  padding: 14px 16px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  min-width: 290px;
+  gap: 12px;
+  min-width: 280px;
 }
 
 .calendarHeader {
@@ -105,6 +105,24 @@
   color: var(--text-inverse);
 }
 
+.clearBadgeBtn {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  padding: 2px 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.clearBadgeBtn:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+}
+
 .navButtons {
   display: flex;
   align-items: center;
@@ -118,8 +136,8 @@
   width: 32px;
   height: 32px;
   border: 1px solid var(--border-default);
+  background: var(--bg-card-subtle);
   border-radius: 8px;
-  background: var(--bg-card);
   color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.15s ease;
@@ -127,15 +145,22 @@
 
 .navBtn:hover {
   background: var(--bg-card-hover);
-  color: var(--text-primary);
   border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
+.navBtn:focus-visible,
+.todayBadgeBtn:focus-visible,
+.clearBadgeBtn:focus-visible {
+  outline: 2px solid var(--primary-emerald);
+  outline-offset: 1px;
 }
 
 .weekdaysGrid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
   text-align: center;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .weekdayLabel {
@@ -150,7 +175,7 @@
 .daysGrid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  row-gap: 4px;
+  row-gap: 3px;
   column-gap: 0;
 }
 
@@ -159,7 +184,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 36px;
+  height: 32px;
 }
 
 .dayCell {
@@ -168,8 +193,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border-radius: 8px;
   border: none;
   background: transparent;
