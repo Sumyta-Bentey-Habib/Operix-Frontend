@@ -10,6 +10,7 @@ import {
   type TaskFilterState,
   type TaskOverdueFilter,
   type TaskPriorityFilter,
+  type TaskScopeFilter,
   type TaskSort,
   type TaskStatusFilter,
 } from "../../types/task.types";
@@ -31,6 +32,7 @@ const STATUS_OPTIONS: TaskStatusFilter[] = [
 ];
 
 const PRIORITY_OPTIONS: TaskPriorityFilter[] = ["ALL", "LOW", "MEDIUM", "HIGH", "URGENT"];
+const SCOPE_OPTIONS: TaskScopeFilter[] = ["ALL", "TEAM", "GLOBAL"];
 const OVERDUE_OPTIONS: TaskOverdueFilter[] = ["ALL", "OVERDUE", "NOT_OVERDUE"];
 const SORT_OPTIONS: TaskSort[] = [
   "CREATED_AT_DESC",
@@ -58,10 +60,11 @@ export const TaskFilters = ({ viewer, filters, onApply, onClear }: TaskFiltersPr
     onApply({
       ...draft,
       q: draft.q.trim(),
+      ...(draft.scope === "GLOBAL" ? { teamId: "" } : {}),
     });
   };
 
-  const showTeamFilter = canFilterTasksByTeam(viewer);
+  const showTeamFilter = canFilterTasksByTeam(viewer) && draft.scope !== "GLOBAL";
   const showMemberFilter = canFilterTasksByAssignedMember(viewer);
   const hasScopedFilters = showTeamFilter || showMemberFilter;
 
@@ -91,6 +94,37 @@ export const TaskFilters = ({ viewer, filters, onApply, onClear }: TaskFiltersPr
             />
           </div>
         </label>
+
+        {viewer.role === "SUPER_ADMIN" && (
+          <label className={styles.field}>
+            <span className={styles.fieldLabel}>Scope</span>
+            <select
+              className={styles.select}
+              value={draft.scope ?? "ALL"}
+              onChange={(event) => {
+                const nextScope = event.target.value as TaskScopeFilter;
+                setDraft((current) => ({
+                  ...current,
+                  scope: nextScope,
+                  ...(nextScope === "GLOBAL" ? { teamId: "" } : {}),
+                }));
+                if (nextScope === "GLOBAL") {
+                  setSelectedTeam(null);
+                }
+              }}
+            >
+              {SCOPE_OPTIONS.map((scopeOption) => (
+                <option key={scopeOption} value={scopeOption}>
+                  {scopeOption === "ALL"
+                    ? "All scopes"
+                    : scopeOption === "GLOBAL"
+                      ? "Global tasks"
+                      : "Team tasks"}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
 
         <label className={styles.field}>
           <span className={styles.fieldLabel}>Status</span>

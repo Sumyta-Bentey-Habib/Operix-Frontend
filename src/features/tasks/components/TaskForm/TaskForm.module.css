@@ -454,6 +454,82 @@
 }
 
 /* ==========================================================================
+   Scope Selector & Global Notice
+   ========================================================================== */
+.scopeSelector {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.scopeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-card-subtle);
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none;
+  min-height: 40px;
+}
+
+.scopeButton:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
+.scopeSelected {
+  border-color: var(--primary-emerald);
+  background: var(--primary-emerald-light);
+  color: var(--text-primary);
+  font-weight: 700;
+  box-shadow: 0 0 0 1px var(--primary-emerald);
+}
+
+.globalNotice {
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.globalNoticeText {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.checkbox {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  accent-color: var(--primary-emerald);
+  cursor: pointer;
+}
+
+
+/* ==========================================================================
    Responsive Adaptations
    ========================================================================== */
 @media (max-width: 1024px) {

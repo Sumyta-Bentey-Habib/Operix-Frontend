@@ -34,6 +34,16 @@ export interface TaskTeamSummary {
   name: string;
 }
 
+export type TaskScope = "TEAM" | "GLOBAL";
+
+export type TaskDistributionStatus = "PENDING" | "SENT" | "CANCELLED";
+
+export interface TaskDistributionSummary {
+  status: TaskDistributionStatus;
+  scheduledAt: string;
+  sentAt: string | null;
+}
+
 export interface Task {
   id: string;
   referenceCode: string;
@@ -42,14 +52,17 @@ export interface Task {
   remarks: string | null;
   priority: TaskPriority;
   status: TaskStatus;
+  scope?: TaskScope;
   dueAt: string | null;
   startedAt: string | null;
   completedAt: string | null;
   cancelledAt: string | null;
-  teamId: string;
-  team?: TaskTeamSummary;
+  teamId?: string | null;
+  team?: TaskTeamSummary | null;
+  distribution?: TaskDistributionSummary | null;
+  completionMode?: "DIRECT" | "REVIEW_REQUIRED";
   categoryId: string | null;
-  createdById: string;
+  createdById?: string;
   owner?: TaskUserSummary;
   responsible?: TaskUserSummary | null;
   createdAt: string;
@@ -72,6 +85,7 @@ export interface TaskListQuery {
   limit?: number;
   status?: TaskStatus;
   priority?: TaskPriority;
+  scope?: TaskScope;
   teamId?: string;
   assignedMemberId?: string;
   overdue?: boolean;
@@ -81,16 +95,24 @@ export interface TaskListQuery {
 
 export type TaskStatusFilter = TaskStatus | "ALL";
 export type TaskPriorityFilter = TaskPriority | "ALL";
+export type TaskScopeFilter = TaskScope | "ALL";
 export type TaskOverdueFilter = "ALL" | "OVERDUE" | "NOT_OVERDUE";
 
 export interface TaskFilterState {
   status: TaskStatusFilter;
   priority: TaskPriorityFilter;
+  scope?: TaskScopeFilter;
   teamId: string;
   assignedMemberId: string;
   overdue: TaskOverdueFilter;
   q: string;
   sort: TaskSort;
+}
+
+export interface CreateTaskDistributionInput {
+  notifyAll: true;
+  scheduledAt?: string;
+  leadMinutes?: number;
 }
 
 export interface CreateTaskInput {
@@ -99,7 +121,10 @@ export interface CreateTaskInput {
   remarks?: string;
   priority?: TaskPriority;
   dueAt?: string;
-  teamId: string;
+  scope?: TaskScope;
+  teamId?: string | null;
+  completionMode?: "DIRECT" | "REVIEW_REQUIRED";
+  distribution?: CreateTaskDistributionInput;
 }
 
 export interface AssignTaskInput {
@@ -110,6 +135,7 @@ export interface AssignTaskInput {
 export const DEFAULT_TASK_FILTERS: TaskFilterState = {
   status: "ALL",
   priority: "ALL",
+  scope: "ALL",
   teamId: "",
   assignedMemberId: "",
   overdue: "ALL",
@@ -132,13 +158,18 @@ export const buildTaskListQuery = (
   if (filters.status !== "ALL") query.status = filters.status;
   if (filters.priority !== "ALL") query.priority = filters.priority;
 
+  if (filters.scope && filters.scope !== "ALL") {
+    query.scope = filters.scope;
+  }
+
   const trimmedSearch = filters.q.trim();
   if (trimmedSearch) query.q = trimmedSearch;
 
   if (filters.overdue === "OVERDUE") query.overdue = true;
   if (filters.overdue === "NOT_OVERDUE") query.overdue = false;
 
-  if (viewer?.role === "SUPER_ADMIN" && filters.teamId) {
+  // Backend forbids teamId when scope is GLOBAL
+  if (viewer?.role === "SUPER_ADMIN" && filters.teamId && filters.scope !== "GLOBAL") {
     query.teamId = filters.teamId;
   }
 
@@ -148,3 +179,4 @@ export const buildTaskListQuery = (
 
   return query;
 };
+
