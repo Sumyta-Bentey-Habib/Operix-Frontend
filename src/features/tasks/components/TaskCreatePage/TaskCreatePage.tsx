@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useOptionalAuth } from "@/context/AuthContext";
 import { ChevronLeftIcon, ChevronRightIcon } from "@/components/icons";
 import { TASK_CREATE_STRINGS } from "@/utils/task-strings";
 import { taskApi } from "../../api/task.api";
@@ -13,6 +14,8 @@ import styles from "./TaskCreatePage.module.css";
 
 export const TaskCreatePage = () => {
   const router = useRouter();
+  const auth = useOptionalAuth();
+  const viewer = auth?.viewer ?? null;
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -68,7 +71,13 @@ export const TaskCreatePage = () => {
       </header>
 
       {/* Main Form */}
-      <TaskForm pending={pending} error={error} onSubmit={handleSubmit} onCancel={handleCancel} />
+      <TaskForm
+        viewer={viewer}
+        pending={pending}
+        error={error}
+        onSubmit={handleSubmit}
+        onCancel={handleCancel}
+      />
     </section>
   );
 };

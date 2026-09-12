@@ -15,7 +15,7 @@ import { viewerApi } from "@/features/auth/api/viewerApi";
 import { isAuthRequiredError, isOperixApiError, OperixApiError } from "@/lib/api";
 import type { AuthContextType, AuthHydrationStatus, AuthProfile, OperixViewer } from "@/types/auth";
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const toOperixApiError = (error: unknown): OperixApiError => {
   if (isOperixApiError(error)) {
@@ -192,3 +192,8 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
+
+export const useOptionalAuth = (): AuthContextType | null => {
+  return useContext(AuthContext) ?? null;
+};
+

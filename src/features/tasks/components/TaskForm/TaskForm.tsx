@@ -1,6 +1,8 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { useOptionalAuth } from "@/context/AuthContext";
+import type { OperixViewer } from "@/types/auth";
 import {
   CalendarIcon,
   CheckCircleIcon,
@@ -9,8 +11,9 @@ import {
   ShieldCheckIcon,
 } from "@/components/icons";
 import type { Team } from "@/features/teams";
+import { canCreateGlobalTask } from "@/lib/auth/permissions";
 import { TASK_CREATE_STRINGS } from "@/utils/task-strings";
-import type { CreateTaskInput, TaskPriority } from "../../types/task.types";
+import type { CreateTaskInput, TaskPriority, TaskScope } from "../../types/task.types";
 import { TaskTeamPicker } from "../TaskTeamPicker";
 import { DateTimePicker } from "@/components/ui/DateTimePicker";
 import styles from "./TaskForm.module.css";
@@ -20,19 +23,31 @@ export interface TaskFormProps {
   error: string | null;
   onSubmit: (input: CreateTaskInput) => void;
   onCancel?: () => void;
+  viewer?: OperixViewer | null;
 }
 
 const PRIORITIES: TaskPriority[] = ["LOW", "MEDIUM", "HIGH", "URGENT"];
 
 const toIsoOrUndefined = (value: string) => (value ? new Date(value).toISOString() : undefined);
 
-export const TaskForm = ({ pending, error, onSubmit, onCancel }: TaskFormProps) => {
+export const TaskForm = ({
+  pending,
+  error,
+  onSubmit,
+  onCancel,
+  viewer: propViewer,
+}: TaskFormProps) => {
+  const optionalAuth = useOptionalAuth();
+  const viewer = propViewer !== undefined ? propViewer : (optionalAuth?.viewer ?? null);
+  const canMakeGlobal = canCreateGlobalTask(viewer);
+  const [scope, setScope] = useState<TaskScope>("TEAM");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [remarks, setRemarks] = useState("");
   const [priority, setPriority] = useState<TaskPriority>("MEDIUM");
   const [dueAt, setDueAt] = useState("");
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
+  const [notifyAll, setNotifyAll] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
@@ -44,7 +59,7 @@ export const TaskForm = ({ pending, error, onSubmit, onCancel }: TaskFormProps) 
       return;
     }
 
-    if (!selectedTeam) {
+    if (scope === "TEAM" && !selectedTeam) {
       setLocalError(TASK_CREATE_STRINGS.validation.teamRequired);
       return;
     }
@@ -53,14 +68,28 @@ export const TaskForm = ({ pending, error, onSubmit, onCancel }: TaskFormProps) 
     const trimmedDescription = description.trim();
     const trimmedRemarks = remarks.trim();
 
-    onSubmit({
-      title: trimmedTitle,
-      ...(trimmedDescription ? { description: trimmedDescription } : {}),
-      ...(trimmedRemarks ? { remarks: trimmedRemarks } : {}),
-      priority,
-      ...(toIsoOrUndefined(dueAt) ? { dueAt: toIsoOrUndefined(dueAt) } : {}),
-      teamId: selectedTeam.id,
-    });
+    if (scope === "GLOBAL") {
+      onSubmit({
+        title: trimmedTitle,
+        ...(trimmedDescription ? { description: trimmedDescription } : {}),
+        ...(trimmedRemarks ? { remarks: trimmedRemarks } : {}),
+        priority,
+        ...(toIsoOrUndefined(dueAt) ? { dueAt: toIsoOrUndefined(dueAt) } : {}),
+        scope: "GLOBAL",
+        completionMode: "DIRECT",
+        ...(notifyAll ? { distribution: { notifyAll: true } } : {}),
+      });
+    } else {
+      onSubmit({
+        title: trimmedTitle,
+        ...(trimmedDescription ? { description: trimmedDescription } : {}),
+        ...(trimmedRemarks ? { remarks: trimmedRemarks } : {}),
+        priority,
+        ...(toIsoOrUndefined(dueAt) ? { dueAt: toIsoOrUndefined(dueAt) } : {}),
+        scope: "TEAM",
+        teamId: selectedTeam!.id,
+      });
+    }
   };
 
   const activeError = localError ?? error;
@@ -193,23 +222,89 @@ export const TaskForm = ({ pending, error, onSubmit, onCancel }: TaskFormProps) 
             </div>
 
             <div className={styles.cardBody}>
-              {/* Target Team */}
-              <div className={styles.fieldGroup}>
-                <label className={styles.label}>
-                  {TASK_CREATE_STRINGS.fields.teamLabel}
-                  <span className={styles.required}>{TASK_CREATE_STRINGS.fields.teamRequired}</span>
-                </label>
-                <TaskTeamPicker
-                  selectedTeamId={selectedTeam?.id ?? ""}
-                  selectedTeam={selectedTeam}
-                  onSelect={(team) => {
-                    setSelectedTeam(team);
-                    if (localError) setLocalError(null);
-                  }}
-                  onClear={() => setSelectedTeam(null)}
-                />
-                <p className={styles.helperText}>{TASK_CREATE_STRINGS.fields.teamHelper}</p>
-              </div>
+              {/* Task Scope Selector (for Super Admins) */}
+              {canMakeGlobal && (
+                <div className={styles.fieldGroup}>
+                  <label className={styles.label}>{TASK_CREATE_STRINGS.fields.scopeLabel}</label>
+                  <div
+                    className={styles.scopeSelector}
+                    role="radiogroup"
+                    aria-label={TASK_CREATE_STRINGS.fields.scopeLabel}
+                  >
+                    <button
+                      type="button"
+                      role="radio"
+                      aria-checked={scope === "TEAM"}
+                      className={`${styles.scopeButton} ${
+                        scope === "TEAM" ? styles.scopeSelected : ""
+                      }`}
+                      onClick={() => {
+                        setScope("TEAM");
+                        if (localError) setLocalError(null);
+                      }}
+                    >
+                      {TASK_CREATE_STRINGS.fields.scopeTeam}
+                    </button>
+                    <button
+                      type="button"
+                      role="radio"
+                      aria-checked={scope === "GLOBAL"}
+                      className={`${styles.scopeButton} ${
+                        scope === "GLOBAL" ? styles.scopeSelected : ""
+                      }`}
+                      onClick={() => {
+                        setScope("GLOBAL");
+                        if (localError) setLocalError(null);
+                      }}
+                    >
+                      {TASK_CREATE_STRINGS.fields.scopeGlobal}
+                    </button>
+                  </div>
+                  <p className={styles.helperText}>
+                    {scope === "TEAM"
+                      ? TASK_CREATE_STRINGS.fields.scopeTeamDescription
+                      : TASK_CREATE_STRINGS.fields.scopeGlobalDescription}
+                  </p>
+                </div>
+              )}
+
+              {/* Target Team or Global Notice */}
+              {scope === "TEAM" ? (
+                <div className={styles.fieldGroup}>
+                  <label className={styles.label}>
+                    {TASK_CREATE_STRINGS.fields.teamLabel}
+                    <span className={styles.required}>{TASK_CREATE_STRINGS.fields.teamRequired}</span>
+                  </label>
+                  <TaskTeamPicker
+                    selectedTeamId={selectedTeam?.id ?? ""}
+                    selectedTeam={selectedTeam}
+                    onSelect={(team) => {
+                      setSelectedTeam(team);
+                      if (localError) setLocalError(null);
+                    }}
+                    onClear={() => setSelectedTeam(null)}
+                  />
+                  <p className={styles.helperText}>{TASK_CREATE_STRINGS.fields.teamHelper}</p>
+                </div>
+              ) : (
+                <div className={styles.globalNotice}>
+                  <p className={styles.globalNoticeText}>
+                    {TASK_CREATE_STRINGS.fields.teamNotRequiredForGlobal}
+                  </p>
+                  <label className={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      checked={notifyAll}
+                      onChange={(event) => setNotifyAll(event.target.checked)}
+                      className={styles.checkbox}
+                    />
+                    <span>{TASK_CREATE_STRINGS.fields.distributionNotifyAll}</span>
+                  </label>
+                  <p className={styles.helperText}>
+                    {TASK_CREATE_STRINGS.fields.distributionNotifyAllHelper}
+                  </p>
+                </div>
+              )}
 
               {/* Priority Selector */}
               <div className={styles.fieldGroup}>

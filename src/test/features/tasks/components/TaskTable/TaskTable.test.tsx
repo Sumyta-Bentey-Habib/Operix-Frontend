@@ -150,4 +150,28 @@ describe("TaskTable", () => {
 
     expect(screen.getByText("Unassigned")).toBeInTheDocument();
   });
+
+  it("renders Global badge for global tasks without a team", () => {
+    const globalTask: Task = {
+      ...task("PENDING"),
+      id: "task-global-1",
+      referenceCode: "TSK-G001",
+      title: "Global Compliance Notice",
+      scope: "GLOBAL",
+      teamId: null,
+      team: null,
+    };
+
+    render(
+      <TaskTable
+        tasks={[globalTask]}
+        viewer={viewer("SUPER_ADMIN")}
+        onAssign={vi.fn()}
+        onStart={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("Global")).toBeInTheDocument();
+    expect(screen.getByText("Global Compliance Notice")).toBeInTheDocument();
+  });
 });

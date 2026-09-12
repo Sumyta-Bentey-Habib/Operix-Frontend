@@ -4,9 +4,16 @@ import { TASK_CREATE_STRINGS } from "@/utils/task-strings";
 import { TaskCreatePage } from "@/features/tasks/components/TaskCreatePage";
 import { taskApi } from "@/features/tasks/api/task.api";
 import type { Team } from "@/features/teams";
+import type { OperixViewer } from "@/types/auth";
 
 const mockReplace = vi.fn();
 const mockPush = vi.fn();
+let mockViewer: OperixViewer | null = null;
+
+vi.mock("@/context/AuthContext", () => ({
+  useOptionalAuth: () => ({ viewer: mockViewer }),
+  useAuth: () => ({ viewer: mockViewer }),
+}));
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
@@ -140,6 +147,7 @@ describe("TaskCreatePage", () => {
         description: "Feature details",
         remarks: "Important notes",
         priority: "HIGH",
+        scope: "TEAM",
         teamId: "team-123",
       });
       expect(mockReplace).toHaveBeenCalledWith("/tasks/task-999");
@@ -201,11 +209,94 @@ describe("TaskCreatePage", () => {
       expect(taskApi.create).toHaveBeenCalledWith(
         expect.objectContaining({
           title: "Deploy release v2",
+          scope: "TEAM",
           teamId: "team-123",
           dueAt: expect.any(String),
         }),
       );
       expect(mockReplace).toHaveBeenCalledWith("/tasks/task-1000");
+    });
+  });
+
+  it("allows SUPER_ADMIN to create a global task without a team", async () => {
+    mockViewer = {
+      userId: "super-1",
+      role: "SUPER_ADMIN",
+      status: "ACTIVE",
+      scope: { type: "GLOBAL" },
+    };
+
+    vi.spyOn(taskApi, "create").mockResolvedValueOnce({
+      id: "task-global-1",
+      referenceCode: "TSK-G001",
+      title: "Organization policy update",
+      description: "Applies to everyone",
+      remarks: null,
+      priority: "HIGH",
+      status: "PENDING",
+      scope: "GLOBAL",
+      dueAt: null,
+      startedAt: null,
+      completedAt: null,
+      cancelledAt: null,
+      teamId: null,
+      categoryId: null,
+      createdById: "super-1",
+      createdAt: "2026-09-12T00:00:00.000Z",
+      updatedAt: "2026-09-12T00:00:00.000Z",
+      isOverdue: false,
+    });
+
+    render(<TaskCreatePage />);
+
+    // Super Admin should see the scope selector
+    expect(screen.getByText(TASK_CREATE_STRINGS.fields.scopeLabel)).toBeInTheDocument();
+
+    // Switch to Global Task
+    const globalScopeBtn = screen.getByRole("radio", {
+      name: TASK_CREATE_STRINGS.fields.scopeGlobal,
+    });
+    fireEvent.click(globalScopeBtn);
+
+    // Verify team not required notice is displayed and team picker is hidden
+    expect(
+      screen.getByText(TASK_CREATE_STRINGS.fields.teamNotRequiredForGlobal),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Select Team Alpha")).not.toBeInTheDocument();
+
+    // Enter title & description
+    const titleInput = screen.getByPlaceholderText(TASK_CREATE_STRINGS.fields.titlePlaceholder);
+    fireEvent.change(titleInput, { target: { value: "Organization policy update" } });
+
+    const descInput = screen.getByPlaceholderText(
+      TASK_CREATE_STRINGS.fields.descriptionPlaceholder,
+    );
+    fireEvent.change(descInput, { target: { value: "Applies to everyone" } });
+
+    // Select Priority: HIGH
+    const highPriorityBtn = screen.getByRole("radio", {
+      name: TASK_CREATE_STRINGS.priorities.HIGH.label,
+    });
+    fireEvent.click(highPriorityBtn);
+
+    // Toggle broadcast distribution checkbox
+    const notifyCheckbox = screen.getByRole("checkbox");
+    fireEvent.click(notifyCheckbox);
+
+    // Submit without selecting any team!
+    const submitBtn = screen.getByRole("button", { name: TASK_CREATE_STRINGS.actions.submit });
+    fireEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(taskApi.create).toHaveBeenCalledWith({
+        title: "Organization policy update",
+        description: "Applies to everyone",
+        priority: "HIGH",
+        scope: "GLOBAL",
+        completionMode: "DIRECT",
+        distribution: { notifyAll: true },
+      });
+      expect(mockReplace).toHaveBeenCalledWith("/tasks/task-global-1");
     });
   });
 });
