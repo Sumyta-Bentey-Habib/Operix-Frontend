@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   canAssignTask,
+  canCreateGlobalTask,
   canCreateTask,
   canManageTaskAttachments,
   canStartTask,
@@ -31,9 +32,9 @@ const makeTask = (status: Task["status"]): Task => ({
   cancelledAt: null,
   teamId: "team-1",
   categoryId: null,
-  createdById: "creator-1",
-  createdAt: "2026-09-01T00:00:00.000Z",
-  updatedAt: "2026-09-01T00:00:00.000Z",
+  createdById: "user-test",
+  createdAt: "2026-01-01T00:00:00.000Z",
+  updatedAt: "2026-01-01T00:00:00.000Z",
   isOverdue: false,
 });
 
@@ -53,6 +54,24 @@ describe("Task permissions", () => {
 
     it("blocks unauthenticated viewers from creating tasks", () => {
       expect(canCreateTask(null)).toBe(false);
+    });
+  });
+
+  describe("canCreateGlobalTask", () => {
+    it("allows SUPER_ADMIN to create global tasks", () => {
+      expect(canCreateGlobalTask(makeViewer("SUPER_ADMIN"))).toBe(true);
+    });
+
+    it("blocks ADMIN from creating global tasks", () => {
+      expect(canCreateGlobalTask(makeViewer("ADMIN"))).toBe(false);
+    });
+
+    it("blocks MEMBER from creating global tasks", () => {
+      expect(canCreateGlobalTask(makeViewer("MEMBER"))).toBe(false);
+    });
+
+    it("blocks unauthenticated viewers from creating global tasks", () => {
+      expect(canCreateGlobalTask(null)).toBe(false);
     });
   });
 

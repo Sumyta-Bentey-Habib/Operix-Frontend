@@ -178,6 +178,19 @@
   letter-spacing: 0.02em;
 }
 
+.globalScopeBadge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--primary-emerald);
+  background: var(--primary-emerald-light);
+  border: 1px solid var(--border-subtle);
+  padding: 2px 8px;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+}
+
 .teamName {
   color: var(--text-secondary);
   font-size: 0.82rem;

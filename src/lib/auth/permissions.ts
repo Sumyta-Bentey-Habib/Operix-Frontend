@@ -58,6 +58,9 @@ export const canViewTaskCore = (viewer: OperixViewer | null): boolean =>
 export const canCreateTask = (viewer: OperixViewer | null): boolean =>
   viewer?.role === "SUPER_ADMIN" || viewer?.role === "ADMIN";
 
+export const canCreateGlobalTask = (viewer: OperixViewer | null): boolean =>
+  viewer?.role === "SUPER_ADMIN";
+
 export const canAssignTask = (viewer: OperixViewer | null): boolean => viewer?.role === "ADMIN";
 
 export const canStartTask = (viewer: OperixViewer | null): boolean => viewer?.role === "MEMBER";

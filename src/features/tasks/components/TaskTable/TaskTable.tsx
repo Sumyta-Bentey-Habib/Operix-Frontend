@@ -84,9 +84,15 @@ export const TaskTable = ({ tasks, viewer, onAssign, onStart }: TaskTableProps) 
                 </div>
               </td>
               <td className={styles.teamCell} data-label={TASK_TABLE_STRINGS.labels.teamPrefix}>
-                <span className={styles.teamName}>
-                  {task.team?.name ?? obfuscateId(task.teamId, "TM")}
-                </span>
+                {task.scope === "GLOBAL" || (!task.team && !task.teamId) ? (
+                  <span className={styles.globalScopeBadge}>
+                    {TASK_TABLE_STRINGS.badges.globalScope}
+                  </span>
+                ) : (
+                  <span className={styles.teamName}>
+                    {task.team?.name ?? (task.teamId ? obfuscateId(task.teamId, "TM") : "—")}
+                  </span>
+                )}
               </td>
             <td className={styles.dueCell} data-label={TASK_TABLE_STRINGS.labels.duePrefix}>
               <span className={styles.dateCell}>{formatOptionalDate(task.dueAt)}</span>

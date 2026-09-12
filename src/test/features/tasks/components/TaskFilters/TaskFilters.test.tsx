@@ -89,4 +89,35 @@ describe("TaskFilters", () => {
       q: "report",
     });
   });
+
+  it("shows Scope filter to SUPER_ADMIN and hides Team filter when GLOBAL is selected", () => {
+    const onApply = vi.fn();
+    render(
+      <TaskFilters
+        viewer={viewer("SUPER_ADMIN")}
+        filters={DEFAULT_TASK_FILTERS}
+        onApply={onApply}
+        onClear={vi.fn()}
+      />,
+    );
+
+    const scopeSelect = screen.getByDisplayValue("All scopes");
+    expect(scopeSelect).toBeInTheDocument();
+    expect(screen.getByText("Team filter")).toBeInTheDocument();
+
+    // Select Global tasks
+    fireEvent.change(scopeSelect, { target: { value: "GLOBAL" } });
+
+    // Team filter should now be hidden
+    expect(screen.queryByText("Team filter")).not.toBeInTheDocument();
+
+    // Apply filters
+    fireEvent.click(screen.getByRole("button", { name: "Apply Filters" }));
+    expect(onApply).toHaveBeenCalledWith({
+      ...DEFAULT_TASK_FILTERS,
+      scope: "GLOBAL",
+      teamId: "",
+      q: "",
+    });
+  });
 });

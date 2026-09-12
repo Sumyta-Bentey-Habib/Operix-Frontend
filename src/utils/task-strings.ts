@@ -57,6 +57,13 @@ export const TASK_DETAILS_STRINGS = {
   metadata: {
     status: "Status",
     priority: "Priority",
+    scope: "Task Scope",
+    scopeGlobal: "Global (Organization-wide)",
+    scopeTeam: "Team",
+    distribution: "Distribution",
+    distributionSent: "Sent to organization",
+    distributionPending: "Scheduled broadcast",
+    distributionCancelled: "Distribution cancelled",
     overdue: "Overdue",
     team: "Team Reference",
     category: "Category Reference",
@@ -102,6 +109,7 @@ export const TASK_TABLE_STRINGS = {
     overdue: "Overdue",
     notOverdue: "No",
     unassigned: "Unassigned",
+    globalScope: "Global",
   },
   actions: {
     view: "View",
@@ -152,11 +160,20 @@ export const TASK_CREATE_STRINGS = {
     dueAtHelper: "Target completion timestamp (optional).",
     dueAtPlaceholder: "Select deadline date & time...",
     dueAtAriaLabel: "Select due date and time",
+    scopeLabel: "Task Scope",
+    scopeTeam: "Team Task",
+    scopeTeamDescription: "Assigned to and executed by members of a specific team.",
+    scopeGlobal: "Global Task",
+    scopeGlobalDescription: "Organization-wide task without a team, completed directly.",
     teamLabel: "Target Team",
     teamRequired: "*",
     teamHelper: "Choose which team will be responsible for executing this task.",
+    teamNotRequiredForGlobal: "Global tasks apply across the entire organization and do not require a team.",
     selectedTeamPrefix: "Selected:",
     clearTeam: "Clear",
+    distributionLabel: "In-App Member Notification",
+    distributionNotifyAll: "Broadcast notification to all members",
+    distributionNotifyAllHelper: "Sends an immediate in-app broadcast announcement to every active member and admin.",
   },
   dateTimePicker: {
     dialogAriaLabel: "Due date and time picker",
@@ -198,8 +215,8 @@ export const TASK_CREATE_STRINGS = {
       description: "Tasks are created in PENDING status until an admin assigns them.",
     },
     {
-      title: "Team Scoped",
-      description: "Assignment will be restricted to members of the selected team.",
+      title: "Team or Global Scoped",
+      description: "Team tasks are restricted to team members; Global tasks apply organization-wide.",
     },
     {
       title: "Workflow Tracking",
@@ -216,3 +233,4 @@ export const TASK_CREATE_STRINGS = {
     teamRequired: "Choose a Team before creating the Task.",
   },
 } as const;
+

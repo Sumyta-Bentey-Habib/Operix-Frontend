@@ -252,6 +252,11 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
           </div>
           <h1 className={styles.title}>{task.title}</h1>
           <div className={styles.badgeRow}>
+            {task.scope === "GLOBAL" && (
+              <span className={styles.globalScopePill}>
+                {TASK_DETAILS_STRINGS.metadata.scopeGlobal}
+              </span>
+            )}
             <TaskStatusBadge status={task.status} />
             <TaskPriorityBadge priority={task.priority} />
             {task.isOverdue && (
@@ -544,12 +549,40 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
 
               <div className={styles.metaItem}>
                 <dt className={styles.metaLabel}>
-                  {TASK_DETAILS_STRINGS.metadata.team}
+                  {TASK_DETAILS_STRINGS.metadata.scope}
                 </dt>
-                <dd className={`${styles.metaValue} ${styles.mono}`}>
-                  {task.team?.name ?? obfuscateId(task.teamId, "TM")}
+                <dd className={styles.metaValue}>
+                  {task.scope === "GLOBAL"
+                    ? TASK_DETAILS_STRINGS.metadata.scopeGlobal
+                    : TASK_DETAILS_STRINGS.metadata.scopeTeam}
                 </dd>
               </div>
+
+              <div className={styles.metaItem}>
+                <dt className={styles.metaLabel}>
+                  {TASK_DETAILS_STRINGS.metadata.team}
+                </dt>
+                <dd className={`${styles.metaValue} ${task.team || task.teamId ? styles.mono : ""}`}>
+                  {task.scope === "GLOBAL" || (!task.team && !task.teamId)
+                    ? TASK_DETAILS_STRINGS.metadata.none
+                    : (task.team?.name ?? (task.teamId ? obfuscateId(task.teamId, "TM") : TASK_DETAILS_STRINGS.metadata.none))}
+                </dd>
+              </div>
+
+              {task.distribution && (
+                <div className={styles.metaItem}>
+                  <dt className={styles.metaLabel}>
+                    {TASK_DETAILS_STRINGS.metadata.distribution}
+                  </dt>
+                  <dd className={styles.metaValue}>
+                    {task.distribution.status === "SENT"
+                      ? TASK_DETAILS_STRINGS.metadata.distributionSent
+                      : task.distribution.status === "CANCELLED"
+                        ? TASK_DETAILS_STRINGS.metadata.distributionCancelled
+                        : TASK_DETAILS_STRINGS.metadata.distributionPending}
+                  </dd>
+                </div>
+              )}
 
               <div className={styles.metaItem}>
                 <dt className={styles.metaLabel}>
