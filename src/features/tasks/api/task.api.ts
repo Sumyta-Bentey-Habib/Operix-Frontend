@@ -2,7 +2,9 @@ import { apiRequest } from "@/lib/api";
 import type { PaginatedResponse } from "@/types/pagination";
 import type {
   AssignTaskInput,
+  CancelDistributionResponse,
   CreateTaskInput,
+  RescheduleDistributionInput,
   Task,
   TaskListQuery,
   TaskStatusHistoryEntry,
@@ -50,6 +52,20 @@ export const taskApi = {
 
   start: (taskId: string): Promise<Task> =>
     apiRequest(`/tasks/${taskId}/start`, {
+      method: "POST",
+    }),
+
+  rescheduleDistribution: (
+    taskId: string,
+    input: RescheduleDistributionInput,
+  ): Promise<Task> =>
+    apiRequest(`/tasks/${taskId}/distribution`, {
+      method: "PATCH",
+      json: input,
+    }),
+
+  cancelDistribution: (taskId: string): Promise<CancelDistributionResponse> =>
+    apiRequest(`/tasks/${taskId}/distribution/cancel`, {
       method: "POST",
     }),
 };

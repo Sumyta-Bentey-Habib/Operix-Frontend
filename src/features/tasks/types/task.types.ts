@@ -42,6 +42,7 @@ export interface TaskDistributionSummary {
   status: TaskDistributionStatus;
   scheduledAt: string;
   sentAt: string | null;
+  leadMinutes?: number | null;
 }
 
 export interface Task {
@@ -65,6 +66,8 @@ export interface Task {
   createdById?: string;
   owner?: TaskUserSummary;
   responsible?: TaskUserSummary | null;
+  reminderLeadMinutes?: number | null;
+  reminderScheduledAt?: string | null;
   createdAt: string;
   updatedAt: string;
   isOverdue: boolean;
@@ -125,6 +128,16 @@ export interface CreateTaskInput {
   teamId?: string | null;
   completionMode?: "DIRECT" | "REVIEW_REQUIRED";
   distribution?: CreateTaskDistributionInput;
+  reminderLeadMinutes?: number;
+}
+
+export interface RescheduleDistributionInput {
+  scheduledAt: string;
+}
+
+export interface CancelDistributionResponse {
+  taskId: string;
+  status: "CANCELLED";
 }
 
 export interface AssignTaskInput {

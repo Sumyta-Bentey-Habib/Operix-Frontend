@@ -695,6 +695,229 @@
 }
 
 /* ==========================================================================
+   Distribution Management Styles
+   ========================================================================== */
+.distributionDateDetail {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.distributionActions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.distributionButtonRow {
+  display: flex;
+  gap: 6px;
+}
+
+.distributionActionButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--primary-emerald);
+  background: var(--primary-emerald-light);
+  color: var(--primary-emerald);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-height: 32px;
+}
+
+.distributionActionButton:hover:not(:disabled) {
+  background: var(--primary-emerald);
+  color: var(--text-on-primary);
+}
+
+.distributionActionButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.distributionCancelButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--destructive);
+  background: transparent;
+  color: var(--destructive);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-height: 32px;
+}
+
+.distributionCancelButton:hover:not(:disabled) {
+  background: var(--destructive);
+  color: var(--text-on-primary);
+}
+
+.distributionCancelButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.rescheduleInline {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rescheduleInput {
+  background: var(--bg-input);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.8125rem;
+  color: var(--text-primary);
+  width: 100%;
+  outline: none;
+  min-height: 36px;
+  font-family: inherit;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.rescheduleInput:focus {
+  border-color: var(--primary-emerald);
+  box-shadow: 0 0 0 3px var(--primary-emerald-glow);
+}
+
+.rescheduleButtonRow {
+  display: flex;
+  gap: 6px;
+}
+
+.distributionErrorText {
+  font-size: 0.775rem;
+  font-weight: 600;
+  color: var(--destructive);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   Cancel Confirmation Dialog
+   ========================================================================== */
+.confirmationOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.confirmationDialog {
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  box-shadow: var(--dropdown-shadow);
+  padding: 24px;
+  max-width: 420px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: dialogSlideIn 0.2s ease;
+}
+
+@keyframes dialogSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.confirmationTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.confirmationMessage {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.confirmationActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.confirmationDismiss {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-card-subtle);
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-height: 36px;
+}
+
+.confirmationDismiss:hover:not(:disabled) {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.confirmationDismiss:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.confirmationDestructive {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--destructive);
+  background: var(--destructive);
+  color: var(--text-on-primary);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-height: 36px;
+}
+
+.confirmationDestructive:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.confirmationDestructive:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
    Responsive Breakpoints & Mobile Optimization
    ========================================================================== */
 @media (max-width: 1080px) {

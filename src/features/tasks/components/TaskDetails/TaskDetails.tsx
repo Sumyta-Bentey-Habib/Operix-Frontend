@@ -6,14 +6,15 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { useAuth } from "@/context/AuthContext";
 import { TaskSubmissions } from "@/features/submissions";
-import { canAssignTask, canStartTask } from "@/lib/auth/permissions";
+import { canAssignTask, canManageDistribution, canStartTask } from "@/lib/auth/permissions";
 import { formatDisplayDate } from "@/utils/date";
 import { obfuscateId } from "@/utils/id-obfuscator";
-import { TASK_DETAILS_STRINGS, TASK_ROLE_LABELS } from "@/utils/task-strings";
+import { TASK_CREATE_STRINGS, TASK_DETAILS_STRINGS, TASK_ROLE_LABELS } from "@/utils/task-strings";
 import { taskApi } from "../../api/task.api";
 import { useTask } from "../../hooks/use-task";
 import type { TaskStatus } from "../../types/task.types";
 import {
+  getDistributionErrorMessage,
   getTaskAssignmentErrorMessage,
   getTaskErrorView,
   getTaskStartErrorMessage,
@@ -130,6 +131,11 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
   const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
   const [activeTab, setActiveTab] = useState<TabKey>("submissions");
   const [copied, setCopied] = useState(false);
+  const [distributionPending, setDistributionPending] = useState(false);
+  const [distributionError, setDistributionError] = useState<string | null>(null);
+  const [cancelConfirmOpen, setCancelConfirmOpen] = useState(false);
+  const [rescheduleOpen, setRescheduleOpen] = useState(false);
+  const [rescheduleDate, setRescheduleDate] = useState("");
 
   if (!viewer) return null;
 
@@ -179,6 +185,42 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
       setStartError(getTaskStartErrorMessage(startTaskError));
     } finally {
       setStartPending(false);
+    }
+  };
+
+  const handleRescheduleDistribution = async () => {
+    if (!task || distributionPending || !rescheduleDate) return;
+    setDistributionPending(true);
+    setDistributionError(null);
+
+    try {
+      const updatedTask = await taskApi.rescheduleDistribution(task.id, {
+        scheduledAt: new Date(rescheduleDate).toISOString(),
+      });
+      setTask(updatedTask);
+      setRescheduleOpen(false);
+      setRescheduleDate("");
+      await refreshTaskAndHistory();
+    } catch (rescheduleError) {
+      setDistributionError(getDistributionErrorMessage(rescheduleError));
+    } finally {
+      setDistributionPending(false);
+    }
+  };
+
+  const handleCancelDistribution = async () => {
+    if (!task || distributionPending) return;
+    setDistributionPending(true);
+    setDistributionError(null);
+
+    try {
+      await taskApi.cancelDistribution(task.id);
+      setCancelConfirmOpen(false);
+      await refreshTaskAndHistory();
+    } catch (cancelError) {
+      setDistributionError(getDistributionErrorMessage(cancelError));
+    } finally {
+      setDistributionPending(false);
     }
   };
 
@@ -575,11 +617,126 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
                     {TASK_DETAILS_STRINGS.metadata.distribution}
                   </dt>
                   <dd className={styles.metaValue}>
-                    {task.distribution.status === "SENT"
-                      ? TASK_DETAILS_STRINGS.metadata.distributionSent
-                      : task.distribution.status === "CANCELLED"
-                        ? TASK_DETAILS_STRINGS.metadata.distributionCancelled
-                        : TASK_DETAILS_STRINGS.metadata.distributionPending}
+                    {task.distribution.status === "SENT" ? (
+                      <>
+                        {TASK_DETAILS_STRINGS.metadata.distributionSent}
+                        {task.distribution.sentAt && (
+                          <span className={styles.distributionDateDetail}>
+                            {TASK_DETAILS_STRINGS.distributionManagement.sentAtLabel}:{" "}
+                            {formatDisplayDate(task.distribution.sentAt)}
+                          </span>
+                        )}
+                      </>
+                    ) : task.distribution.status === "CANCELLED" ? (
+                      TASK_DETAILS_STRINGS.metadata.distributionCancelled
+                    ) : (
+                      <>
+                        {TASK_DETAILS_STRINGS.metadata.distributionPending}
+                        <span className={styles.distributionDateDetail}>
+                          {TASK_DETAILS_STRINGS.distributionManagement.scheduledAtLabel}:{" "}
+                          {formatDisplayDate(task.distribution.scheduledAt)}
+                        </span>
+                        {task.distribution.leadMinutes && (
+                          <span className={styles.distributionDateDetail}>
+                            {TASK_DETAILS_STRINGS.distributionManagement.leadMinutesLabel}:{" "}
+                            {task.distribution.leadMinutes >= 1440
+                              ? `${Math.round(task.distribution.leadMinutes / 1440)}d`
+                              : `${task.distribution.leadMinutes}m`}
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </dd>
+
+                  {/* Distribution Management Actions */}
+                  {canManageDistribution(viewer) &&
+                    task.distribution.status === "PENDING" && (
+                      <div className={styles.distributionActions}>
+                        {distributionError && (
+                          <p className={styles.distributionErrorText}>
+                            {distributionError}
+                          </p>
+                        )}
+
+                        {rescheduleOpen ? (
+                          <div className={styles.rescheduleInline}>
+                            <input
+                              type="datetime-local"
+                              value={rescheduleDate}
+                              onChange={(event) =>
+                                setRescheduleDate(event.target.value)
+                              }
+                              className={styles.rescheduleInput}
+                            />
+                            <div className={styles.rescheduleButtonRow}>
+                              <button
+                                type="button"
+                                className={styles.distributionActionButton}
+                                onClick={handleRescheduleDistribution}
+                                disabled={distributionPending || !rescheduleDate}
+                              >
+                                {distributionPending
+                                  ? TASK_CREATE_STRINGS.actions.submitting
+                                  : TASK_DETAILS_STRINGS.distributionManagement.reschedule}
+                              </button>
+                              <button
+                                type="button"
+                                className={styles.distributionCancelButton}
+                                onClick={() => {
+                                  setRescheduleOpen(false);
+                                  setRescheduleDate("");
+                                }}
+                                disabled={distributionPending}
+                              >
+                                {TASK_CREATE_STRINGS.actions.cancel}
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className={styles.distributionButtonRow}>
+                            <button
+                              type="button"
+                              className={styles.distributionActionButton}
+                              onClick={() => setRescheduleOpen(true)}
+                              disabled={distributionPending}
+                            >
+                              {TASK_DETAILS_STRINGS.distributionManagement.reschedule}
+                            </button>
+                            <button
+                              type="button"
+                              className={styles.distributionCancelButton}
+                              onClick={() => setCancelConfirmOpen(true)}
+                              disabled={distributionPending}
+                            >
+                              {TASK_DETAILS_STRINGS.distributionManagement.cancelDistribution}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                </div>
+              )}
+
+              {/* Deadline Reminder */}
+              {task.reminderLeadMinutes != null && (
+                <div className={styles.metaItem}>
+                  <dt className={styles.metaLabel}>
+                    {TASK_DETAILS_STRINGS.metadata.reminder}
+                  </dt>
+                  <dd className={styles.metaValue}>
+                    {TASK_DETAILS_STRINGS.metadata.reminderScheduled}
+                    {task.reminderScheduledAt && (
+                      <span className={styles.distributionDateDetail}>
+                        {formatDisplayDate(task.reminderScheduledAt)}
+                      </span>
+                    )}
+                    <span className={styles.distributionDateDetail}>
+                      {task.reminderLeadMinutes >= 1440
+                        ? `${Math.round(task.reminderLeadMinutes / 1440)}d before deadline`
+                        : task.reminderLeadMinutes >= 60
+                          ? `${Math.round(task.reminderLeadMinutes / 60)}h before deadline`
+                          : `${task.reminderLeadMinutes}m before deadline`}
+                    </span>
                   </dd>
                 </div>
               )}
@@ -611,6 +768,53 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
         onSubmit={handleAssign}
         onClose={() => !assignmentPending && setAssignmentOpen(false)}
       />
+
+      {/* Cancel Distribution Confirmation Dialog */}
+      {cancelConfirmOpen && (
+        <div
+          className={styles.confirmationOverlay}
+          onClick={() => !distributionPending && setCancelConfirmOpen(false)}
+          role="presentation"
+        >
+          <div
+            className={styles.confirmationDialog}
+            role="alertdialog"
+            aria-labelledby="cancel-dist-title"
+            aria-describedby="cancel-dist-desc"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h3 id="cancel-dist-title" className={styles.confirmationTitle}>
+              {TASK_DETAILS_STRINGS.distributionManagement.confirmCancelTitle}
+            </h3>
+            <p id="cancel-dist-desc" className={styles.confirmationMessage}>
+              {TASK_DETAILS_STRINGS.distributionManagement.confirmCancelMessage}
+            </p>
+            {distributionError && (
+              <p className={styles.distributionErrorText}>{distributionError}</p>
+            )}
+            <div className={styles.confirmationActions}>
+              <button
+                type="button"
+                className={styles.confirmationDismiss}
+                onClick={() => setCancelConfirmOpen(false)}
+                disabled={distributionPending}
+              >
+                {TASK_DETAILS_STRINGS.distributionManagement.confirmCancelDismiss}
+              </button>
+              <button
+                type="button"
+                className={styles.confirmationDestructive}
+                onClick={handleCancelDistribution}
+                disabled={distributionPending}
+              >
+                {distributionPending
+                  ? TASK_CREATE_STRINGS.actions.submitting
+                  : TASK_DETAILS_STRINGS.distributionManagement.confirmCancelAction}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

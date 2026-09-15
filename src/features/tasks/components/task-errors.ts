@@ -15,6 +15,10 @@ const TASK_ERROR_MESSAGES: Record<string, string> = {
     "The selected Member is not eligible for this Task. Choose an active Member assigned to the Task's Team.",
   MEMBER_NOT_TASK_ASSIGNEE: "You are not the active assignee for this Task.",
   FORBIDDEN: "You do not have permission to perform this action.",
+  DISTRIBUTION_NOT_FOUND: "No distribution found for this task.",
+  DISTRIBUTION_ALREADY_SENT: "Distribution has already been sent and cannot be modified.",
+  DISTRIBUTION_ALREADY_CANCELLED: "Distribution was already cancelled.",
+  GLOBAL_TASK_FORBIDDEN: "Only a Super Admin may create a global task.",
 };
 
 export const getTaskErrorView = (error: unknown): TaskErrorView => {
@@ -57,3 +61,18 @@ export const getTaskStartErrorMessage = (error: unknown): string => {
 
   return view.message;
 };
+
+export const getDistributionErrorMessage = (error: unknown): string => {
+  const view = getTaskErrorView(error);
+
+  if (view.code === "DISTRIBUTION_ALREADY_SENT") {
+    return "This distribution has already been sent and can no longer be modified.";
+  }
+
+  if (view.code === "DISTRIBUTION_ALREADY_CANCELLED") {
+    return "This distribution was already cancelled.";
+  }
+
+  return view.message;
+};
+

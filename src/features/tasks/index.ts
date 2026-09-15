@@ -2,8 +2,13 @@ export { taskApi } from "./api/task.api";
 export { taskAttachmentApi } from "./api/task-attachment.api";
 export type {
   AssignTaskInput,
+  CancelDistributionResponse,
+  CreateTaskDistributionInput,
   CreateTaskInput,
+  RescheduleDistributionInput,
   Task,
+  TaskDistributionStatus,
+  TaskDistributionSummary,
   TaskFilterState,
   TaskListQuery,
   TaskOverdueFilter,

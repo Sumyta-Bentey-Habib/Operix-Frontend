@@ -85,3 +85,6 @@ export const canFilterTasksByAssignedMember = (viewer: OperixViewer | null): boo
 
 export const canViewAdminTodos = (viewer: OperixViewer | null): boolean =>
   viewer?.role === "SUPER_ADMIN" || viewer?.role === "ADMIN";
+
+export const canManageDistribution = (viewer: OperixViewer | null): boolean =>
+  viewer?.role === "SUPER_ADMIN" || viewer?.role === "ADMIN";
