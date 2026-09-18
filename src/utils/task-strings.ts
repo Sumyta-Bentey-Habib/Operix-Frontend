@@ -16,10 +16,16 @@ export const TASK_DETAILS_STRINGS = {
   badges: {
     overdue: "Overdue",
     onTrack: "On Track",
+    recurring: "Recurring",
+    selfClaim: "Self-Claim Enabled",
   },
   actions: {
     assignTask: "Assign Task",
     startTask: "Start Task",
+    claimTask: "Claim Task",
+    completeTask: "Complete Task",
+    claiming: "Claiming...",
+    completing: "Completing...",
   },
   stepper: {
     title: "Workflow Progress",
@@ -82,6 +88,25 @@ export const TASK_DETAILS_STRINGS = {
     noRemarks: "No special remarks or instructions provided.",
     reminder: "Deadline Reminder",
     reminderScheduled: "Reminder scheduled",
+    recurrence: "Recurrence Schedule",
+    recurrenceWeekly: "Weekly",
+    recurrenceMonthly: "Monthly",
+    nextOccurrence: "Next Occurrence",
+    selfClaim: "Self-Claim Policy",
+    selfClaimEnabled: "Allowed for Members",
+    selfClaimDisabled: "Disabled (Admin assignment only)",
+    completionMode: "Completion Mode",
+    completionModeDirect: "Direct Completion",
+    completionModeReview: "Review Required",
+    completionNote: "Completion Note",
+  },
+  directCompletionDialog: {
+    title: "Complete Task",
+    description: "Mark this task as completed directly without requiring submission review.",
+    noteLabel: "Completion remarks (optional)",
+    notePlaceholder: "Add any closing remarks or summary of completed work...",
+    submitButton: "Mark Completed",
+    cancelButton: "Cancel",
   },
   distributionManagement: {
     reschedule: "Reschedule",
@@ -126,10 +151,12 @@ export const TASK_TABLE_STRINGS = {
     notOverdue: "No",
     unassigned: "Unassigned",
     globalScope: "Global",
+    recurring: "Recurring",
   },
   actions: {
     view: "View",
     assign: "Assign",
+    claim: "Claim",
     start: "Start",
   },
 } as const;
@@ -213,6 +240,24 @@ export const TASK_CREATE_STRINGS = {
       "10080": "1 week before deadline",
     } as Record<string, string>,
     infoCallout: "Clock-wise distributions are processed automatically by the system's hourly automation engine.",
+  },
+  selfClaim: {
+    sectionLabel: "Self-Claim Policy",
+    enableLabel: "Allow eligible Members to self-claim this task",
+    enableHelper:
+      "When enabled, active members can directly pick up and assign this task to themselves from the task list.",
+    disabledForRecurring: "Self-claim cannot be combined with recurring task schedules.",
+  },
+  recurrence: {
+    sectionLabel: "Recurrence Schedule",
+    modeNone: "One-Time Task",
+    modeWeekly: "Weekly",
+    modeMonthly: "Monthly",
+    modeNoneDescription: "Standard one-time task execution.",
+    modeWeeklyDescription: "Repeats on the same day every week.",
+    modeMonthlyDescription: "Repeats automatically every month (e.g. 5th of each month).",
+    infoCallout:
+      "Recurring tasks automatically generate new occurrences and broadcast scheduled clock-wise reminders.",
   },
   reminder: {
     sectionLabel: "Deadline Reminder",

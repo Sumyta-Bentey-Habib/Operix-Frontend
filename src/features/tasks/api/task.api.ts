@@ -3,11 +3,15 @@ import type { PaginatedResponse } from "@/types/pagination";
 import type {
   AssignTaskInput,
   CancelDistributionResponse,
+  CompleteTaskInput,
   CreateTaskInput,
   RescheduleDistributionInput,
   Task,
   TaskListQuery,
+  TaskRecurrenceSummary,
   TaskStatusHistoryEntry,
+  UpdateTaskRecurrenceInput,
+  UpdateTaskSelfClaimInput,
 } from "../types/task.types";
 
 export const taskApi = {
@@ -50,9 +54,29 @@ export const taskApi = {
       json: input,
     }),
 
+  claim: (taskId: string): Promise<Task> =>
+    apiRequest(`/tasks/${taskId}/claim`, {
+      method: "POST",
+    }),
+
+  updateSelfClaim: (
+    taskId: string,
+    input: UpdateTaskSelfClaimInput,
+  ): Promise<Task> =>
+    apiRequest(`/tasks/${taskId}/self-claim`, {
+      method: "PATCH",
+      json: input,
+    }),
+
   start: (taskId: string): Promise<Task> =>
     apiRequest(`/tasks/${taskId}/start`, {
       method: "POST",
+    }),
+
+  complete: (taskId: string, input?: CompleteTaskInput): Promise<Task> =>
+    apiRequest(`/tasks/${taskId}/complete`, {
+      method: "POST",
+      ...(input ? { json: input } : {}),
     }),
 
   rescheduleDistribution: (
@@ -68,4 +92,22 @@ export const taskApi = {
     apiRequest(`/tasks/${taskId}/distribution/cancel`, {
       method: "POST",
     }),
+
+  getRecurrence: (
+    recurrenceId: string,
+    options?: { signal?: AbortSignal },
+  ): Promise<TaskRecurrenceSummary> =>
+    apiRequest(`/task-recurrences/${recurrenceId}`, {
+      signal: options?.signal,
+    }),
+
+  updateRecurrence: (
+    recurrenceId: string,
+    input: UpdateTaskRecurrenceInput,
+  ): Promise<TaskRecurrenceSummary> =>
+    apiRequest(`/task-recurrences/${recurrenceId}`, {
+      method: "PATCH",
+      json: input,
+    }),
 };
+

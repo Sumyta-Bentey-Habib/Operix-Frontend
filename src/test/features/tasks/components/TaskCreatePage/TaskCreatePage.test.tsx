@@ -280,7 +280,9 @@ describe("TaskCreatePage", () => {
     fireEvent.click(highPriorityBtn);
 
     // Toggle broadcast distribution checkbox
-    const notifyCheckbox = screen.getByRole("checkbox");
+    const notifyCheckbox = screen.getByRole("checkbox", {
+      name: TASK_CREATE_STRINGS.fields.distributionNotifyAll,
+    });
     fireEvent.click(notifyCheckbox);
 
     // Submit without selecting any team!

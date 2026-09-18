@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { canAssignTask, canStartTask } from "@/lib/auth/permissions";
+import { canAssignTask, canClaimTask, canStartTask } from "@/lib/auth/permissions";
 import type { OperixViewer } from "@/types/auth";
 import { formatDisplayDate } from "@/utils/date";
 import { obfuscateId } from "@/utils/id-obfuscator";
@@ -15,13 +15,14 @@ export interface TaskTableProps {
   tasks: Task[];
   viewer: OperixViewer;
   onAssign: (task: Task) => void;
+  onClaim?: (task: Task) => void;
   onStart: (task: Task) => void;
 }
 
 const formatOptionalDate = (value: string | null) =>
   value ? formatDisplayDate(value) : "—";
 
-export const TaskTable = ({ tasks, viewer, onAssign, onStart }: TaskTableProps) => (
+export const TaskTable = ({ tasks, viewer, onAssign, onClaim, onStart }: TaskTableProps) => (
   <div className={styles.tableWrap}>
     <table className={styles.table}>
       <thead className={styles.thead}>
@@ -119,6 +120,15 @@ export const TaskTable = ({ tasks, viewer, onAssign, onStart }: TaskTableProps) 
                     onClick={() => onAssign(task)}
                   >
                     {TASK_TABLE_STRINGS.actions.assign}
+                  </button>
+                )}
+                {canClaimTask(viewer, task) && onClaim && (
+                  <button
+                    type="button"
+                    className={styles.button}
+                    onClick={() => onClaim(task)}
+                  >
+                    {TASK_TABLE_STRINGS.actions.claim}
                   </button>
                 )}
                 {canStartTask(viewer) && task.status === "ASSIGNED" && (

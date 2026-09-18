@@ -695,6 +695,65 @@
 }
 
 /* ==========================================================================
+   Direct Completion Dialog Styles
+   ========================================================================== */
+.completeForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.completeField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.completeField textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.875rem;
+  resize: vertical;
+}
+
+.completeField textarea:focus {
+  outline: none;
+  border-color: var(--primary-emerald);
+}
+
+.dialogActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.dialogCancelButton {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border-default);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dialogCancelButton:hover:not(:disabled) {
+  background: var(--bg-card-subtle);
+  color: var(--text-primary);
+}
+
+/* ==========================================================================
    Distribution Management Styles
    ========================================================================== */
 .distributionDateDetail {

@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { OperixApiError } from "@/lib/api";
 import {
   getDistributionErrorMessage,
+  getTaskClaimErrorMessage,
+  getTaskCompleteErrorMessage,
   getTaskErrorView,
 } from "@/features/tasks/components/task-errors";
 
@@ -102,3 +104,30 @@ describe("getDistributionErrorMessage", () => {
     expect(getDistributionErrorMessage(error)).toBe("Something broke");
   });
 });
+
+describe("getTaskClaimErrorMessage", () => {
+  it("returns tailored message for TASK_CLAIM_CONFLICT", () => {
+    const error = new OperixApiError("Conflict", {
+      status: 409,
+      code: "TASK_CLAIM_CONFLICT",
+      details: null,
+    });
+    expect(getTaskClaimErrorMessage(error)).toBe(
+      "This task has already been claimed or assigned by someone else.",
+    );
+  });
+});
+
+describe("getTaskCompleteErrorMessage", () => {
+  it("returns tailored message for TASK_ALREADY_COMPLETED", () => {
+    const error = new OperixApiError("Conflict", {
+      status: 409,
+      code: "TASK_ALREADY_COMPLETED",
+      details: null,
+    });
+    expect(getTaskCompleteErrorMessage(error)).toBe(
+      "This task has already been completed.",
+    );
+  });
+});
+

@@ -38,6 +38,17 @@ export type TaskScope = "TEAM" | "GLOBAL";
 
 export type TaskDistributionStatus = "PENDING" | "SENT" | "CANCELLED";
 
+export type TaskRecurrenceFrequency = "WEEKLY" | "MONTHLY";
+
+export interface TaskRecurrenceSummary {
+  id: string;
+  frequency: TaskRecurrenceFrequency;
+  nextOccurrenceAt: string;
+  reminderLeadMinutes: number;
+  distributionLeadMinutes: number | null;
+  isActive: boolean;
+}
+
 export interface TaskDistributionSummary {
   status: TaskDistributionStatus;
   scheduledAt: string;
@@ -62,6 +73,11 @@ export interface Task {
   team?: TaskTeamSummary | null;
   distribution?: TaskDistributionSummary | null;
   completionMode?: "DIRECT" | "REVIEW_REQUIRED";
+  completionNote?: string | null;
+  allowSelfClaim?: boolean;
+  occurrenceKey?: string | null;
+  scheduledStartAt?: string | null;
+  recurrence?: TaskRecurrenceSummary | null;
   categoryId: string | null;
   createdById?: string;
   owner?: TaskUserSummary;
@@ -118,6 +134,11 @@ export interface CreateTaskDistributionInput {
   leadMinutes?: number;
 }
 
+export interface CreateTaskRecurrenceInput {
+  frequency: TaskRecurrenceFrequency;
+  reminderLeadMinutes?: number;
+}
+
 export interface CreateTaskInput {
   title: string;
   description?: string;
@@ -127,8 +148,26 @@ export interface CreateTaskInput {
   scope?: TaskScope;
   teamId?: string | null;
   completionMode?: "DIRECT" | "REVIEW_REQUIRED";
+  allowSelfClaim?: boolean;
+  recurrence?: CreateTaskRecurrenceInput;
   distribution?: CreateTaskDistributionInput;
   reminderLeadMinutes?: number;
+}
+
+export interface UpdateTaskRecurrenceInput {
+  title?: string;
+  responsibleUserId?: string;
+  reminderLeadMinutes?: number;
+  distributionLeadMinutes?: number | null;
+  isActive?: boolean;
+}
+
+export interface UpdateTaskSelfClaimInput {
+  enabled: boolean;
+}
+
+export interface CompleteTaskInput {
+  completionNote?: string;
 }
 
 export interface RescheduleDistributionInput {

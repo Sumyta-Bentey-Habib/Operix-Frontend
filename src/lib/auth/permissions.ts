@@ -61,9 +61,23 @@ export const canCreateTask = (viewer: OperixViewer | null): boolean =>
 export const canCreateGlobalTask = (viewer: OperixViewer | null): boolean =>
   viewer?.role === "SUPER_ADMIN";
 
-export const canAssignTask = (viewer: OperixViewer | null): boolean => viewer?.role === "ADMIN";
+export const canAssignTask = (viewer: OperixViewer | null): boolean =>
+  viewer?.role === "SUPER_ADMIN" || viewer?.role === "ADMIN";
+
+export const canClaimTask = (viewer: OperixViewer | null, task: Task): boolean =>
+  viewer?.role === "MEMBER" && task.status === "PENDING" && Boolean(task.allowSelfClaim);
 
 export const canStartTask = (viewer: OperixViewer | null): boolean => viewer?.role === "MEMBER";
+
+export const canDirectCompleteTask = (viewer: OperixViewer | null, task: Task): boolean =>
+  task.completionMode === "DIRECT" &&
+  task.status === "IN_PROGRESS" &&
+  (viewer?.role === "SUPER_ADMIN" ||
+    viewer?.role === "ADMIN" ||
+    (viewer?.role === "MEMBER" && task.responsible?.id === viewer.userId));
+
+export const canToggleSelfClaim = (viewer: OperixViewer | null): boolean =>
+  viewer?.role === "SUPER_ADMIN" || viewer?.role === "ADMIN";
 
 export const canManageTaskAttachments = (viewer: OperixViewer | null, task: Task): boolean =>
   viewer?.role === "ADMIN" && task.status === "PENDING";
@@ -88,3 +102,4 @@ export const canViewAdminTodos = (viewer: OperixViewer | null): boolean =>
 
 export const canManageDistribution = (viewer: OperixViewer | null): boolean =>
   viewer?.role === "SUPER_ADMIN" || viewer?.role === "ADMIN";
+

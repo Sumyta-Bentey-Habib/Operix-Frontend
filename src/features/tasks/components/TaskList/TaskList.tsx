@@ -13,6 +13,7 @@ import { useTasks } from "../../hooks/use-tasks";
 import type { Task } from "../../types/task.types";
 import {
   getTaskAssignmentErrorMessage,
+  getTaskClaimErrorMessage,
   getTaskErrorView,
   getTaskStartErrorMessage,
 } from "../task-errors";
@@ -45,6 +46,16 @@ export const TaskList = () => {
       setAssignmentError(getTaskAssignmentErrorMessage(assignError));
     } finally {
       setAssignmentPending(false);
+    }
+  };
+
+  const handleClaim = async (task: Task) => {
+    setAssignmentError(null);
+    try {
+      await taskApi.claim(task.id);
+      await refresh();
+    } catch (claimErr) {
+      setAssignmentError(getTaskClaimErrorMessage(claimErr));
     }
   };
 
@@ -106,6 +117,7 @@ export const TaskList = () => {
               setAssignmentError(null);
               setAssignTask(task);
             }}
+            onClaim={handleClaim}
             onStart={handleStart}
           />
           <Pagination meta={meta} onPageChange={setPage} disabled={loading} />

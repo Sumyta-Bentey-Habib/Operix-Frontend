@@ -242,6 +242,83 @@ describe("taskApi", () => {
     expect((fetchMock.mock.calls[0]?.[1] as RequestInit).body).toBeUndefined();
     expect(result).toEqual({ taskId: "task-1", status: "CANCELLED" });
   });
+
+  it("claims a task via POST /tasks/:taskId/claim", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse({ id: "task-1", status: "ASSIGNED" }));
+
+    const result = await taskApi.claim("task-1");
+
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe(
+      "http://localhost:5000/api/v1/tasks/task-1/claim",
+    );
+    expect((fetchMock.mock.calls[0]?.[1] as RequestInit).method).toBe("POST");
+    expect((fetchMock.mock.calls[0]?.[1] as RequestInit).body).toBeUndefined();
+    expect(result).toEqual({ id: "task-1", status: "ASSIGNED" });
+  });
+
+  it("completes a task directly via POST /tasks/:taskId/complete", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse({ id: "task-1", status: "COMPLETED" }));
+
+    const result = await taskApi.complete("task-1", {
+      completionNote: "Finished all deliverables directly.",
+    });
+
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe(
+      "http://localhost:5000/api/v1/tasks/task-1/complete",
+    );
+    const request = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    expect(request.method).toBe("POST");
+    expect(JSON.parse(String(request.body))).toEqual({
+      completionNote: "Finished all deliverables directly.",
+    });
+    expect(result).toEqual({ id: "task-1", status: "COMPLETED" });
+  });
+
+  it("updates self-claim policy via PATCH /tasks/:taskId/self-claim", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse({ id: "task-1", allowSelfClaim: true }));
+
+    const result = await taskApi.updateSelfClaim("task-1", { enabled: true });
+
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe(
+      "http://localhost:5000/api/v1/tasks/task-1/self-claim",
+    );
+    const request = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    expect(request.method).toBe("PATCH");
+    expect(JSON.parse(String(request.body))).toEqual({ enabled: true });
+    expect(result).toEqual({ id: "task-1", allowSelfClaim: true });
+  });
+
+  it("gets and updates recurrence via /task-recurrences/:id", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(
+        jsonResponse({ id: "rec-1", frequency: "MONTHLY", isActive: true }),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse({ id: "rec-1", frequency: "MONTHLY", isActive: false }),
+      );
+
+    const rec = await taskApi.getRecurrence("rec-1");
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe(
+      "http://localhost:5000/api/v1/task-recurrences/rec-1",
+    );
+    expect(rec).toEqual({ id: "rec-1", frequency: "MONTHLY", isActive: true });
+
+    const updated = await taskApi.updateRecurrence("rec-1", { isActive: false });
+    expect(String(fetchMock.mock.calls[1]?.[0])).toBe(
+      "http://localhost:5000/api/v1/task-recurrences/rec-1",
+    );
+    const request = fetchMock.mock.calls[1]?.[1] as RequestInit;
+    expect(request.method).toBe("PATCH");
+    expect(JSON.parse(String(request.body))).toEqual({ isActive: false });
+    expect(updated).toEqual({ id: "rec-1", frequency: "MONTHLY", isActive: false });
+  });
 });
 
 describe("buildTaskListQuery", () => {

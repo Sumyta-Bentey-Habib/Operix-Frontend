@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   canAssignTask,
+  canClaimTask,
   canCreateGlobalTask,
   canCreateTask,
+  canDirectCompleteTask,
   canManageTaskAttachments,
   canStartTask,
   canSubmitTask,
@@ -80,8 +82,8 @@ describe("Task permissions", () => {
       expect(canAssignTask(makeViewer("ADMIN"))).toBe(true);
     });
 
-    it("blocks SUPER_ADMIN from assigning tasks", () => {
-      expect(canAssignTask(makeViewer("SUPER_ADMIN"))).toBe(false);
+    it("allows SUPER_ADMIN to assign tasks", () => {
+      expect(canAssignTask(makeViewer("SUPER_ADMIN"))).toBe(true);
     });
 
     it("blocks MEMBER from assigning tasks", () => {
@@ -90,6 +92,47 @@ describe("Task permissions", () => {
 
     it("blocks unauthenticated viewers from assigning tasks", () => {
       expect(canAssignTask(null)).toBe(false);
+    });
+  });
+
+  describe("canClaimTask", () => {
+    it("allows MEMBER to claim PENDING task with allowSelfClaim", () => {
+      const task = { ...makeTask("PENDING"), allowSelfClaim: true };
+      expect(canClaimTask(makeViewer("MEMBER"), task)).toBe(true);
+    });
+
+    it("blocks MEMBER if allowSelfClaim is false or undefined", () => {
+      const task = { ...makeTask("PENDING"), allowSelfClaim: false };
+      expect(canClaimTask(makeViewer("MEMBER"), task)).toBe(false);
+    });
+
+    it("blocks MEMBER if task is not in PENDING status", () => {
+      const task = { ...makeTask("ASSIGNED"), allowSelfClaim: true };
+      expect(canClaimTask(makeViewer("MEMBER"), task)).toBe(false);
+    });
+
+    it("blocks ADMIN and SUPER_ADMIN from claiming tasks", () => {
+      const task = { ...makeTask("PENDING"), allowSelfClaim: true };
+      expect(canClaimTask(makeViewer("ADMIN"), task)).toBe(false);
+      expect(canClaimTask(makeViewer("SUPER_ADMIN"), task)).toBe(false);
+    });
+  });
+
+  describe("canDirectCompleteTask", () => {
+    it("allows direct completion for DIRECT mode in IN_PROGRESS status", () => {
+      const task = {
+        ...makeTask("IN_PROGRESS"),
+        completionMode: "DIRECT" as const,
+      };
+      expect(canDirectCompleteTask(makeViewer("ADMIN"), task)).toBe(true);
+    });
+
+    it("blocks direct completion when completionMode is not DIRECT", () => {
+      const task = {
+        ...makeTask("IN_PROGRESS"),
+        completionMode: "REVIEW_REQUIRED" as const,
+      };
+      expect(canDirectCompleteTask(makeViewer("ADMIN"), task)).toBe(false);
     });
   });
 

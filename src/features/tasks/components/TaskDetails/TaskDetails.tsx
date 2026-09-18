@@ -6,7 +6,13 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { useAuth } from "@/context/AuthContext";
 import { TaskSubmissions } from "@/features/submissions";
-import { canAssignTask, canManageDistribution, canStartTask } from "@/lib/auth/permissions";
+import {
+  canAssignTask,
+  canClaimTask,
+  canDirectCompleteTask,
+  canManageDistribution,
+  canStartTask,
+} from "@/lib/auth/permissions";
 import { formatDisplayDate } from "@/utils/date";
 import { obfuscateId } from "@/utils/id-obfuscator";
 import { TASK_CREATE_STRINGS, TASK_DETAILS_STRINGS, TASK_ROLE_LABELS } from "@/utils/task-strings";
@@ -16,6 +22,8 @@ import type { TaskStatus } from "../../types/task.types";
 import {
   getDistributionErrorMessage,
   getTaskAssignmentErrorMessage,
+  getTaskClaimErrorMessage,
+  getTaskCompleteErrorMessage,
   getTaskErrorView,
   getTaskStartErrorMessage,
 } from "../task-errors";
@@ -25,6 +33,7 @@ import { TaskHistory } from "../TaskHistory";
 import { TaskPriorityBadge } from "../TaskPriorityBadge";
 import { TaskStartButton } from "../TaskStartButton";
 import { TaskStatusBadge } from "../TaskStatusBadge";
+import { Modal } from "@/components/ui/Modal";
 import {
   CalendarIcon,
   CheckCircleIcon,
@@ -131,6 +140,12 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
   const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
   const [activeTab, setActiveTab] = useState<TabKey>("submissions");
   const [copied, setCopied] = useState(false);
+  const [claimPending, setClaimPending] = useState(false);
+  const [claimError, setClaimError] = useState<string | null>(null);
+  const [completeOpen, setCompleteOpen] = useState(false);
+  const [completeNote, setCompleteNote] = useState("");
+  const [completePending, setCompletePending] = useState(false);
+  const [completeError, setCompleteError] = useState<string | null>(null);
   const [distributionPending, setDistributionPending] = useState(false);
   const [distributionError, setDistributionError] = useState<string | null>(null);
   const [cancelConfirmOpen, setCancelConfirmOpen] = useState(false);
@@ -172,6 +187,22 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
     }
   };
 
+  const handleClaim = async () => {
+    if (!task || claimPending) return;
+    setClaimPending(true);
+    setClaimError(null);
+
+    try {
+      const updatedTask = await taskApi.claim(task.id);
+      setTask(updatedTask);
+      await refreshTaskAndHistory();
+    } catch (claimErr) {
+      setClaimError(getTaskClaimErrorMessage(claimErr));
+    } finally {
+      setClaimPending(false);
+    }
+  };
+
   const handleStart = async () => {
     if (!task || startPending) return;
     setStartPending(true);
@@ -185,6 +216,29 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
       setStartError(getTaskStartErrorMessage(startTaskError));
     } finally {
       setStartPending(false);
+    }
+  };
+
+  const handleComplete = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!task || completePending) return;
+    setCompletePending(true);
+    setCompleteError(null);
+
+    try {
+      const trimmedNote = completeNote.trim();
+      const updatedTask = await taskApi.complete(
+        task.id,
+        trimmedNote ? { completionNote: trimmedNote } : undefined,
+      );
+      setTask(updatedTask);
+      setCompleteOpen(false);
+      setCompleteNote("");
+      await refreshTaskAndHistory();
+    } catch (completeErr) {
+      setCompleteError(getTaskCompleteErrorMessage(completeErr));
+    } finally {
+      setCompletePending(false);
     }
   };
 
@@ -299,6 +353,19 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
                 {TASK_DETAILS_STRINGS.metadata.scopeGlobal}
               </span>
             )}
+            {task.recurrence && (
+              <span className={styles.globalScopePill}>
+                {TASK_DETAILS_STRINGS.badges.recurring}:{" "}
+                {task.recurrence.frequency === "WEEKLY"
+                  ? TASK_DETAILS_STRINGS.metadata.recurrenceWeekly
+                  : TASK_DETAILS_STRINGS.metadata.recurrenceMonthly}
+              </span>
+            )}
+            {task.allowSelfClaim && task.status === "PENDING" && (
+              <span className={styles.globalScopePill}>
+                {TASK_DETAILS_STRINGS.badges.selfClaim}
+              </span>
+            )}
             <TaskStatusBadge status={task.status} />
             <TaskPriorityBadge priority={task.priority} />
             {task.isOverdue && (
@@ -319,14 +386,37 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
               {TASK_DETAILS_STRINGS.actions.assignTask}
             </button>
           )}
+          {canClaimTask(viewer, task) && (
+            <button
+              type="button"
+              className={styles.primaryActionButton}
+              onClick={handleClaim}
+              disabled={claimPending}
+            >
+              {claimPending
+                ? TASK_DETAILS_STRINGS.actions.claiming
+                : TASK_DETAILS_STRINGS.actions.claimTask}
+            </button>
+          )}
           {canStartTask(viewer) && task.status === "ASSIGNED" && (
             <TaskStartButton pending={startPending} onStart={handleStart} />
+          )}
+          {canDirectCompleteTask(viewer, task) && (
+            <button
+              type="button"
+              className={styles.primaryActionButton}
+              onClick={() => setCompleteOpen(true)}
+            >
+              {TASK_DETAILS_STRINGS.actions.completeTask}
+            </button>
           )}
         </div>
       </header>
 
       {startError && <div className={styles.errorAlert}>{startError}</div>}
       {assignmentError && <div className={styles.errorAlert}>{assignmentError}</div>}
+      {claimError && <div className={styles.errorAlert}>{claimError}</div>}
+      {completeError && <div className={styles.errorAlert}>{completeError}</div>}
 
       {/* Interactive Lifecycle Workflow Stepper */}
       <div className={styles.stepperCard}>
@@ -550,6 +640,25 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
                   {formatDisplayDate(task.updatedAt)}
                 </dd>
               </div>
+
+              {task.recurrence && (
+                <div className={styles.metaItem}>
+                  <dt className={styles.metaLabel}>
+                    {TASK_DETAILS_STRINGS.metadata.recurrence}
+                  </dt>
+                  <dd className={styles.metaValue}>
+                    {task.recurrence.frequency === "WEEKLY"
+                      ? TASK_DETAILS_STRINGS.metadata.recurrenceWeekly
+                      : TASK_DETAILS_STRINGS.metadata.recurrenceMonthly}
+                    {task.recurrence.nextOccurrenceAt && (
+                      <span className={styles.distributionDateDetail}>
+                        {TASK_DETAILS_STRINGS.metadata.nextOccurrence}:{" "}
+                        {formatDisplayDate(task.recurrence.nextOccurrenceAt)}
+                      </span>
+                    )}
+                  </dd>
+                </div>
+              )}
             </dl>
           </div>
 
@@ -610,6 +719,41 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
                     : (task.team?.name ?? (task.teamId ? obfuscateId(task.teamId, "TM") : TASK_DETAILS_STRINGS.metadata.none))}
                 </dd>
               </div>
+
+              <div className={styles.metaItem}>
+                <dt className={styles.metaLabel}>
+                  {TASK_DETAILS_STRINGS.metadata.selfClaim}
+                </dt>
+                <dd className={styles.metaValue}>
+                  {task.allowSelfClaim
+                    ? TASK_DETAILS_STRINGS.metadata.selfClaimEnabled
+                    : TASK_DETAILS_STRINGS.metadata.selfClaimDisabled}
+                </dd>
+              </div>
+
+              {task.completionMode && (
+                <div className={styles.metaItem}>
+                  <dt className={styles.metaLabel}>
+                    {TASK_DETAILS_STRINGS.metadata.completionMode}
+                  </dt>
+                  <dd className={styles.metaValue}>
+                    {task.completionMode === "DIRECT"
+                      ? TASK_DETAILS_STRINGS.metadata.completionModeDirect
+                      : TASK_DETAILS_STRINGS.metadata.completionModeReview}
+                  </dd>
+                </div>
+              )}
+
+              {task.completionNote && (
+                <div className={styles.metaItem}>
+                  <dt className={styles.metaLabel}>
+                    {TASK_DETAILS_STRINGS.metadata.completionNote}
+                  </dt>
+                  <dd className={styles.metaValue}>
+                    {task.completionNote}
+                  </dd>
+                </div>
+              )}
 
               {task.distribution && (
                 <div className={styles.metaItem}>
@@ -768,6 +912,49 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
         onSubmit={handleAssign}
         onClose={() => !assignmentPending && setAssignmentOpen(false)}
       />
+
+      {/* Direct Completion Dialog */}
+      <Modal
+        open={completeOpen}
+        title={TASK_DETAILS_STRINGS.directCompletionDialog.title}
+        description={TASK_DETAILS_STRINGS.directCompletionDialog.description}
+        onClose={() => !completePending && setCompleteOpen(false)}
+      >
+        <form className={styles.completeForm} onSubmit={handleComplete}>
+          <label className={styles.completeField}>
+            <span>{TASK_DETAILS_STRINGS.directCompletionDialog.noteLabel}</span>
+            <textarea
+              value={completeNote}
+              maxLength={2000}
+              onChange={(event) => setCompleteNote(event.target.value)}
+              placeholder={TASK_DETAILS_STRINGS.directCompletionDialog.notePlaceholder}
+              rows={4}
+            />
+          </label>
+          {completeError && (
+            <p className={styles.distributionErrorText}>{completeError}</p>
+          )}
+          <div className={styles.dialogActions}>
+            <button
+              type="button"
+              className={styles.dialogCancelButton}
+              onClick={() => setCompleteOpen(false)}
+              disabled={completePending}
+            >
+              {TASK_DETAILS_STRINGS.directCompletionDialog.cancelButton}
+            </button>
+            <button
+              type="submit"
+              className={styles.primaryActionButton}
+              disabled={completePending}
+            >
+              {completePending
+                ? TASK_DETAILS_STRINGS.actions.completing
+                : TASK_DETAILS_STRINGS.directCompletionDialog.submitButton}
+            </button>
+          </div>
+        </form>
+      </Modal>
 
       {/* Cancel Distribution Confirmation Dialog */}
       {cancelConfirmOpen && (

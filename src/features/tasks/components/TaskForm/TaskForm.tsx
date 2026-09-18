@@ -17,6 +17,7 @@ import type {
   CreateTaskDistributionInput,
   CreateTaskInput,
   TaskPriority,
+  TaskRecurrenceFrequency,
   TaskScope,
 } from "../../types/task.types";
 import { TaskTeamPicker } from "../TaskTeamPicker";
@@ -24,11 +25,18 @@ import { DateTimePicker } from "@/components/ui/DateTimePicker";
 import styles from "./TaskForm.module.css";
 
 type DistributionMode = "IMMEDIATE" | "SCHEDULED" | "LEAD_TIME";
+type RecurrenceSelection = "NONE" | TaskRecurrenceFrequency;
 
 const DISTRIBUTION_MODES: { value: DistributionMode; label: string }[] = [
   { value: "IMMEDIATE", label: TASK_CREATE_STRINGS.distribution.modeImmediate },
   { value: "SCHEDULED", label: TASK_CREATE_STRINGS.distribution.modeScheduled },
   { value: "LEAD_TIME", label: TASK_CREATE_STRINGS.distribution.modeLeadTime },
+];
+
+const RECURRENCE_OPTIONS: { value: RecurrenceSelection; label: string }[] = [
+  { value: "NONE", label: TASK_CREATE_STRINGS.recurrence.modeNone },
+  { value: "WEEKLY", label: TASK_CREATE_STRINGS.recurrence.modeWeekly },
+  { value: "MONTHLY", label: TASK_CREATE_STRINGS.recurrence.modeMonthly },
 ];
 
 const DISTRIBUTION_LEAD_TIME_OPTIONS = Object.entries(
@@ -74,6 +82,8 @@ export const TaskForm = ({
   const [distributionLeadMinutes, setDistributionLeadMinutes] = useState(1440);
   const [reminderEnabled, setReminderEnabled] = useState(false);
   const [reminderLeadMinutes, setReminderLeadMinutes] = useState(1440);
+  const [allowSelfClaim, setAllowSelfClaim] = useState(false);
+  const [recurrenceFrequency, setRecurrenceFrequency] = useState<RecurrenceSelection>("NONE");
   const [localError, setLocalError] = useState<string | null>(null);
 
   const hasDueDate = Boolean(dueAt);
@@ -100,6 +110,14 @@ export const TaskForm = ({
     const resolvedReminderLeadMinutes =
       reminderEnabled && hasDueDate ? reminderLeadMinutes : undefined;
 
+    const recurrence =
+      recurrenceFrequency !== "NONE"
+        ? {
+            frequency: recurrenceFrequency,
+            ...(resolvedReminderLeadMinutes ? { reminderLeadMinutes: resolvedReminderLeadMinutes } : {}),
+          }
+        : undefined;
+
     if (scope === "GLOBAL") {
       // Build distribution input with scheduling
       let distribution: CreateTaskDistributionInput | undefined;
@@ -120,6 +138,8 @@ export const TaskForm = ({
         ...(toIsoOrUndefined(dueAt) ? { dueAt: toIsoOrUndefined(dueAt) } : {}),
         scope: "GLOBAL",
         completionMode: "DIRECT",
+        ...(allowSelfClaim && recurrenceFrequency === "NONE" ? { allowSelfClaim: true } : {}),
+        ...(recurrence ? { recurrence } : {}),
         ...(distribution ? { distribution } : {}),
         ...(resolvedReminderLeadMinutes ? { reminderLeadMinutes: resolvedReminderLeadMinutes } : {}),
       });
@@ -132,6 +152,8 @@ export const TaskForm = ({
         ...(toIsoOrUndefined(dueAt) ? { dueAt: toIsoOrUndefined(dueAt) } : {}),
         scope: "TEAM",
         teamId: selectedTeam!.id,
+        ...(allowSelfClaim && recurrenceFrequency === "NONE" ? { allowSelfClaim: true } : {}),
+        ...(recurrence ? { recurrence } : {}),
         ...(resolvedReminderLeadMinutes ? { reminderLeadMinutes: resolvedReminderLeadMinutes } : {}),
       });
     }
@@ -563,6 +585,74 @@ export const TaskForm = ({
                   <p className={styles.infoCallout}>
                     {TASK_CREATE_STRINGS.reminder.requiresDueDate}
                   </p>
+                )}
+              </div>
+
+              {/* Member Self-Claim Policy Section */}
+              <div className={styles.reminderSection}>
+                <label className={styles.label}>
+                  {TASK_CREATE_STRINGS.selfClaim.sectionLabel}
+                </label>
+                <label className={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={allowSelfClaim}
+                    disabled={recurrenceFrequency !== "NONE"}
+                    onChange={(event) => setAllowSelfClaim(event.target.checked)}
+                    className={styles.checkbox}
+                  />
+                  <span>{TASK_CREATE_STRINGS.selfClaim.enableLabel}</span>
+                </label>
+                <p className={styles.helperText}>
+                  {recurrenceFrequency !== "NONE"
+                    ? TASK_CREATE_STRINGS.selfClaim.disabledForRecurring
+                    : TASK_CREATE_STRINGS.selfClaim.enableHelper}
+                </p>
+              </div>
+
+              {/* Clock-Wise Recurrence Schedule Section */}
+              <div className={styles.reminderSection}>
+                <label className={styles.label}>
+                  {TASK_CREATE_STRINGS.recurrence.sectionLabel}
+                </label>
+                <div
+                  className={styles.distributionModeSelector}
+                  role="radiogroup"
+                  aria-label={TASK_CREATE_STRINGS.recurrence.sectionLabel}
+                >
+                  {RECURRENCE_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      role="radio"
+                      aria-checked={recurrenceFrequency === opt.value}
+                      className={`${styles.distributionModeButton} ${
+                        recurrenceFrequency === opt.value
+                          ? styles.distributionModeSelected
+                          : ""
+                      }`}
+                      onClick={() => {
+                        setRecurrenceFrequency(opt.value);
+                        if (opt.value !== "NONE") {
+                          setAllowSelfClaim(false);
+                        }
+                      }}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <p className={styles.helperText}>
+                  {recurrenceFrequency === "NONE"
+                    ? TASK_CREATE_STRINGS.recurrence.modeNoneDescription
+                    : recurrenceFrequency === "WEEKLY"
+                      ? TASK_CREATE_STRINGS.recurrence.modeWeeklyDescription
+                      : TASK_CREATE_STRINGS.recurrence.modeMonthlyDescription}
+                </p>
+                {recurrenceFrequency !== "NONE" && (
+                  <div className={styles.infoCallout}>
+                    {TASK_CREATE_STRINGS.recurrence.infoCallout}
+                  </div>
                 )}
               </div>
             </div>

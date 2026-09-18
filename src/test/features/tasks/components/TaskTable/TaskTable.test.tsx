@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import type { OperixViewer } from "@/types/auth";
 import type { Task } from "@/features/tasks/types/task.types";
@@ -37,7 +37,7 @@ const task = (status: Task["status"], isOverdue = false): Task => ({
 });
 
 describe("TaskTable", () => {
-  it("shows SUPER_ADMIN read only actions", () => {
+  it("shows SUPER_ADMIN assign action for PENDING tasks", () => {
     render(
       <TaskTable
         tasks={[task("PENDING")]}
@@ -48,8 +48,25 @@ describe("TaskTable", () => {
     );
 
     expect(screen.getByRole("link", { name: "View" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Assign" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Assign" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Start" })).not.toBeInTheDocument();
+  });
+
+  it("shows MEMBER claim action for PENDING tasks with allowSelfClaim", () => {
+    const claimFn = vi.fn();
+    render(
+      <TaskTable
+        tasks={[{ ...task("PENDING"), allowSelfClaim: true }]}
+        viewer={viewer("MEMBER")}
+        onAssign={vi.fn()}
+        onClaim={claimFn}
+        onStart={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "Claim" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Claim" }));
+    expect(claimFn).toHaveBeenCalled();
   });
 
   it("shows ADMIN assign only for PENDING Tasks", () => {

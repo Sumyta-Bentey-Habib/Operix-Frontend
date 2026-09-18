@@ -6,21 +6,19 @@
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
   gap: 24px;
-  align-items: stretch;
+  align-items: start;
 }
 
 .primaryColumn {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  height: 100%;
 }
 
 .sidebarColumn {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  height: 100%;
 }
 
 /* ==========================================================================
@@ -286,7 +284,6 @@
   border-color: var(--border-subtle);
   padding: 18px 20px;
   gap: 14px;
-  margin-top: auto;
 }
 
 .guidelinesCard .cardTitle {
@@ -370,12 +367,7 @@
   align-items: center;
   justify-content: flex-end;
   gap: 12px;
-  padding: 16px 20px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-default);
-  border-radius: 16px;
-  box-shadow: var(--card-shadow);
-  margin-top: auto;
+  padding: 4px 0;
 }
 
 .cancelButton {
