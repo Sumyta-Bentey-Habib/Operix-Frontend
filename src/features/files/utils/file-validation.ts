@@ -16,14 +16,29 @@ export const SUPPORTED_ATTACHMENT_EXTENSIONS = [
 export const ATTACHMENT_FILE_ACCEPT = SUPPORTED_ATTACHMENT_EXTENSIONS.join(",");
 
 const MIME_TYPES_BY_EXTENSION: Record<string, string[]> = {
-  ".pdf": ["application/pdf"],
-  ".jpg": ["image/jpeg"],
-  ".jpeg": ["image/jpeg"],
-  ".png": ["image/png"],
+  ".pdf": ["application/pdf", "application/x-pdf"],
+  ".jpg": ["image/jpeg", "image/jpg", "image/pjpeg"],
+  ".jpeg": ["image/jpeg", "image/jpg", "image/pjpeg"],
+  ".png": ["image/png", "image/x-png"],
   ".webp": ["image/webp"],
-  ".docx": ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
-  ".xlsx": ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"],
-  ".pptx": ["application/vnd.openxmlformats-officedocument.presentationml.presentation"],
+  ".docx": [
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/msword",
+    "application/zip",
+    "application/octet-stream",
+  ],
+  ".xlsx": [
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.ms-excel",
+    "application/zip",
+    "application/octet-stream",
+  ],
+  ".pptx": [
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "application/vnd.ms-powerpoint",
+    "application/zip",
+    "application/octet-stream",
+  ],
 };
 
 export interface ValidatedFileSelection {
