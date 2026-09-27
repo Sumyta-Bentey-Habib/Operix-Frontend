@@ -31,6 +31,7 @@ export const TaskAssignmentDialog = ({
     if (!selectedMember || pending) return;
     const trimmedNote = note.trim();
     onSubmit({
+      responsibleUserId: selectedMember.id,
       memberId: selectedMember.id,
       ...(trimmedNote ? { note: trimmedNote } : {}),
     });

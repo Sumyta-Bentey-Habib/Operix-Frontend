@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { fileApi, triggerBrowserDownload } from "@/features/files";
-import { canManageTaskAttachments } from "@/lib/auth/permissions";
+import { canDeleteTaskAttachment, canManageTaskAttachments } from "@/lib/auth/permissions";
 import { taskAttachmentApi } from "../../api/task-attachment.api";
 import { useTaskAttachments } from "../../hooks/use-task-attachments";
 import type { AttachmentResponse } from "../../types/task-attachment.types";
@@ -134,6 +134,9 @@ export const TaskAttachments = ({ task, onTaskRefresh }: TaskAttachmentsProps) =
         loading={loading}
         error={error}
         canManage={canManage}
+        canDeleteAttachment={(attachment) =>
+          canDeleteTaskAttachment(viewer, task, attachment)
+        }
         downloadingFileId={downloadingFileId}
         deletingAttachmentId={deletingAttachmentId}
         onRetry={() => void refresh()}

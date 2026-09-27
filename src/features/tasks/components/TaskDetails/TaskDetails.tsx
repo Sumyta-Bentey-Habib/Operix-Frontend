@@ -18,7 +18,7 @@ import { obfuscateId } from "@/utils/id-obfuscator";
 import { TASK_CREATE_STRINGS, TASK_DETAILS_STRINGS, TASK_ROLE_LABELS } from "@/utils/task-strings";
 import { taskApi } from "../../api/task.api";
 import { useTask } from "../../hooks/use-task";
-import type { TaskStatus } from "../../types/task.types";
+import type { AssignTaskInput, TaskStatus } from "../../types/task.types";
 import {
   getDistributionErrorMessage,
   getTaskAssignmentErrorMessage,
@@ -170,7 +170,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
     }
   };
 
-  const handleAssign = async (input: { memberId: string; note?: string }) => {
+  const handleAssign = async (input: AssignTaskInput) => {
     if (!task || assignmentPending) return;
     setAssignmentPending(true);
     setAssignmentError(null);

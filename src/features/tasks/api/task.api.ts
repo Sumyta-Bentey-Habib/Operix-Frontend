@@ -51,7 +51,10 @@ export const taskApi = {
   assign: (taskId: string, input: AssignTaskInput): Promise<Task> =>
     apiRequest(`/tasks/${taskId}/assignments`, {
       method: "POST",
-      json: input,
+      json: {
+        responsibleUserId: input.responsibleUserId ?? input.memberId,
+        ...(input.note ? { note: input.note } : {}),
+      },
     }),
 
   claim: (taskId: string): Promise<Task> =>

@@ -10,7 +10,7 @@ import { useAuth } from "@/context/AuthContext";
 import { canCreateTask } from "@/lib/auth/permissions";
 import { taskApi } from "../../api/task.api";
 import { useTasks } from "../../hooks/use-tasks";
-import type { Task } from "../../types/task.types";
+import type { AssignTaskInput, Task } from "../../types/task.types";
 import {
   getTaskAssignmentErrorMessage,
   getTaskClaimErrorMessage,
@@ -33,7 +33,7 @@ export const TaskList = () => {
 
   if (!viewer) return null;
 
-  const handleAssign = async (input: { memberId: string; note?: string }) => {
+  const handleAssign = async (input: AssignTaskInput) => {
     if (!assignTask || assignmentPending) return;
     setAssignmentPending(true);
     setAssignmentError(null);

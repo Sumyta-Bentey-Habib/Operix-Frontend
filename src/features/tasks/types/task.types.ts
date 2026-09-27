@@ -49,6 +49,14 @@ export interface TaskRecurrenceSummary {
   isActive: boolean;
 }
 
+export type TaskReminderStatus = "PENDING" | "SENT" | "CANCELLED";
+
+export interface TaskReminderSummary {
+  status: TaskReminderStatus;
+  scheduledAt: string;
+  sentAt: string | null;
+}
+
 export interface TaskDistributionSummary {
   status: TaskDistributionStatus;
   scheduledAt: string;
@@ -82,6 +90,7 @@ export interface Task {
   createdById?: string;
   owner?: TaskUserSummary;
   responsible?: TaskUserSummary | null;
+  reminder?: TaskReminderSummary | null;
   reminderLeadMinutes?: number | null;
   reminderScheduledAt?: string | null;
   createdAt: string;
@@ -90,11 +99,15 @@ export interface Task {
 }
 
 export interface TaskStatusHistoryEntry {
-  id: string;
+  id?: string;
   taskId: string;
   fromStatus: TaskStatus | null;
   toStatus: TaskStatus;
-  changedById: string;
+  changedById?: string;
+  changedBy?: {
+    id: string;
+    name: string;
+  };
   notes: string | null;
   changedAt: string;
 }
@@ -180,7 +193,8 @@ export interface CancelDistributionResponse {
 }
 
 export interface AssignTaskInput {
-  memberId: string;
+  responsibleUserId?: string;
+  memberId?: string;
   note?: string;
 }
 
@@ -220,7 +234,6 @@ export const buildTaskListQuery = (
   if (filters.overdue === "OVERDUE") query.overdue = true;
   if (filters.overdue === "NOT_OVERDUE") query.overdue = false;
 
-  // Backend forbids teamId when scope is GLOBAL
   if (viewer?.role === "SUPER_ADMIN" && filters.teamId && filters.scope !== "GLOBAL") {
     query.teamId = filters.teamId;
   }

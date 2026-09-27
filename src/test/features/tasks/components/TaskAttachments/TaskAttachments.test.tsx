@@ -196,4 +196,40 @@ describe("TaskAttachments", () => {
     expect(mocks.upload).toHaveBeenCalledTimes(1);
     expect(screen.getByRole("alert")).toHaveTextContent("Task attachments can only be changed");
   });
+
+  it("allows Responsible MEMBER to upload and delete only their own attachments on editable ASSIGNED task", () => {
+    const memberViewer = viewer("MEMBER"); // userId: "member-1"
+    mocks.useAuth.mockReturnValue({ viewer: memberViewer });
+
+    const memberAttachment: AttachmentResponse = {
+      id: "attachment-member",
+      downloadUrl: "/api/v1/files/file-2/download",
+      file: {
+        id: "file-2",
+        originalName: "member-spec.pdf",
+        mimeType: "application/pdf",
+        sizeBytes: 456,
+        uploadedBy: { id: "member-1", name: "Member Tupur" },
+        uploadedById: "member-1",
+        createdAt: "2026-08-24T00:00:00.000Z",
+      },
+    };
+
+    mocks.useTaskAttachments.mockReturnValue({
+      ...hookValue,
+      attachments: [attachment, memberAttachment],
+    });
+
+    const assignedTask: Task = {
+      ...task("ASSIGNED"),
+      responsible: { id: "member-1", name: "Member Tupur", role: "MEMBER" },
+    };
+
+    render(<TaskAttachments task={assignedTask} onTaskRefresh={vi.fn()} />);
+
+    expect(screen.getByLabelText("Add attachments")).toBeInTheDocument();
+
+    const removeButtons = screen.getAllByRole("button", { name: "Remove" });
+    expect(removeButtons).toHaveLength(1);
+  });
 });

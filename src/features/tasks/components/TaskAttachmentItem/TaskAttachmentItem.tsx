@@ -6,7 +6,8 @@ import styles from "./TaskAttachmentItem.module.css";
 
 export interface TaskAttachmentItemProps {
   attachment: AttachmentResponse;
-  canManage: boolean;
+  canManage?: boolean;
+  canDelete?: boolean;
   downloading: boolean;
   deleting: boolean;
   onDownload: (attachment: AttachmentResponse) => void;
@@ -15,13 +16,15 @@ export interface TaskAttachmentItemProps {
 
 export const TaskAttachmentItem = ({
   attachment,
-  canManage,
+  canManage = false,
+  canDelete,
   downloading,
   deleting,
   onDownload,
   onDelete,
 }: TaskAttachmentItemProps) => {
   const { file } = attachment;
+  const isDeletable = canDelete ?? canManage;
 
   return (
     <article className={styles.item}>
@@ -42,7 +45,9 @@ export const TaskAttachmentItem = ({
           </div>
           <div>
             <dt>Uploaded By</dt>
-            <dd className={styles.mono}>{obfuscateId(file.uploadedById, "USR")}</dd>
+            <dd className={styles.mono}>
+              {file.uploadedBy?.name ?? obfuscateId(file.uploadedById, "USR")}
+            </dd>
           </div>
         </dl>
       </div>
@@ -50,7 +55,7 @@ export const TaskAttachmentItem = ({
         <button type="button" onClick={() => onDownload(attachment)} disabled={downloading}>
           {downloading ? "Downloading..." : "Download"}
         </button>
-        {canManage && (
+        {isDeletable && (
           <button
             type="button"
             className={styles.dangerButton}

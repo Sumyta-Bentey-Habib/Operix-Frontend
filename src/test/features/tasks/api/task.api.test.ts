@@ -198,7 +198,7 @@ describe("taskApi", () => {
     );
     expect(assignRequest.method).toBe("POST");
     expect(JSON.parse(String(assignRequest.body))).toEqual({
-      memberId: "member-1",
+      responsibleUserId: "member-1",
       note: "Please start today",
     });
     expect(String(fetchMock.mock.calls[1]?.[0])).toBe(

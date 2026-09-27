@@ -1,5 +1,6 @@
 import type { OperixViewer, UserRole } from "@/types/auth";
 import type { Task } from "@/features/tasks/types/task.types";
+import type { AttachmentResponse } from "@/features/tasks/types/task-attachment.types";
 
 const NAV_ROLES: Record<string, UserRole[]> = {
   dashboard: ["SUPER_ADMIN", "ADMIN", "MEMBER"],
@@ -65,7 +66,11 @@ export const canAssignTask = (viewer: OperixViewer | null): boolean =>
   viewer?.role === "SUPER_ADMIN" || viewer?.role === "ADMIN";
 
 export const canClaimTask = (viewer: OperixViewer | null, task: Task): boolean =>
-  viewer?.role === "MEMBER" && task.status === "PENDING" && Boolean(task.allowSelfClaim);
+  viewer?.role === "MEMBER" &&
+  Boolean(task.allowSelfClaim) &&
+  task.status === "PENDING" &&
+  task.responsible == null &&
+  task.recurrence == null;
 
 export const canStartTask = (viewer: OperixViewer | null, task: Task): boolean =>
   viewer?.role === "MEMBER" &&
@@ -79,29 +84,71 @@ export const canDirectCompleteTask = (viewer: OperixViewer | null, task: Task): 
     viewer?.role === "ADMIN" ||
     (viewer?.role === "MEMBER" && task.responsible?.id === viewer.userId));
 
-export const canToggleSelfClaim = (viewer: OperixViewer | null): boolean =>
-  viewer?.role === "SUPER_ADMIN" || viewer?.role === "ADMIN";
-
-export const canManageTaskAttachments = (viewer: OperixViewer | null, task: Task): boolean => {
+export const canToggleSelfClaim = (viewer: OperixViewer | null, task?: Task): boolean => {
   if (!viewer) return false;
+  if (viewer.role !== "SUPER_ADMIN" && viewer.role !== "ADMIN") return false;
 
-  // Mirror the backend canMutateTaskAttachments policy:
-  // Only SUPER_ADMIN or the task creator can mutate attachments.
-  const hasRole =
-    viewer.role === "SUPER_ADMIN" ||
-    (task.createdById !== undefined && task.createdById === viewer.userId);
-  if (!hasRole) return false;
-
-  // Task must be in an editable state: PENDING or ASSIGNED (not yet started).
-  const editableStatus =
-    task.status === "PENDING" ||
-    (task.status === "ASSIGNED" && task.startedAt === null);
-  if (!editableStatus) return false;
-
-  // Distribution must not have been sent already.
-  if (task.distribution?.status === "SENT") return false;
+  if (task) {
+    if (viewer.role === "ADMIN") {
+      const ownerId = task.owner?.id ?? task.createdById;
+      if (ownerId && ownerId !== viewer.userId) return false;
+    }
+    if (task.recurrence != null) return false;
+    if (task.status !== "PENDING" || task.responsible != null) return false;
+  }
 
   return true;
+};
+
+export const canMutateTaskAttachments = (viewer: OperixViewer | null, task: Task): boolean => {
+  if (!viewer) return false;
+
+  if (viewer.role === "SUPER_ADMIN") {
+    return true;
+  }
+
+  if (viewer.role === "ADMIN") {
+    const ownerId = task.owner?.id ?? task.createdById;
+    return Boolean(ownerId && ownerId === viewer.userId);
+  }
+
+  if (viewer.role === "MEMBER") {
+    return Boolean(task.responsible?.id && task.responsible.id === viewer.userId);
+  }
+
+  return false;
+};
+
+export const areTaskAttachmentsEditable = (task: Task): boolean => {
+  const editableByState =
+    task.status === "PENDING" ||
+    (task.status === "ASSIGNED" && task.startedAt === null);
+
+  return editableByState && task.distribution?.status !== "SENT";
+};
+
+export const canManageTaskAttachments = (viewer: OperixViewer | null, task: Task): boolean =>
+  canMutateTaskAttachments(viewer, task) && areTaskAttachmentsEditable(task);
+
+export const canDeleteTaskAttachment = (
+  viewer: OperixViewer | null,
+  task: Task,
+  attachment: AttachmentResponse,
+): boolean => {
+  if (!viewer || !canManageTaskAttachments(viewer, task)) {
+    return false;
+  }
+
+  if (viewer.role === "SUPER_ADMIN" || viewer.role === "ADMIN") {
+    return true;
+  }
+
+  if (viewer.role === "MEMBER") {
+    const uploaderId = attachment.file.uploadedBy?.id ?? attachment.file.uploadedById;
+    return Boolean(uploaderId && uploaderId === viewer.userId);
+  }
+
+  return false;
 };
 
 

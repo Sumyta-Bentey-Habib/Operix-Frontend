@@ -40,28 +40,37 @@ export const TaskHistory = ({ taskId, refreshKey = 0 }: TaskHistoryProps) => {
       {!loading && !error && entries.length > 0 && (
         <>
           <div className={styles.timeline}>
-            {entries.map((entry) => (
-              <article key={entry.id} className={styles.entry}>
-                <div className={styles.transition}>
-                  <span>
-                    {entry.fromStatus ? <TaskStatusBadge status={entry.fromStatus} /> : "—"}
-                  </span>
-                  <span>→</span>
-                  <TaskStatusBadge status={entry.toStatus} />
-                </div>
-                <p>{entry.notes ?? "No notes provided."}</p>
-                <dl className={styles.meta}>
-                  <div>
-                    <dt>Changed By</dt>
-                    <dd className={styles.mono}>{obfuscateId(entry.changedById, "USR")}</dd>
+            {entries.map((entry, index) => {
+              const itemKey = entry.id ?? `${entry.taskId}-${entry.changedAt}-${entry.toStatus}-${index}`;
+              const changedByName =
+                entry.changedBy?.name ??
+                (entry.changedBy?.id
+                  ? obfuscateId(entry.changedBy.id, "USR")
+                  : obfuscateId(entry.changedById, "USR"));
+
+              return (
+                <article key={itemKey} className={styles.entry}>
+                  <div className={styles.transition}>
+                    <span>
+                      {entry.fromStatus ? <TaskStatusBadge status={entry.fromStatus} /> : "—"}
+                    </span>
+                    <span>→</span>
+                    <TaskStatusBadge status={entry.toStatus} />
                   </div>
-                  <div>
-                    <dt>Changed At</dt>
-                    <dd>{formatDisplayDate(entry.changedAt)}</dd>
-                  </div>
-                </dl>
-              </article>
-            ))}
+                  <p>{entry.notes ?? "No notes provided."}</p>
+                  <dl className={styles.meta}>
+                    <div>
+                      <dt>Changed By</dt>
+                      <dd className={styles.mono}>{changedByName}</dd>
+                    </div>
+                    <div>
+                      <dt>Changed At</dt>
+                      <dd>{formatDisplayDate(entry.changedAt)}</dd>
+                    </div>
+                  </dl>
+                </article>
+              );
+            })}
           </div>
           <Pagination meta={meta} onPageChange={setPage} disabled={loading} />
         </>
