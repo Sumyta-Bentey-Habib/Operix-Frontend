@@ -21,6 +21,8 @@ import type {
   TaskScope,
 } from "../../types/task.types";
 import { TaskTeamPicker } from "../TaskTeamPicker";
+import { TaskAssigneePicker } from "../TaskAssigneePicker";
+import type { Member } from "@/features/members/types/member.types";
 import { DateTimePicker } from "@/components/ui/DateTimePicker";
 import styles from "./TaskForm.module.css";
 
@@ -84,6 +86,7 @@ export const TaskForm = ({
   const [reminderLeadMinutes, setReminderLeadMinutes] = useState(1440);
   const [allowSelfClaim, setAllowSelfClaim] = useState(false);
   const [recurrenceFrequency, setRecurrenceFrequency] = useState<RecurrenceSelection>("NONE");
+  const [responsibleMember, setResponsibleMember] = useState<Member | null>(null);
   const [localError, setLocalError] = useState<string | null>(null);
 
   const hasDueDate = Boolean(dueAt);
@@ -99,6 +102,11 @@ export const TaskForm = ({
 
     if (scope === "TEAM" && !selectedTeam) {
       setLocalError(TASK_CREATE_STRINGS.validation.teamRequired);
+      return;
+    }
+
+    if (recurrenceFrequency !== "NONE" && !responsibleMember) {
+      setLocalError(TASK_CREATE_STRINGS.validation.responsibleMemberRequired);
       return;
     }
 
@@ -119,14 +127,20 @@ export const TaskForm = ({
         : undefined;
 
     if (scope === "GLOBAL") {
-      // Build distribution input with scheduling
+      // Build distribution input with scheduling.
+      // For recurring tasks the backend ONLY accepts leadMinutes (no scheduledAt, no bare notifyAll).
       let distribution: CreateTaskDistributionInput | undefined;
       if (notifyAll) {
-        distribution = { notifyAll: true };
-        if (distributionMode === "SCHEDULED" && distributionScheduledAt) {
-          distribution.scheduledAt = new Date(distributionScheduledAt).toISOString();
-        } else if (distributionMode === "LEAD_TIME" && hasDueDate) {
-          distribution.leadMinutes = distributionLeadMinutes;
+        if (recurrenceFrequency !== "NONE" && hasDueDate) {
+          // Recurring: always force lead-time distribution
+          distribution = { notifyAll: true, leadMinutes: distributionLeadMinutes };
+        } else if (recurrenceFrequency === "NONE") {
+          distribution = { notifyAll: true };
+          if (distributionMode === "SCHEDULED" && distributionScheduledAt) {
+            distribution.scheduledAt = new Date(distributionScheduledAt).toISOString();
+          } else if (distributionMode === "LEAD_TIME" && hasDueDate) {
+            distribution.leadMinutes = distributionLeadMinutes;
+          }
         }
       }
 
@@ -138,10 +152,10 @@ export const TaskForm = ({
         ...(toIsoOrUndefined(dueAt) ? { dueAt: toIsoOrUndefined(dueAt) } : {}),
         scope: "GLOBAL",
         completionMode: "DIRECT",
+        ...(responsibleMember ? { responsibleUserId: responsibleMember.id } : {}),
         ...(allowSelfClaim && recurrenceFrequency === "NONE" ? { allowSelfClaim: true } : {}),
         ...(recurrence ? { recurrence } : {}),
         ...(distribution ? { distribution } : {}),
-        ...(resolvedReminderLeadMinutes ? { reminderLeadMinutes: resolvedReminderLeadMinutes } : {}),
       });
     } else {
       onSubmit({
@@ -152,9 +166,9 @@ export const TaskForm = ({
         ...(toIsoOrUndefined(dueAt) ? { dueAt: toIsoOrUndefined(dueAt) } : {}),
         scope: "TEAM",
         teamId: selectedTeam!.id,
+        ...(responsibleMember ? { responsibleUserId: responsibleMember.id } : {}),
         ...(allowSelfClaim && recurrenceFrequency === "NONE" ? { allowSelfClaim: true } : {}),
         ...(recurrence ? { recurrence } : {}),
-        ...(resolvedReminderLeadMinutes ? { reminderLeadMinutes: resolvedReminderLeadMinutes } : {}),
       });
     }
   };
@@ -377,38 +391,49 @@ export const TaskForm = ({
                       <label className={styles.label}>
                         {TASK_CREATE_STRINGS.distribution.scheduleLabel}
                       </label>
-                      <div
-                        className={styles.distributionModeSelector}
-                        role="radiogroup"
-                        aria-label={TASK_CREATE_STRINGS.distribution.scheduleLabel}
-                      >
-                        {DISTRIBUTION_MODES.map((mode) => (
-                          <button
-                            key={mode.value}
-                            type="button"
-                            role="radio"
-                            aria-checked={distributionMode === mode.value}
-                            className={`${styles.distributionModeButton} ${
-                              distributionMode === mode.value
-                                ? styles.distributionModeSelected
-                                : ""
-                            }`}
-                            onClick={() => setDistributionMode(mode.value)}
-                          >
-                            {mode.label}
-                          </button>
-                        ))}
-                      </div>
+
+                      {/* For recurring tasks the backend only accepts leadMinutes — lock to LEAD_TIME */}
+                      {recurrenceFrequency !== "NONE" ? (
+                        <p className={styles.infoCallout}>
+                          {TASK_CREATE_STRINGS.distribution.recurringLeadTimeOnly}
+                        </p>
+                      ) : (
+                        <div
+                          className={styles.distributionModeSelector}
+                          role="radiogroup"
+                          aria-label={TASK_CREATE_STRINGS.distribution.scheduleLabel}
+                        >
+                          {DISTRIBUTION_MODES.map((mode) => (
+                            <button
+                              key={mode.value}
+                              type="button"
+                              role="radio"
+                              aria-checked={distributionMode === mode.value}
+                              className={`${styles.distributionModeButton} ${
+                                distributionMode === mode.value
+                                  ? styles.distributionModeSelected
+                                  : ""
+                              }`}
+                              onClick={() => setDistributionMode(mode.value)}
+                            >
+                              {mode.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
                       <p className={styles.helperText}>
-                        {distributionMode === "IMMEDIATE"
-                          ? TASK_CREATE_STRINGS.distribution.modeImmediateDescription
-                          : distributionMode === "SCHEDULED"
-                            ? TASK_CREATE_STRINGS.distribution.modeScheduledDescription
-                            : TASK_CREATE_STRINGS.distribution.modeLeadTimeDescription}
+                        {recurrenceFrequency !== "NONE"
+                          ? TASK_CREATE_STRINGS.distribution.modeLeadTimeDescription
+                          : distributionMode === "IMMEDIATE"
+                            ? TASK_CREATE_STRINGS.distribution.modeImmediateDescription
+                            : distributionMode === "SCHEDULED"
+                              ? TASK_CREATE_STRINGS.distribution.modeScheduledDescription
+                              : TASK_CREATE_STRINGS.distribution.modeLeadTimeDescription}
                       </p>
 
-                      {/* Scheduled Date Picker */}
-                      {distributionMode === "SCHEDULED" && (
+                      {/* Scheduled Date Picker — one-time only */}
+                      {recurrenceFrequency === "NONE" && distributionMode === "SCHEDULED" && (
                         <div className={styles.distributionScheduleField}>
                           <label
                             htmlFor="distribution-scheduled-at"
@@ -435,8 +460,8 @@ export const TaskForm = ({
                         </div>
                       )}
 
-                      {/* Lead Time Selector */}
-                      {distributionMode === "LEAD_TIME" && (
+                      {/* Lead Time Selector — shown for one-time LEAD_TIME mode OR recurring (always leadMinutes) */}
+                      {(recurrenceFrequency !== "NONE" || distributionMode === "LEAD_TIME") && (
                         <div className={styles.distributionScheduleField}>
                           <label
                             htmlFor="distribution-lead-minutes"
@@ -473,7 +498,7 @@ export const TaskForm = ({
                       )}
 
                       {/* Clock-wise info callout */}
-                      {distributionMode !== "IMMEDIATE" && (
+                      {(recurrenceFrequency !== "NONE" || distributionMode !== "IMMEDIATE") && (
                         <div className={styles.infoCallout}>
                           {TASK_CREATE_STRINGS.distribution.infoCallout}
                         </div>
@@ -534,56 +559,62 @@ export const TaskForm = ({
                 <p className={styles.helperText}>{TASK_CREATE_STRINGS.fields.dueAtHelper}</p>
               </div>
 
-              {/* Deadline Reminder Section */}
+              {/* Deadline Reminder Section — only active for recurring tasks */}
               <div className={styles.reminderSection}>
                 <label className={styles.label}>
                   {TASK_CREATE_STRINGS.reminder.sectionLabel}
                 </label>
-                {hasDueDate ? (
-                  <>
-                    <label className={styles.checkboxLabel}>
-                      <input
-                        type="checkbox"
-                        checked={reminderEnabled}
-                        onChange={(event) => setReminderEnabled(event.target.checked)}
-                        className={styles.checkbox}
-                      />
-                      <span>{TASK_CREATE_STRINGS.reminder.enableLabel}</span>
-                    </label>
-                    {reminderEnabled && (
-                      <div className={styles.distributionScheduleField}>
-                        <label
-                          htmlFor="reminder-lead-minutes"
-                          className={styles.label}
-                        >
-                          {TASK_CREATE_STRINGS.reminder.leadTimeLabel}
-                        </label>
-                        <select
-                          id="reminder-lead-minutes"
-                          className={styles.leadTimeSelect}
-                          value={reminderLeadMinutes}
-                          onChange={(event) =>
-                            setReminderLeadMinutes(Number(event.target.value))
-                          }
-                        >
-                          {REMINDER_LEAD_TIME_OPTIONS.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </select>
-                        <p className={styles.helperText}>
-                          {TASK_CREATE_STRINGS.reminder.leadTimeHelper}
-                        </p>
-                      </div>
-                    )}
-                    <p className={styles.helperText}>
-                      {TASK_CREATE_STRINGS.reminder.enableHelper}
+                {recurrenceFrequency !== "NONE" ? (
+                  hasDueDate ? (
+                    <>
+                      <label className={styles.checkboxLabel}>
+                        <input
+                          type="checkbox"
+                          checked={reminderEnabled}
+                          onChange={(event) => setReminderEnabled(event.target.checked)}
+                          className={styles.checkbox}
+                        />
+                        <span>{TASK_CREATE_STRINGS.reminder.enableLabel}</span>
+                      </label>
+                      {reminderEnabled && (
+                        <div className={styles.distributionScheduleField}>
+                          <label
+                            htmlFor="reminder-lead-minutes"
+                            className={styles.label}
+                          >
+                            {TASK_CREATE_STRINGS.reminder.leadTimeLabel}
+                          </label>
+                          <select
+                            id="reminder-lead-minutes"
+                            className={styles.leadTimeSelect}
+                            value={reminderLeadMinutes}
+                            onChange={(event) =>
+                              setReminderLeadMinutes(Number(event.target.value))
+                            }
+                          >
+                            {REMINDER_LEAD_TIME_OPTIONS.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+                          <p className={styles.helperText}>
+                            {TASK_CREATE_STRINGS.reminder.leadTimeHelper}
+                          </p>
+                        </div>
+                      )}
+                      <p className={styles.helperText}>
+                        {TASK_CREATE_STRINGS.reminder.enableHelper}
+                      </p>
+                    </>
+                  ) : (
+                    <p className={styles.infoCallout}>
+                      {TASK_CREATE_STRINGS.reminder.requiresDueDate}
                     </p>
-                  </>
+                  )
                 ) : (
                   <p className={styles.infoCallout}>
-                    {TASK_CREATE_STRINGS.reminder.requiresDueDate}
+                    {TASK_CREATE_STRINGS.reminder.onlyForRecurring}
                   </p>
                 )}
               </div>
@@ -635,6 +666,8 @@ export const TaskForm = ({
                         setRecurrenceFrequency(opt.value);
                         if (opt.value !== "NONE") {
                           setAllowSelfClaim(false);
+                        } else {
+                          setResponsibleMember(null);
                         }
                       }}
                     >
@@ -650,9 +683,45 @@ export const TaskForm = ({
                       : TASK_CREATE_STRINGS.recurrence.modeMonthlyDescription}
                 </p>
                 {recurrenceFrequency !== "NONE" && (
-                  <div className={styles.infoCallout}>
-                    {TASK_CREATE_STRINGS.recurrence.infoCallout}
-                  </div>
+                  <>
+                    <div className={styles.responsiblePickerField}>
+                      <label className={styles.label}>
+                        {TASK_CREATE_STRINGS.recurrence.responsibleMemberLabel}
+                        <span className={styles.required}>
+                          {TASK_CREATE_STRINGS.recurrence.responsibleMemberRequired}
+                        </span>
+                      </label>
+                      {responsibleMember ? (
+                        <div className={styles.selectedMemberRow}>
+                          <span className={styles.selectedMemberName}>{responsibleMember.name}</span>
+                          <button
+                            type="button"
+                            className={styles.clearMemberButton}
+                            onClick={() => setResponsibleMember(null)}
+                          >
+                            {TASK_CREATE_STRINGS.recurrence.responsibleMemberClear}
+                          </button>
+                        </div>
+                      ) : (
+                        <TaskAssigneePicker
+                          selectedMemberId=""
+                          selectedMember={null}
+                          requireActive
+                          onSelect={(member) => {
+                            setResponsibleMember(member);
+                            if (localError) setLocalError(null);
+                          }}
+                        />
+                      )}
+                      <p className={styles.helperText}>
+                        {TASK_CREATE_STRINGS.recurrence.responsibleMemberHelper}
+                      </p>
+                    </div>
+                    <div className={styles.infoCallout}>
+                      {TASK_CREATE_STRINGS.recurrence.infoCallout}
+                    </div>
+                  </>
+                  
                 )}
               </div>
             </div>

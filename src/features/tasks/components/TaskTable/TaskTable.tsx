@@ -131,7 +131,7 @@ export const TaskTable = ({ tasks, viewer, onAssign, onClaim, onStart }: TaskTab
                     {TASK_TABLE_STRINGS.actions.claim}
                   </button>
                 )}
-                {canStartTask(viewer) && task.status === "ASSIGNED" && (
+                {canStartTask(viewer, task) && onStart && (
                   <button
                     type="button"
                     className={styles.button}

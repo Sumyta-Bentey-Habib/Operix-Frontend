@@ -137,29 +137,57 @@ describe("Task permissions", () => {
   });
 
   describe("canManageTaskAttachments", () => {
-    it("allows ADMIN for PENDING tasks", () => {
-      expect(canManageTaskAttachments(makeViewer("ADMIN"), makeTask("PENDING"))).toBe(true);
+    it("allows SUPER_ADMIN for PENDING tasks (always allowed by role)", () => {
+      const sa = makeViewer("SUPER_ADMIN");
+      expect(canManageTaskAttachments(sa, makeTask("PENDING"))).toBe(true);
     });
 
-    it("blocks SUPER_ADMIN for PENDING tasks", () => {
-      expect(canManageTaskAttachments(makeViewer("SUPER_ADMIN"), makeTask("PENDING"))).toBe(false);
+    it("allows ADMIN who is the task creator for PENDING tasks", () => {
+      const admin = makeViewer("ADMIN");
+      // makeViewer returns userId: "user-test", makeTask returns createdById: "user-test"
+      expect(canManageTaskAttachments(admin, makeTask("PENDING"))).toBe(true);
     });
 
-    it("blocks SUPER_ADMIN for non-PENDING tasks", () => {
-      expect(canManageTaskAttachments(makeViewer("SUPER_ADMIN"), makeTask("IN_PROGRESS"))).toBe(
-        false,
-      );
+    it("blocks ADMIN who did NOT create the task", () => {
+      const admin = makeViewer("ADMIN");
+      const otherTask = { ...makeTask("PENDING"), createdById: "someone-else" };
+      expect(canManageTaskAttachments(admin, otherTask)).toBe(false);
     });
 
-    it("blocks MEMBER for PENDING tasks", () => {
-      expect(canManageTaskAttachments(makeViewer("MEMBER"), makeTask("PENDING"))).toBe(false);
+    it("blocks SUPER_ADMIN for non-editable statuses", () => {
+      expect(canManageTaskAttachments(makeViewer("SUPER_ADMIN"), makeTask("IN_PROGRESS"))).toBe(false);
+    });
+
+    it("blocks MEMBER for PENDING tasks (not a creator in normal flow)", () => {
+      const member = makeViewer("MEMBER");
+      const taskByOther = { ...makeTask("PENDING"), createdById: "admin-1" };
+      expect(canManageTaskAttachments(member, taskByOther)).toBe(false);
     });
   });
 
   describe("canStartTask and canSubmitTask", () => {
-    it("allows MEMBER to start task", () => {
-      expect(canStartTask(makeViewer("MEMBER"))).toBe(true);
-      expect(canStartTask(makeViewer("SUPER_ADMIN"))).toBe(false);
+    it("allows MEMBER who is responsible to start an ASSIGNED task", () => {
+      const viewer = makeViewer("MEMBER");
+      const task: Task = { ...makeTask("ASSIGNED"), responsible: { id: viewer.userId, name: "Tupur", role: "MEMBER" } };
+      expect(canStartTask(viewer, task)).toBe(true);
+    });
+
+    it("blocks MEMBER who is NOT the responsible user", () => {
+      const viewer = makeViewer("MEMBER");
+      const task: Task = { ...makeTask("ASSIGNED"), responsible: { id: "other-user", name: "Other", role: "MEMBER" } };
+      expect(canStartTask(viewer, task)).toBe(false);
+    });
+
+    it("blocks MEMBER on a non-ASSIGNED task", () => {
+      const viewer = makeViewer("MEMBER");
+      const task: Task = { ...makeTask("IN_PROGRESS"), responsible: { id: viewer.userId, name: "Tupur", role: "MEMBER" } };
+      expect(canStartTask(viewer, task)).toBe(false);
+    });
+
+    it("blocks SUPER_ADMIN from starting a task", () => {
+      const viewer = makeViewer("SUPER_ADMIN");
+      const task: Task = { ...makeTask("ASSIGNED"), responsible: { id: viewer.userId, name: "SA", role: "SUPER_ADMIN" } };
+      expect(canStartTask(viewer, task)).toBe(false);
     });
 
     it("allows MEMBER to submit IN_PROGRESS task", () => {

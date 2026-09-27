@@ -128,31 +128,39 @@ describe("TaskAttachments", () => {
     await waitFor(() => expect(mocks.remove).toHaveBeenCalledWith("task-1", "attachment-1"));
   });
 
-  it("renders read only controls for SUPER_ADMIN, MEMBER, and non Pending ADMIN", () => {
-    mocks.useAuth.mockReturnValue({ viewer: viewer("SUPER_ADMIN") });
+  it("renders read only controls for non-creator ADMIN, MEMBER, and IN_PROGRESS tasks", () => {
+    // ADMIN who did NOT create the task — createdById is "admin-1" but this viewer is "admin-2"
+    const nonCreatorAdmin = { ...viewer("ADMIN"), userId: "admin-2" };
+    mocks.useAuth.mockReturnValue({ viewer: nonCreatorAdmin });
     const { rerender } = render(<TaskAttachments task={task("PENDING")} onTaskRefresh={vi.fn()} />);
 
     expect(screen.queryByLabelText("Add attachments")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Remove" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Download" })).toBeInTheDocument();
 
+    // MEMBER also cannot manage
     mocks.useAuth.mockReturnValue({ viewer: viewer("MEMBER") });
     rerender(<TaskAttachments task={task("PENDING")} onTaskRefresh={vi.fn()} />);
     expect(screen.queryByLabelText("Add attachments")).not.toBeInTheDocument();
 
+    // Creator ADMIN on an IN_PROGRESS task (no longer editable)
     mocks.useAuth.mockReturnValue({ viewer: viewer("ADMIN") });
-    rerender(<TaskAttachments task={task("ASSIGNED")} onTaskRefresh={vi.fn()} />);
+    rerender(<TaskAttachments task={task("IN_PROGRESS")} onTaskRefresh={vi.fn()} />);
     expect(screen.queryByLabelText("Add attachments")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Remove" })).not.toBeInTheDocument();
   });
 
   it("removes mutation controls when Task prop changes from PENDING to ASSIGNED", () => {
+    // viewer("ADMIN").userId === "admin-1" === task.createdById, so they are the creator
     mocks.useAuth.mockReturnValue({ viewer: viewer("ADMIN") });
     const { rerender } = render(<TaskAttachments task={task("PENDING")} onTaskRefresh={vi.fn()} />);
 
     expect(screen.getByLabelText("Add attachments")).toBeInTheDocument();
 
-    rerender(<TaskAttachments task={task("ASSIGNED")} onTaskRefresh={vi.fn()} />);
+    // Once the task is ASSIGNED (and startedAt is null by default), uploader is still shown
+    // since ASSIGNED + not-started is still editable per backend policy.
+    // Move to IN_PROGRESS to see controls disappear.
+    rerender(<TaskAttachments task={task("IN_PROGRESS")} onTaskRefresh={vi.fn()} />);
 
     expect(screen.queryByLabelText("Add attachments")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Remove" })).not.toBeInTheDocument();

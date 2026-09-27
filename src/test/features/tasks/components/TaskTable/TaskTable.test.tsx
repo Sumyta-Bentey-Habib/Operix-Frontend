@@ -83,14 +83,17 @@ describe("TaskTable", () => {
     expect(screen.queryByRole("button", { name: "Start" })).not.toBeInTheDocument();
   });
 
-  it("shows MEMBER start only for ASSIGNED Tasks", () => {
+  it("shows MEMBER start only for ASSIGNED Tasks where they are responsible", () => {
+    const memberViewer = viewer("MEMBER"); // userId: "member-1"
     render(
       <TaskTable
         tasks={[
-          task("ASSIGNED"),
+          // ASSIGNED task where member is the responsible user
+          { ...task("ASSIGNED"), responsible: { id: "member-1", name: "Test Member", role: "MEMBER" } },
+          // IN_PROGRESS task - no Start button regardless
           { ...task("IN_PROGRESS"), id: "task-2", referenceCode: "TSK-0002" },
         ]}
-        viewer={viewer("MEMBER")}
+        viewer={memberViewer}
         onAssign={vi.fn()}
         onStart={vi.fn()}
       />,

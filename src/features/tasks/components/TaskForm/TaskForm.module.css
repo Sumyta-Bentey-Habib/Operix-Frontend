@@ -629,6 +629,51 @@
   border: 1px solid var(--border-subtle);
 }
 
+/* ==========================================================================
+   Responsible Member Picker (inside Recurrence section)
+   ========================================================================== */
+.responsiblePickerField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 4px;
+}
+
+.selectedMemberRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--primary-emerald-light);
+  border: 1px solid var(--primary-emerald);
+}
+
+.selectedMemberName {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.clearMemberButton {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: color 0.15s ease;
+}
+
+.clearMemberButton:hover {
+  color: var(--destructive);
+}
+
 
 /* ==========================================================================
    Responsive Adaptations

@@ -398,7 +398,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
                 : TASK_DETAILS_STRINGS.actions.claimTask}
             </button>
           )}
-          {canStartTask(viewer) && task.status === "ASSIGNED" && (
+          {canStartTask(viewer, task) && (
             <TaskStartButton pending={startPending} onStart={handleStart} />
           )}
           {canDirectCompleteTask(viewer, task) && (

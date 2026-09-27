@@ -147,11 +147,11 @@ export interface CreateTaskInput {
   dueAt?: string;
   scope?: TaskScope;
   teamId?: string | null;
+  responsibleUserId?: string;
   completionMode?: "DIRECT" | "REVIEW_REQUIRED";
   allowSelfClaim?: boolean;
   recurrence?: CreateTaskRecurrenceInput;
   distribution?: CreateTaskDistributionInput;
-  reminderLeadMinutes?: number;
 }
 
 export interface UpdateTaskRecurrenceInput {

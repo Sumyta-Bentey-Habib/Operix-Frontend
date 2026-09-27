@@ -233,6 +233,7 @@ export const TASK_CREATE_STRINGS = {
     leadTimeLabel: "Lead Time Before Deadline",
     leadTimeHelper: "The broadcast will fire this long before the task's due date.",
     leadTimeRequiresDueDate: "A due date is required to use lead-time distribution.",
+    recurringLeadTimeOnly: "Recurring tasks use lead-time distribution only. The broadcast fires automatically before each occurrence's due date.",
     presets: {
       "1440": "24 hours before deadline",
       "2880": "48 hours before deadline",
@@ -258,6 +259,10 @@ export const TASK_CREATE_STRINGS = {
     modeMonthlyDescription: "Repeats automatically every month (e.g. 5th of each month).",
     infoCallout:
       "Recurring tasks automatically generate new occurrences and broadcast scheduled clock-wise reminders.",
+    responsibleMemberLabel: "Responsible Member",
+    responsibleMemberRequired: "*",
+    responsibleMemberHelper: "This member will be automatically assigned to each recurrence of this task.",
+    responsibleMemberClear: "Clear",
   },
   reminder: {
     sectionLabel: "Deadline Reminder",
@@ -266,6 +271,7 @@ export const TASK_CREATE_STRINGS = {
     leadTimeLabel: "Reminder Lead Time",
     leadTimeHelper: "How far in advance of the deadline to send the reminder.",
     requiresDueDate: "Set a due date above to enable deadline reminders.",
+    onlyForRecurring: "Deadline reminders are only available for recurring tasks. Set a recurrence schedule above to enable this.",
     presets: {
       "30": "30 minutes before",
       "60": "1 hour before",
@@ -330,6 +336,7 @@ export const TASK_CREATE_STRINGS = {
   validation: {
     titleRequired: "Task title is required.",
     teamRequired: "Choose a Team before creating the Task.",
+    responsibleMemberRequired: "Choose a Responsible Member for recurring tasks.",
   },
 } as const;
 

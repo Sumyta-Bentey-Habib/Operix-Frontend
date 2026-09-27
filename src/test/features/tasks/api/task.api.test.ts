@@ -162,7 +162,7 @@ describe("taskApi", () => {
     });
   });
 
-  it("creates a Task with reminderLeadMinutes", async () => {
+  it("creates a Task with recurrence reminderLeadMinutes", async () => {
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
       .mockResolvedValueOnce(jsonResponse({ id: "task-4" }));
@@ -173,12 +173,13 @@ describe("taskApi", () => {
       dueAt: "2026-09-20T17:00:00.000Z",
       scope: "TEAM",
       teamId: "team-1",
-      reminderLeadMinutes: 1440,
+      responsibleUserId: "user-1",
+      recurrence: { frequency: "WEEKLY", reminderLeadMinutes: 1440 },
     });
 
     const request = fetchMock.mock.calls[0]?.[1] as RequestInit;
     const body = JSON.parse(String(request.body));
-    expect(body.reminderLeadMinutes).toBe(1440);
+    expect(body.recurrence.reminderLeadMinutes).toBe(1440);
   });
 
   it("assigns and starts Tasks with exact methods and payloads", async () => {
