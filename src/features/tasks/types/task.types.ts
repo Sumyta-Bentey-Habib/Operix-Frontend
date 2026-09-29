@@ -34,6 +34,36 @@ export interface TaskTeamSummary {
   name: string;
 }
 
+export type TaskScope = "TEAM" | "GLOBAL";
+
+export type TaskDistributionStatus = "PENDING" | "SENT" | "CANCELLED";
+
+export type TaskRecurrenceFrequency = "WEEKLY" | "MONTHLY";
+
+export interface TaskRecurrenceSummary {
+  id: string;
+  frequency: TaskRecurrenceFrequency;
+  nextOccurrenceAt: string;
+  reminderLeadMinutes: number;
+  distributionLeadMinutes: number | null;
+  isActive: boolean;
+}
+
+export type TaskReminderStatus = "PENDING" | "SENT" | "CANCELLED";
+
+export interface TaskReminderSummary {
+  status: TaskReminderStatus;
+  scheduledAt: string;
+  sentAt: string | null;
+}
+
+export interface TaskDistributionSummary {
+  status: TaskDistributionStatus;
+  scheduledAt: string;
+  sentAt: string | null;
+  leadMinutes?: number | null;
+}
+
 export interface Task {
   id: string;
   referenceCode: string;
@@ -42,27 +72,42 @@ export interface Task {
   remarks: string | null;
   priority: TaskPriority;
   status: TaskStatus;
+  scope?: TaskScope;
   dueAt: string | null;
   startedAt: string | null;
   completedAt: string | null;
   cancelledAt: string | null;
-  teamId: string;
-  team?: TaskTeamSummary;
+  teamId?: string | null;
+  team?: TaskTeamSummary | null;
+  distribution?: TaskDistributionSummary | null;
+  completionMode?: "DIRECT" | "REVIEW_REQUIRED";
+  completionNote?: string | null;
+  allowSelfClaim?: boolean;
+  occurrenceKey?: string | null;
+  scheduledStartAt?: string | null;
+  recurrence?: TaskRecurrenceSummary | null;
   categoryId: string | null;
-  createdById: string;
+  createdById?: string;
   owner?: TaskUserSummary;
   responsible?: TaskUserSummary | null;
+  reminder?: TaskReminderSummary | null;
+  reminderLeadMinutes?: number | null;
+  reminderScheduledAt?: string | null;
   createdAt: string;
   updatedAt: string;
   isOverdue: boolean;
 }
 
 export interface TaskStatusHistoryEntry {
-  id: string;
+  id?: string;
   taskId: string;
   fromStatus: TaskStatus | null;
   toStatus: TaskStatus;
-  changedById: string;
+  changedById?: string;
+  changedBy?: {
+    id: string;
+    name: string;
+  };
   notes: string | null;
   changedAt: string;
 }
@@ -72,6 +117,7 @@ export interface TaskListQuery {
   limit?: number;
   status?: TaskStatus;
   priority?: TaskPriority;
+  scope?: TaskScope;
   teamId?: string;
   assignedMemberId?: string;
   overdue?: boolean;
@@ -81,16 +127,29 @@ export interface TaskListQuery {
 
 export type TaskStatusFilter = TaskStatus | "ALL";
 export type TaskPriorityFilter = TaskPriority | "ALL";
+export type TaskScopeFilter = TaskScope | "ALL";
 export type TaskOverdueFilter = "ALL" | "OVERDUE" | "NOT_OVERDUE";
 
 export interface TaskFilterState {
   status: TaskStatusFilter;
   priority: TaskPriorityFilter;
+  scope?: TaskScopeFilter;
   teamId: string;
   assignedMemberId: string;
   overdue: TaskOverdueFilter;
   q: string;
   sort: TaskSort;
+}
+
+export interface CreateTaskDistributionInput {
+  notifyAll: true;
+  scheduledAt?: string;
+  leadMinutes?: number;
+}
+
+export interface CreateTaskRecurrenceInput {
+  frequency: TaskRecurrenceFrequency;
+  reminderLeadMinutes?: number;
 }
 
 export interface CreateTaskInput {
@@ -99,17 +158,50 @@ export interface CreateTaskInput {
   remarks?: string;
   priority?: TaskPriority;
   dueAt?: string;
-  teamId: string;
+  scope?: TaskScope;
+  teamId?: string | null;
+  responsibleUserId?: string;
+  completionMode?: "DIRECT" | "REVIEW_REQUIRED";
+  allowSelfClaim?: boolean;
+  recurrence?: CreateTaskRecurrenceInput;
+  distribution?: CreateTaskDistributionInput;
+}
+
+export interface UpdateTaskRecurrenceInput {
+  title?: string;
+  responsibleUserId?: string;
+  reminderLeadMinutes?: number;
+  distributionLeadMinutes?: number | null;
+  isActive?: boolean;
+}
+
+export interface UpdateTaskSelfClaimInput {
+  enabled: boolean;
+}
+
+export interface CompleteTaskInput {
+  completionNote?: string;
+}
+
+export interface RescheduleDistributionInput {
+  scheduledAt: string;
+}
+
+export interface CancelDistributionResponse {
+  taskId: string;
+  status: "CANCELLED";
 }
 
 export interface AssignTaskInput {
-  memberId: string;
+  responsibleUserId?: string;
+  memberId?: string;
   note?: string;
 }
 
 export const DEFAULT_TASK_FILTERS: TaskFilterState = {
   status: "ALL",
   priority: "ALL",
+  scope: "ALL",
   teamId: "",
   assignedMemberId: "",
   overdue: "ALL",
@@ -132,13 +224,17 @@ export const buildTaskListQuery = (
   if (filters.status !== "ALL") query.status = filters.status;
   if (filters.priority !== "ALL") query.priority = filters.priority;
 
+  if (filters.scope && filters.scope !== "ALL") {
+    query.scope = filters.scope;
+  }
+
   const trimmedSearch = filters.q.trim();
   if (trimmedSearch) query.q = trimmedSearch;
 
   if (filters.overdue === "OVERDUE") query.overdue = true;
   if (filters.overdue === "NOT_OVERDUE") query.overdue = false;
 
-  if (viewer?.role === "SUPER_ADMIN" && filters.teamId) {
+  if (viewer?.role === "SUPER_ADMIN" && filters.teamId && filters.scope !== "GLOBAL") {
     query.teamId = filters.teamId;
   }
 
@@ -148,3 +244,4 @@ export const buildTaskListQuery = (
 
   return query;
 };
+

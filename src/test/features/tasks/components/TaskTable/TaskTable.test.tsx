@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import type { OperixViewer } from "@/types/auth";
 import type { Task } from "@/features/tasks/types/task.types";
@@ -37,7 +37,7 @@ const task = (status: Task["status"], isOverdue = false): Task => ({
 });
 
 describe("TaskTable", () => {
-  it("shows SUPER_ADMIN read only actions", () => {
+  it("shows SUPER_ADMIN assign action for PENDING tasks", () => {
     render(
       <TaskTable
         tasks={[task("PENDING")]}
@@ -48,8 +48,25 @@ describe("TaskTable", () => {
     );
 
     expect(screen.getByRole("link", { name: "View" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Assign" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Assign" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Start" })).not.toBeInTheDocument();
+  });
+
+  it("shows MEMBER claim action for PENDING tasks with allowSelfClaim", () => {
+    const claimFn = vi.fn();
+    render(
+      <TaskTable
+        tasks={[{ ...task("PENDING"), allowSelfClaim: true }]}
+        viewer={viewer("MEMBER")}
+        onAssign={vi.fn()}
+        onClaim={claimFn}
+        onStart={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "Claim" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Claim" }));
+    expect(claimFn).toHaveBeenCalled();
   });
 
   it("shows ADMIN assign only for PENDING Tasks", () => {
@@ -66,14 +83,17 @@ describe("TaskTable", () => {
     expect(screen.queryByRole("button", { name: "Start" })).not.toBeInTheDocument();
   });
 
-  it("shows MEMBER start only for ASSIGNED Tasks", () => {
+  it("shows MEMBER start only for ASSIGNED Tasks where they are responsible", () => {
+    const memberViewer = viewer("MEMBER"); // userId: "member-1"
     render(
       <TaskTable
         tasks={[
-          task("ASSIGNED"),
+          // ASSIGNED task where member is the responsible user
+          { ...task("ASSIGNED"), responsible: { id: "member-1", name: "Test Member", role: "MEMBER" } },
+          // IN_PROGRESS task - no Start button regardless
           { ...task("IN_PROGRESS"), id: "task-2", referenceCode: "TSK-0002" },
         ]}
-        viewer={viewer("MEMBER")}
+        viewer={memberViewer}
         onAssign={vi.fn()}
         onStart={vi.fn()}
       />,
@@ -149,5 +169,29 @@ describe("TaskTable", () => {
     );
 
     expect(screen.getByText("Unassigned")).toBeInTheDocument();
+  });
+
+  it("renders Global badge for global tasks without a team", () => {
+    const globalTask: Task = {
+      ...task("PENDING"),
+      id: "task-global-1",
+      referenceCode: "TSK-G001",
+      title: "Global Compliance Notice",
+      scope: "GLOBAL",
+      teamId: null,
+      team: null,
+    };
+
+    render(
+      <TaskTable
+        tasks={[globalTask]}
+        viewer={viewer("SUPER_ADMIN")}
+        onAssign={vi.fn()}
+        onStart={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("Global")).toBeInTheDocument();
+    expect(screen.getByText("Global Compliance Notice")).toBeInTheDocument();
   });
 });

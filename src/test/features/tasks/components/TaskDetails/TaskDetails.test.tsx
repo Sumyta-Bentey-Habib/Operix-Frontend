@@ -197,4 +197,30 @@ describe("TaskDetails", () => {
 
     expect(screen.getByRole("button", { name: "Start Task" })).toBeInTheDocument();
   });
+
+  it("renders global task details and scope badge when scope is GLOBAL", () => {
+    mocks.useAuth.mockReturnValue({ viewer: { role: "SUPER_ADMIN", id: "super-1" } });
+    mocks.useTask.mockReturnValue({
+      task: {
+        ...mockTask,
+        scope: "GLOBAL",
+        team: null,
+        teamId: null,
+        distribution: {
+          status: "SENT",
+          scheduledAt: "2026-09-12T00:00:00.000Z",
+          sentAt: "2026-09-12T00:00:00.000Z",
+        },
+      },
+      loading: false,
+      error: null,
+      setTask: vi.fn(),
+      refresh: vi.fn(),
+    });
+
+    render(<TaskDetails taskId="task-test-id" />);
+
+    expect(screen.getAllByText(TASK_DETAILS_STRINGS.metadata.scopeGlobal).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(TASK_DETAILS_STRINGS.metadata.distributionSent)).toBeInTheDocument();
+  });
 });

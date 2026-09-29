@@ -11,11 +11,13 @@ export interface TaskAttachmentListProps {
   loading: boolean;
   error: unknown;
   canManage: boolean;
+  canDeleteAttachment?: (attachment: AttachmentResponse) => boolean;
   downloadingFileId: string | null;
   deletingAttachmentId: string | null;
   onRetry: () => void;
   onDownload: (attachment: AttachmentResponse) => void;
   onDelete: (attachment: AttachmentResponse) => void;
+  onView?: (attachment: AttachmentResponse) => void;
 }
 
 export const TaskAttachmentList = ({
@@ -23,11 +25,13 @@ export const TaskAttachmentList = ({
   loading,
   error,
   canManage,
+  canDeleteAttachment,
   downloadingFileId,
   deletingAttachmentId,
   onRetry,
   onDownload,
   onDelete,
+  onView,
 }: TaskAttachmentListProps) => (
   <div className={styles.list}>
     {loading && <LoadingState message="Loading attachments..." />}
@@ -48,11 +52,14 @@ export const TaskAttachmentList = ({
           key={attachment.id}
           attachment={attachment}
           canManage={canManage}
+          canDelete={canDeleteAttachment ? canDeleteAttachment(attachment) : canManage}
           downloading={downloadingFileId === attachment.file.id}
           deleting={deletingAttachmentId === attachment.id}
           onDownload={onDownload}
           onDelete={onDelete}
+          onView={onView}
         />
       ))}
   </div>
 );
+

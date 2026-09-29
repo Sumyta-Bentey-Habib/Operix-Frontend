@@ -2,7 +2,12 @@
 
 import { useState } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { fileApi, triggerBrowserDownload } from "@/features/files";
+import {
+  FilePreviewModal,
+  cleanFilename,
+  fileApi,
+  triggerBrowserDownload,
+} from "@/features/files";
 import type { FileAttachmentResponse } from "@/features/files";
 import { getSubmissionErrorView } from "../submission-errors";
 import { SubmissionAttachmentItem } from "../SubmissionAttachmentItem";
@@ -15,6 +20,7 @@ export interface SubmissionAttachmentsProps {
 export const SubmissionAttachments = ({ attachments }: SubmissionAttachmentsProps) => {
   const [downloadingFileId, setDownloadingFileId] = useState<string | null>(null);
   const [downloadError, setDownloadError] = useState<string | null>(null);
+  const [previewAttachment, setPreviewAttachment] = useState<FileAttachmentResponse | null>(null);
 
   const handleDownload = async (attachment: FileAttachmentResponse) => {
     if (downloadingFileId) return;
@@ -26,7 +32,7 @@ export const SubmissionAttachments = ({ attachments }: SubmissionAttachmentsProp
       triggerBrowserDownload({
         blob: result.blob,
         filename: result.filename,
-        fallbackFilename: attachment.file.originalName,
+        fallbackFilename: cleanFilename(attachment.file.originalName),
       });
     } catch (downloadFailure) {
       setDownloadError(getSubmissionErrorView(downloadFailure).message);
@@ -56,10 +62,23 @@ export const SubmissionAttachments = ({ attachments }: SubmissionAttachmentsProp
               attachment={attachment}
               downloading={downloadingFileId === attachment.file.id}
               onDownload={(nextAttachment) => void handleDownload(nextAttachment)}
+              onView={(nextAttachment) => setPreviewAttachment(nextAttachment)}
             />
           ))}
         </div>
       )}
+
+      <FilePreviewModal
+        open={Boolean(previewAttachment)}
+        file={previewAttachment?.file ?? null}
+        onClose={() => setPreviewAttachment(null)}
+        onDownload={() => {
+          if (previewAttachment) {
+            void handleDownload(previewAttachment);
+          }
+        }}
+      />
     </section>
   );
 };
+

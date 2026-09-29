@@ -2,13 +2,14 @@
 
 import { useMemo, useRef, useState } from "react";
 import type { ChangeEvent, DragEvent } from "react";
-import { formatFileSize } from "@/features/files";
+import { formatFileSize, sanitizeUploadFile } from "@/features/files";
 import {
   canUploadSelectedAttachments,
   MAX_TASK_ATTACHMENTS,
   TASK_ATTACHMENT_ACCEPT,
   validateAttachmentSelection,
 } from "../../utils/task-attachment-validation";
+
 import type { SelectedAttachmentFile } from "../../types/task-attachment.types";
 import styles from "./TaskAttachmentUploader.module.css";
 
@@ -38,10 +39,12 @@ export const TaskAttachmentUploader = ({
   }, [capacityError, pending, selectedFiles]);
 
   const updateSelection = (files: File[]) => {
-    const validation = validateAttachmentSelection(files, currentAttachmentCount);
+    const sanitizedFiles = files.map(sanitizeUploadFile);
+    const validation = validateAttachmentSelection(sanitizedFiles, currentAttachmentCount);
     setSelectedFiles(validation.selectedFiles);
     setCapacityError(validation.capacityError);
   };
+
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     updateSelection(Array.from(event.target.files ?? []));

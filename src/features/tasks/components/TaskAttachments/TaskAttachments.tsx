@@ -2,8 +2,14 @@
 
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { fileApi, triggerBrowserDownload } from "@/features/files";
-import { canManageTaskAttachments } from "@/lib/auth/permissions";
+import {
+  FilePreviewModal,
+  cleanFilename,
+  fileApi,
+  triggerBrowserDownload,
+} from "@/features/files";
+
+import { canDeleteTaskAttachment, canManageTaskAttachments } from "@/lib/auth/permissions";
 import { taskAttachmentApi } from "../../api/task-attachment.api";
 import { useTaskAttachments } from "../../hooks/use-task-attachments";
 import type { AttachmentResponse } from "../../types/task-attachment.types";
@@ -29,7 +35,10 @@ export const TaskAttachments = ({ task, onTaskRefresh }: TaskAttachmentsProps) =
   const [deletingAttachmentId, setDeletingAttachmentId] = useState<string | null>(null);
   const [downloadingFileId, setDownloadingFileId] = useState<string | null>(null);
   const [selectedDelete, setSelectedDelete] = useState<AttachmentResponse | null>(null);
+
+  const [previewAttachment, setPreviewAttachment] = useState<AttachmentResponse | null>(null);
   const [mutationError, setMutationError] = useState<string | null>(null);
+
   const [downloadError, setDownloadError] = useState<string | null>(null);
   const canManage = viewer ? canManageTaskAttachments(viewer, task) : false;
 
@@ -91,7 +100,7 @@ export const TaskAttachments = ({ task, onTaskRefresh }: TaskAttachmentsProps) =
       triggerBrowserDownload({
         blob: result.blob,
         filename: result.filename,
-        fallbackFilename: attachment.file.originalName,
+        fallbackFilename: cleanFilename(attachment.file.originalName),
       });
     } catch (downloadFailure) {
       setDownloadError(getTaskAttachmentErrorView(downloadFailure).message);
@@ -134,11 +143,15 @@ export const TaskAttachments = ({ task, onTaskRefresh }: TaskAttachmentsProps) =
         loading={loading}
         error={error}
         canManage={canManage}
+        canDeleteAttachment={(attachment) =>
+          canDeleteTaskAttachment(viewer, task, attachment)
+        }
         downloadingFileId={downloadingFileId}
         deletingAttachmentId={deletingAttachmentId}
         onRetry={() => void refresh()}
         onDownload={(attachment) => void handleDownload(attachment)}
         onDelete={setSelectedDelete}
+        onView={(attachment) => setPreviewAttachment(attachment)}
       />
 
       <TaskAttachmentDeleteDialog
@@ -147,6 +160,18 @@ export const TaskAttachments = ({ task, onTaskRefresh }: TaskAttachmentsProps) =
         onConfirm={() => void handleDelete()}
         onClose={() => !deletingAttachmentId && setSelectedDelete(null)}
       />
+
+      <FilePreviewModal
+        open={Boolean(previewAttachment)}
+        file={previewAttachment?.file ?? null}
+        onClose={() => setPreviewAttachment(null)}
+        onDownload={() => {
+          if (previewAttachment) {
+            void handleDownload(previewAttachment);
+          }
+        }}
+      />
     </section>
   );
+
 };

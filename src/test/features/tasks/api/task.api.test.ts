@@ -111,6 +111,77 @@ describe("taskApi", () => {
     expect(String(request.body)).not.toContain("isOverdue");
   });
 
+  it("creates a Global Task with distribution.scheduledAt", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse({ id: "task-2" }));
+
+    await taskApi.create({
+      title: "Global compliance task",
+      priority: "HIGH",
+      scope: "GLOBAL",
+      completionMode: "DIRECT",
+      distribution: {
+        notifyAll: true,
+        scheduledAt: "2026-09-20T09:00:00.000Z",
+      },
+    });
+
+    const request = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    const body = JSON.parse(String(request.body));
+    expect(body.scope).toBe("GLOBAL");
+    expect(body.distribution).toEqual({
+      notifyAll: true,
+      scheduledAt: "2026-09-20T09:00:00.000Z",
+    });
+    expect(body.teamId).toBeUndefined();
+  });
+
+  it("creates a Global Task with distribution.leadMinutes", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse({ id: "task-3" }));
+
+    await taskApi.create({
+      title: "Recurring distribution task",
+      priority: "MEDIUM",
+      dueAt: "2026-09-25T17:00:00.000Z",
+      scope: "GLOBAL",
+      completionMode: "DIRECT",
+      distribution: {
+        notifyAll: true,
+        leadMinutes: 1440,
+      },
+    });
+
+    const request = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    const body = JSON.parse(String(request.body));
+    expect(body.distribution).toEqual({
+      notifyAll: true,
+      leadMinutes: 1440,
+    });
+  });
+
+  it("creates a Task with recurrence reminderLeadMinutes", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse({ id: "task-4" }));
+
+    await taskApi.create({
+      title: "Task with reminder",
+      priority: "HIGH",
+      dueAt: "2026-09-20T17:00:00.000Z",
+      scope: "TEAM",
+      teamId: "team-1",
+      responsibleUserId: "user-1",
+      recurrence: { frequency: "WEEKLY", reminderLeadMinutes: 1440 },
+    });
+
+    const request = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    const body = JSON.parse(String(request.body));
+    expect(body.recurrence.reminderLeadMinutes).toBe(1440);
+  });
+
   it("assigns and starts Tasks with exact methods and payloads", async () => {
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
@@ -127,7 +198,7 @@ describe("taskApi", () => {
     );
     expect(assignRequest.method).toBe("POST");
     expect(JSON.parse(String(assignRequest.body))).toEqual({
-      memberId: "member-1",
+      responsibleUserId: "member-1",
       note: "Please start today",
     });
     expect(String(fetchMock.mock.calls[1]?.[0])).toBe(
@@ -135,6 +206,119 @@ describe("taskApi", () => {
     );
     expect(startRequest.method).toBe("POST");
     expect(startRequest.body).toBeUndefined();
+  });
+
+  it("reschedules a distribution via PATCH /tasks/:taskId/distribution", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse({ id: "task-1" }));
+
+    await taskApi.rescheduleDistribution("task-1", {
+      scheduledAt: "2026-09-22T10:00:00.000Z",
+    });
+
+    const request = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe(
+      "http://localhost:5000/api/v1/tasks/task-1/distribution",
+    );
+    expect(request.method).toBe("PATCH");
+    expect(JSON.parse(String(request.body))).toEqual({
+      scheduledAt: "2026-09-22T10:00:00.000Z",
+    });
+  });
+
+  it("cancels a distribution via POST /tasks/:taskId/distribution/cancel", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(
+        jsonResponse({ taskId: "task-1", status: "CANCELLED" }),
+      );
+
+    const result = await taskApi.cancelDistribution("task-1");
+
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe(
+      "http://localhost:5000/api/v1/tasks/task-1/distribution/cancel",
+    );
+    expect((fetchMock.mock.calls[0]?.[1] as RequestInit).method).toBe("POST");
+    expect((fetchMock.mock.calls[0]?.[1] as RequestInit).body).toBeUndefined();
+    expect(result).toEqual({ taskId: "task-1", status: "CANCELLED" });
+  });
+
+  it("claims a task via POST /tasks/:taskId/claim", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse({ id: "task-1", status: "ASSIGNED" }));
+
+    const result = await taskApi.claim("task-1");
+
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe(
+      "http://localhost:5000/api/v1/tasks/task-1/claim",
+    );
+    expect((fetchMock.mock.calls[0]?.[1] as RequestInit).method).toBe("POST");
+    expect((fetchMock.mock.calls[0]?.[1] as RequestInit).body).toBeUndefined();
+    expect(result).toEqual({ id: "task-1", status: "ASSIGNED" });
+  });
+
+  it("completes a task directly via POST /tasks/:taskId/complete", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse({ id: "task-1", status: "COMPLETED" }));
+
+    const result = await taskApi.complete("task-1", {
+      completionNote: "Finished all deliverables directly.",
+    });
+
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe(
+      "http://localhost:5000/api/v1/tasks/task-1/complete",
+    );
+    const request = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    expect(request.method).toBe("POST");
+    expect(JSON.parse(String(request.body))).toEqual({
+      completionNote: "Finished all deliverables directly.",
+    });
+    expect(result).toEqual({ id: "task-1", status: "COMPLETED" });
+  });
+
+  it("updates self-claim policy via PATCH /tasks/:taskId/self-claim", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse({ id: "task-1", allowSelfClaim: true }));
+
+    const result = await taskApi.updateSelfClaim("task-1", { enabled: true });
+
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe(
+      "http://localhost:5000/api/v1/tasks/task-1/self-claim",
+    );
+    const request = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    expect(request.method).toBe("PATCH");
+    expect(JSON.parse(String(request.body))).toEqual({ enabled: true });
+    expect(result).toEqual({ id: "task-1", allowSelfClaim: true });
+  });
+
+  it("gets and updates recurrence via /task-recurrences/:id", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(
+        jsonResponse({ id: "rec-1", frequency: "MONTHLY", isActive: true }),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse({ id: "rec-1", frequency: "MONTHLY", isActive: false }),
+      );
+
+    const rec = await taskApi.getRecurrence("rec-1");
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe(
+      "http://localhost:5000/api/v1/task-recurrences/rec-1",
+    );
+    expect(rec).toEqual({ id: "rec-1", frequency: "MONTHLY", isActive: true });
+
+    const updated = await taskApi.updateRecurrence("rec-1", { isActive: false });
+    expect(String(fetchMock.mock.calls[1]?.[0])).toBe(
+      "http://localhost:5000/api/v1/task-recurrences/rec-1",
+    );
+    const request = fetchMock.mock.calls[1]?.[1] as RequestInit;
+    expect(request.method).toBe("PATCH");
+    expect(JSON.parse(String(request.body))).toEqual({ isActive: false });
+    expect(updated).toEqual({ id: "rec-1", frequency: "MONTHLY", isActive: false });
   });
 });
 

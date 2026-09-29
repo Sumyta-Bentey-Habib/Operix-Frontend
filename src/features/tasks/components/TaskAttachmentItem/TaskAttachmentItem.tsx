@@ -1,4 +1,4 @@
-import { formatFileSize, formatFileType } from "@/features/files";
+import { cleanFilename, formatFileSize, formatFileType } from "@/features/files";
 import { formatDisplayDate } from "@/utils/date";
 import { obfuscateId } from "@/utils/id-obfuscator";
 import type { AttachmentResponse } from "../../types/task-attachment.types";
@@ -6,31 +6,37 @@ import styles from "./TaskAttachmentItem.module.css";
 
 export interface TaskAttachmentItemProps {
   attachment: AttachmentResponse;
-  canManage: boolean;
+  canManage?: boolean;
+  canDelete?: boolean;
   downloading: boolean;
   deleting: boolean;
   onDownload: (attachment: AttachmentResponse) => void;
   onDelete: (attachment: AttachmentResponse) => void;
+  onView?: (attachment: AttachmentResponse) => void;
 }
 
 export const TaskAttachmentItem = ({
   attachment,
-  canManage,
+  canManage = false,
+  canDelete,
   downloading,
   deleting,
   onDownload,
   onDelete,
+  onView,
 }: TaskAttachmentItemProps) => {
   const { file } = attachment;
+  const isDeletable = canDelete ?? canManage;
+  const displayName = cleanFilename(file.originalName);
 
   return (
     <article className={styles.item}>
       <div className={styles.main}>
-        <h3 className={styles.name}>{file.originalName}</h3>
+        <h3 className={styles.name}>{displayName}</h3>
         <dl className={styles.meta}>
           <div>
             <dt>Type</dt>
-            <dd>{formatFileType(file.mimeType, file.originalName)}</dd>
+            <dd>{formatFileType(file.mimeType, displayName)}</dd>
           </div>
           <div>
             <dt>Size</dt>
@@ -42,15 +48,31 @@ export const TaskAttachmentItem = ({
           </div>
           <div>
             <dt>Uploaded By</dt>
-            <dd className={styles.mono}>{obfuscateId(file.uploadedById, "USR")}</dd>
+            <dd className={styles.mono}>
+              {file.uploadedBy?.name ?? obfuscateId(file.uploadedById, "USR")}
+            </dd>
           </div>
         </dl>
       </div>
       <div className={styles.actions}>
-        <button type="button" onClick={() => onDownload(attachment)} disabled={downloading}>
+        {onView && (
+          <button
+            type="button"
+            className={styles.viewButton}
+            onClick={() => onView(attachment)}
+          >
+            View
+          </button>
+        )}
+        <button
+          type="button"
+          className={styles.downloadButton}
+          onClick={() => onDownload(attachment)}
+          disabled={downloading}
+        >
           {downloading ? "Downloading..." : "Download"}
         </button>
-        {canManage && (
+        {isDeletable && (
           <button
             type="button"
             className={styles.dangerButton}
@@ -64,3 +86,4 @@ export const TaskAttachmentItem = ({
     </article>
   );
 };
+

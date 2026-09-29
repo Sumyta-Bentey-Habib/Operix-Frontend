@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { canAssignTask, canStartTask } from "@/lib/auth/permissions";
+import { canAssignTask, canClaimTask, canStartTask } from "@/lib/auth/permissions";
 import type { OperixViewer } from "@/types/auth";
 import { formatDisplayDate } from "@/utils/date";
 import { obfuscateId } from "@/utils/id-obfuscator";
@@ -15,13 +15,14 @@ export interface TaskTableProps {
   tasks: Task[];
   viewer: OperixViewer;
   onAssign: (task: Task) => void;
+  onClaim?: (task: Task) => void;
   onStart: (task: Task) => void;
 }
 
 const formatOptionalDate = (value: string | null) =>
   value ? formatDisplayDate(value) : "—";
 
-export const TaskTable = ({ tasks, viewer, onAssign, onStart }: TaskTableProps) => (
+export const TaskTable = ({ tasks, viewer, onAssign, onClaim, onStart }: TaskTableProps) => (
   <div className={styles.tableWrap}>
     <table className={styles.table}>
       <thead className={styles.thead}>
@@ -84,9 +85,15 @@ export const TaskTable = ({ tasks, viewer, onAssign, onStart }: TaskTableProps) 
                 </div>
               </td>
               <td className={styles.teamCell} data-label={TASK_TABLE_STRINGS.labels.teamPrefix}>
-                <span className={styles.teamName}>
-                  {task.team?.name ?? obfuscateId(task.teamId, "TM")}
-                </span>
+                {task.scope === "GLOBAL" || (!task.team && !task.teamId) ? (
+                  <span className={styles.globalScopeBadge}>
+                    {TASK_TABLE_STRINGS.badges.globalScope}
+                  </span>
+                ) : (
+                  <span className={styles.teamName}>
+                    {task.team?.name ?? (task.teamId ? obfuscateId(task.teamId, "TM") : "—")}
+                  </span>
+                )}
               </td>
             <td className={styles.dueCell} data-label={TASK_TABLE_STRINGS.labels.duePrefix}>
               <span className={styles.dateCell}>{formatOptionalDate(task.dueAt)}</span>
@@ -115,7 +122,16 @@ export const TaskTable = ({ tasks, viewer, onAssign, onStart }: TaskTableProps) 
                     {TASK_TABLE_STRINGS.actions.assign}
                   </button>
                 )}
-                {canStartTask(viewer) && task.status === "ASSIGNED" && (
+                {canClaimTask(viewer, task) && onClaim && (
+                  <button
+                    type="button"
+                    className={styles.button}
+                    onClick={() => onClaim(task)}
+                  >
+                    {TASK_TABLE_STRINGS.actions.claim}
+                  </button>
+                )}
+                {canStartTask(viewer, task) && onStart && (
                   <button
                     type="button"
                     className={styles.button}

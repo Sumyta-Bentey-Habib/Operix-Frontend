@@ -3,7 +3,11 @@ export interface FileAssetSummary {
   originalName: string;
   mimeType: string;
   sizeBytes: number;
-  uploadedById: string;
+  uploadedById?: string;
+  uploadedBy?: {
+    id: string;
+    name: string;
+  };
   createdAt: string;
 }
 

@@ -128,31 +128,39 @@ describe("TaskAttachments", () => {
     await waitFor(() => expect(mocks.remove).toHaveBeenCalledWith("task-1", "attachment-1"));
   });
 
-  it("renders read only controls for SUPER_ADMIN, MEMBER, and non Pending ADMIN", () => {
-    mocks.useAuth.mockReturnValue({ viewer: viewer("SUPER_ADMIN") });
+  it("renders read only controls for non-creator ADMIN, MEMBER, and IN_PROGRESS tasks", () => {
+    // ADMIN who did NOT create the task — createdById is "admin-1" but this viewer is "admin-2"
+    const nonCreatorAdmin = { ...viewer("ADMIN"), userId: "admin-2" };
+    mocks.useAuth.mockReturnValue({ viewer: nonCreatorAdmin });
     const { rerender } = render(<TaskAttachments task={task("PENDING")} onTaskRefresh={vi.fn()} />);
 
     expect(screen.queryByLabelText("Add attachments")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Remove" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Download" })).toBeInTheDocument();
 
+    // MEMBER also cannot manage
     mocks.useAuth.mockReturnValue({ viewer: viewer("MEMBER") });
     rerender(<TaskAttachments task={task("PENDING")} onTaskRefresh={vi.fn()} />);
     expect(screen.queryByLabelText("Add attachments")).not.toBeInTheDocument();
 
+    // Creator ADMIN on an IN_PROGRESS task (no longer editable)
     mocks.useAuth.mockReturnValue({ viewer: viewer("ADMIN") });
-    rerender(<TaskAttachments task={task("ASSIGNED")} onTaskRefresh={vi.fn()} />);
+    rerender(<TaskAttachments task={task("IN_PROGRESS")} onTaskRefresh={vi.fn()} />);
     expect(screen.queryByLabelText("Add attachments")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Remove" })).not.toBeInTheDocument();
   });
 
   it("removes mutation controls when Task prop changes from PENDING to ASSIGNED", () => {
+    // viewer("ADMIN").userId === "admin-1" === task.createdById, so they are the creator
     mocks.useAuth.mockReturnValue({ viewer: viewer("ADMIN") });
     const { rerender } = render(<TaskAttachments task={task("PENDING")} onTaskRefresh={vi.fn()} />);
 
     expect(screen.getByLabelText("Add attachments")).toBeInTheDocument();
 
-    rerender(<TaskAttachments task={task("ASSIGNED")} onTaskRefresh={vi.fn()} />);
+    // Once the task is ASSIGNED (and startedAt is null by default), uploader is still shown
+    // since ASSIGNED + not-started is still editable per backend policy.
+    // Move to IN_PROGRESS to see controls disappear.
+    rerender(<TaskAttachments task={task("IN_PROGRESS")} onTaskRefresh={vi.fn()} />);
 
     expect(screen.queryByLabelText("Add attachments")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Remove" })).not.toBeInTheDocument();
@@ -188,4 +196,88 @@ describe("TaskAttachments", () => {
     expect(mocks.upload).toHaveBeenCalledTimes(1);
     expect(screen.getByRole("alert")).toHaveTextContent("Task attachments can only be changed");
   });
+
+  it("allows Responsible MEMBER to upload and delete only their own attachments on editable ASSIGNED task", () => {
+    const memberViewer = viewer("MEMBER"); // userId: "member-1"
+    mocks.useAuth.mockReturnValue({ viewer: memberViewer });
+
+    const memberAttachment: AttachmentResponse = {
+      id: "attachment-member",
+      downloadUrl: "/api/v1/files/file-2/download",
+      file: {
+        id: "file-2",
+        originalName: "member-spec.pdf",
+        mimeType: "application/pdf",
+        sizeBytes: 456,
+        uploadedBy: { id: "member-1", name: "Member Tupur" },
+        uploadedById: "member-1",
+        createdAt: "2026-08-24T00:00:00.000Z",
+      },
+    };
+
+    mocks.useTaskAttachments.mockReturnValue({
+      ...hookValue,
+      attachments: [attachment, memberAttachment],
+    });
+
+    const assignedTask: Task = {
+      ...task("ASSIGNED"),
+      responsible: { id: "member-1", name: "Member Tupur", role: "MEMBER" },
+    };
+
+    render(<TaskAttachments task={assignedTask} onTaskRefresh={vi.fn()} />);
+
+    expect(screen.getByLabelText("Add attachments")).toBeInTheDocument();
+
+    const removeButtons = screen.getAllByRole("button", { name: "Remove" });
+    expect(removeButtons).toHaveLength(1);
+  });
+
+  it("renders View button and opens preview modal with cleaned filename", async () => {
+    mocks.useAuth.mockReturnValue({ viewer: viewer("ADMIN") });
+    const corruptedAttachment: AttachmentResponse = {
+      id: "attachment-corrupted",
+      downloadUrl: "/api/v1/files/file-corrupted/download",
+      file: {
+        id: "file-corrupted",
+        originalName: "Screenshot 2026-09-07 at 9.50.11â¯PM.png",
+        mimeType: "image/png",
+        sizeBytes: 1048576,
+        uploadedById: "admin-1",
+        createdAt: "2026-08-23T00:00:00.000Z",
+      },
+    };
+
+    mocks.useTaskAttachments.mockReturnValue({
+      ...hookValue,
+      attachments: [corruptedAttachment],
+    });
+
+    mocks.download.mockResolvedValueOnce({
+      blob: new Blob(["fake-image-bytes"], { type: "image/png" }),
+      filename: "Screenshot 2026-09-07 at 9.50.11â¯PM.png",
+    });
+
+    render(<TaskAttachments task={task("PENDING")} onTaskRefresh={vi.fn()} />);
+
+    // Check that displayed name in the list has been cleaned of mojibake
+    expect(
+      screen.getByText("Screenshot 2026-09-07 at 9.50.11 PM.png"),
+    ).toBeInTheDocument();
+
+    const viewButton = screen.getByRole("button", { name: "View" });
+    expect(viewButton).toBeInTheDocument();
+
+    fireEvent.click(viewButton);
+
+    // Modal opens and shows cleaned title
+    await waitFor(() => {
+      expect(
+        screen.getByRole("dialog", {
+          name: /Preview Screenshot 2026-09-07 at 9.50.11 PM.png/i,
+        }),
+      ).toBeInTheDocument();
+    });
+  });
 });
+

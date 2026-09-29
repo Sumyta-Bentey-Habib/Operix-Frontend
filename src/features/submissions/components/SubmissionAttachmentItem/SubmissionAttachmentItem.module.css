@@ -44,23 +44,83 @@
   font-family: monospace;
 }
 
-.item button {
-  background: var(--primary-emerald);
-  border: 0;
-  border-radius: 12px;
-  color: var(--text-inverse);
-  cursor: pointer;
-  font-weight: 800;
-  padding: 9px 12px;
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.item button:disabled {
+.actions button {
+  border: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 800;
+  padding: 9px 14px;
+  transition: all 0.15s ease;
+}
+
+.viewButton {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default) !important;
+}
+
+.viewButton:hover:not(:disabled) {
+  background: var(--bg-muted);
+  border-color: var(--border-hover) !important;
+}
+
+.downloadButton {
+  background: var(--primary-emerald);
+  color: var(--text-inverse);
+}
+
+.downloadButton:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.actions button:disabled {
   cursor: not-allowed;
   opacity: 0.65;
 }
 
+
 @media (max-width: 760px) {
   .item {
     flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    padding: 14px;
+  }
+
+  .main {
+    width: 100%;
+  }
+
+  .meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .actions {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .actions button {
+    flex: 1 1 0;
+    min-width: 80px;
+    text-align: center;
+    justify-content: center;
+    padding: 10px 12px;
   }
 }
+
+@media (max-width: 380px) {
+  .actions button {
+    flex: 1 1 100%;
+  }
+}
+
