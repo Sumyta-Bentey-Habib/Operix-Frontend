@@ -232,4 +232,52 @@ describe("TaskAttachments", () => {
     const removeButtons = screen.getAllByRole("button", { name: "Remove" });
     expect(removeButtons).toHaveLength(1);
   });
+
+  it("renders View button and opens preview modal with cleaned filename", async () => {
+    mocks.useAuth.mockReturnValue({ viewer: viewer("ADMIN") });
+    const corruptedAttachment: AttachmentResponse = {
+      id: "attachment-corrupted",
+      downloadUrl: "/api/v1/files/file-corrupted/download",
+      file: {
+        id: "file-corrupted",
+        originalName: "Screenshot 2026-09-07 at 9.50.11â¯PM.png",
+        mimeType: "image/png",
+        sizeBytes: 1048576,
+        uploadedById: "admin-1",
+        createdAt: "2026-08-23T00:00:00.000Z",
+      },
+    };
+
+    mocks.useTaskAttachments.mockReturnValue({
+      ...hookValue,
+      attachments: [corruptedAttachment],
+    });
+
+    mocks.download.mockResolvedValueOnce({
+      blob: new Blob(["fake-image-bytes"], { type: "image/png" }),
+      filename: "Screenshot 2026-09-07 at 9.50.11â¯PM.png",
+    });
+
+    render(<TaskAttachments task={task("PENDING")} onTaskRefresh={vi.fn()} />);
+
+    // Check that displayed name in the list has been cleaned of mojibake
+    expect(
+      screen.getByText("Screenshot 2026-09-07 at 9.50.11 PM.png"),
+    ).toBeInTheDocument();
+
+    const viewButton = screen.getByRole("button", { name: "View" });
+    expect(viewButton).toBeInTheDocument();
+
+    fireEvent.click(viewButton);
+
+    // Modal opens and shows cleaned title
+    await waitFor(() => {
+      expect(
+        screen.getByRole("dialog", {
+          name: /Preview Screenshot 2026-09-07 at 9.50.11 PM.png/i,
+        }),
+      ).toBeInTheDocument();
+    });
+  });
 });
+

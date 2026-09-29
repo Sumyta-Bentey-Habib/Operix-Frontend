@@ -17,6 +17,7 @@ export interface TaskAttachmentListProps {
   onRetry: () => void;
   onDownload: (attachment: AttachmentResponse) => void;
   onDelete: (attachment: AttachmentResponse) => void;
+  onView?: (attachment: AttachmentResponse) => void;
 }
 
 export const TaskAttachmentList = ({
@@ -30,6 +31,7 @@ export const TaskAttachmentList = ({
   onRetry,
   onDownload,
   onDelete,
+  onView,
 }: TaskAttachmentListProps) => (
   <div className={styles.list}>
     {loading && <LoadingState message="Loading attachments..." />}
@@ -55,7 +57,9 @@ export const TaskAttachmentList = ({
           deleting={deletingAttachmentId === attachment.id}
           onDownload={onDownload}
           onDelete={onDelete}
+          onView={onView}
         />
       ))}
   </div>
 );
+

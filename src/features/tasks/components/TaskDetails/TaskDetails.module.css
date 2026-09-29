@@ -1129,20 +1129,29 @@
   .tabBar {
     padding: 6px;
     gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .tabBar::-webkit-scrollbar {
+    display: none;
   }
 
   .tabButton {
-    flex: 1;
+    flex: 1 0 auto;
     justify-content: center;
     min-height: 44px;
-    padding: 8px 10px;
-    font-size: 0.8rem;
+    padding: 8px 12px;
+    font-size: 0.8125rem;
     border-radius: 8px;
+    white-space: nowrap;
   }
 
   .tabContent {
     padding: 14px;
   }
+
 
   .metaItem {
     flex-direction: row;

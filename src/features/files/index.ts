@@ -14,3 +14,8 @@ export {
   validateFileBatch,
 } from "./utils/file-validation";
 export type { ValidatedFileSelection } from "./utils/file-validation";
+export { cleanFilename, sanitizeUploadFile } from "./utils/clean-filename";
+export { FilePreviewModal } from "./components/FilePreviewModal";
+export type { FilePreviewModalProps, FilePreviewTarget } from "./components/FilePreviewModal";
+
+

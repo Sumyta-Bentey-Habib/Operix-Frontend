@@ -1,3 +1,5 @@
+import { cleanFilename } from "./clean-filename";
+
 export interface BrowserDownloadInput {
   blob: Blob;
   filename?: string | null;
@@ -8,14 +10,15 @@ export const resolveBrowserDownloadFilename = (
   filename?: string | null,
   fallbackFilename?: string | null,
 ): string => {
-  const explicit = filename?.trim();
+  const explicit = cleanFilename(filename);
   if (explicit) return explicit;
 
-  const fallback = fallbackFilename?.trim();
+  const fallback = cleanFilename(fallbackFilename);
   if (fallback) return fallback;
 
   return "download";
 };
+
 
 export const triggerBrowserDownload = ({
   blob,
