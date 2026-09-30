@@ -243,8 +243,8 @@
             "bn": "বিকল্প: সরাসরি কাজ সম্পন্ন করা (Direct Mode)"
           },
           "instruction": {
-            "en": "If a task was created with DIRECT completion mode, no formal submission is required. While 'IN_PROGRESS', click 'Complete Task', optionally enter a completion note, and the task transitions straight to 'COMPLETED'.",
-            "bn": "যদি কোনো টাস্ক 'DIRECT' মোডে তৈরি হয়ে থাকে, তবে কোনো ফাইল সাবমিশনের প্রয়োজন নেই। 'IN_PROGRESS' থাকা অবস্থায় 'Complete Task' বাটনে ক্লিক করে ঐচ্ছিক নোট দিয়ে কাজটি সরাসরি 'COMPLETED' করতে পারেন।"
+            "en": "If a task was created with DIRECT completion mode, no formal file submission is required from you. Once your work is concluded, an authorized Admin or Super Admin will verify and mark the task 'COMPLETED'.",
+            "bn": "যদি কোনো টাস্ক 'DIRECT' মোডে তৈরি হয়ে থাকে, তবে আপনার কোনো ফাইল সাবমিশনের প্রয়োজন নেই। কাজ শেষ হলে অনুমোদিত অ্যাডমিন বা সুপার অ্যাডমিন তা যাচাই করে কাজটি 'COMPLETED' করবেন।"
           }
         },
         {

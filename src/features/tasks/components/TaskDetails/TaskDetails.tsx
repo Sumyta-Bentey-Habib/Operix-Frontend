@@ -377,7 +377,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
         </div>
 
         <div className={styles.headerActions}>
-          {canAssignTask(viewer) && task.status === "PENDING" && (
+          {canAssignTask(viewer, task) && task.status === "PENDING" && (
             <button
               type="button"
               className={styles.primaryActionButton}
@@ -903,7 +903,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
       {/* Task Assignment Dialog */}
       <TaskAssignmentDialog
         task={
-          assignmentOpen && canAssignTask(viewer) && task.status === "PENDING"
+          assignmentOpen && canAssignTask(viewer, task) && task.status === "PENDING"
             ? task
             : null
         }
