@@ -152,6 +152,8 @@ export const TASK_TABLE_STRINGS = {
     unassigned: "Unassigned",
     globalScope: "Global",
     recurring: "Recurring",
+    recurringWeekly: "Weekly Recurring",
+    recurringMonthly: "Monthly Recurring",
   },
   actions: {
     view: "View",
@@ -211,12 +213,14 @@ export const TASK_CREATE_STRINGS = {
     teamLabel: "Target Team",
     teamRequired: "*",
     teamHelper: "Choose which team will be responsible for executing this task.",
-    teamNotRequiredForGlobal: "Global tasks apply across the entire organization and do not require a team.",
+    teamNotRequiredForGlobal:
+      "Global tasks apply across the entire organization and do not require a team.",
     selectedTeamPrefix: "Selected:",
     clearTeam: "Clear",
     distributionLabel: "In-App Member Notification",
     distributionNotifyAll: "Broadcast notification to all members",
-    distributionNotifyAllHelper: "Sends an immediate in-app broadcast announcement to every active member and admin.",
+    distributionNotifyAllHelper:
+      "Sends an immediate in-app broadcast announcement to every active member and admin.",
   },
   distribution: {
     scheduleLabel: "Distribution Schedule",
@@ -233,14 +237,16 @@ export const TASK_CREATE_STRINGS = {
     leadTimeLabel: "Lead Time Before Deadline",
     leadTimeHelper: "The broadcast will fire this long before the task's due date.",
     leadTimeRequiresDueDate: "A due date is required to use lead-time distribution.",
-    recurringLeadTimeOnly: "Recurring tasks use lead-time distribution only. The broadcast fires automatically before each occurrence's due date.",
+    recurringLeadTimeOnly:
+      "Recurring tasks use lead-time distribution only. The broadcast fires automatically before each occurrence's due date.",
     presets: {
       "1440": "24 hours before deadline",
       "2880": "48 hours before deadline",
       "4320": "72 hours before deadline",
       "10080": "1 week before deadline",
     } as Record<string, string>,
-    infoCallout: "Clock-wise distributions are processed automatically by the system's hourly automation engine.",
+    infoCallout:
+      "Clock-wise distributions are processed automatically by the system's hourly automation engine.",
   },
   selfClaim: {
     sectionLabel: "Self-Claim Policy",
@@ -261,7 +267,8 @@ export const TASK_CREATE_STRINGS = {
       "Recurring tasks automatically generate new occurrences and broadcast scheduled clock-wise reminders.",
     responsibleMemberLabel: "Responsible Member",
     responsibleMemberRequired: "*",
-    responsibleMemberHelper: "This member will be automatically assigned to each recurrence of this task.",
+    responsibleMemberHelper:
+      "This member will be automatically assigned to each recurrence of this task.",
     responsibleMemberClear: "Clear",
   },
   reminder: {
@@ -271,7 +278,8 @@ export const TASK_CREATE_STRINGS = {
     leadTimeLabel: "Reminder Lead Time",
     leadTimeHelper: "How far in advance of the deadline to send the reminder.",
     requiresDueDate: "Set a due date above to enable deadline reminders.",
-    onlyForRecurring: "Deadline reminders are only available for recurring tasks. Set a recurrence schedule above to enable this.",
+    onlyForRecurring:
+      "Deadline reminders are only available for recurring tasks. Set a recurrence schedule above to enable this.",
     presets: {
       "30": "30 minutes before",
       "60": "1 hour before",
@@ -321,7 +329,8 @@ export const TASK_CREATE_STRINGS = {
     },
     {
       title: "Team or Global Scoped",
-      description: "Team tasks are restricted to team members; Global tasks apply organization-wide.",
+      description:
+        "Team tasks are restricted to team members; Global tasks apply organization-wide.",
     },
     {
       title: "Workflow Tracking",
@@ -339,4 +348,3 @@ export const TASK_CREATE_STRINGS = {
     responsibleMemberRequired: "Choose a Responsible Member for recurring tasks.",
   },
 } as const;
-

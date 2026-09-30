@@ -12,8 +12,7 @@ const ERROR_MESSAGES: Record<string, TaskAttachmentErrorView> = {
   },
   TASK_ATTACHMENTS_NOT_EDITABLE: {
     title: "Attachments locked",
-    message:
-      "Task attachments can only be changed while the Task is Pending. Refresh the Task to see its latest status.",
+    message: "Task attachments can no longer be modified.",
   },
   ATTACHMENT_LIMIT_REACHED: {
     title: "Attachment limit reached",
@@ -41,7 +40,7 @@ const ERROR_MESSAGES: Record<string, TaskAttachmentErrorView> = {
   },
   FORBIDDEN: {
     title: "Permission needed",
-    message: "You do not have permission to perform this action.",
+    message: "You no longer have permission to modify this attachment.",
   },
   NETWORK_ERROR: {
     title: "Network error",
@@ -74,3 +73,6 @@ export const getTaskAttachmentErrorView = (error: unknown): TaskAttachmentErrorV
 
 export const isTaskAttachmentsNotEditableError = (error: unknown): boolean =>
   isOperixApiError(error) && error.code === "TASK_ATTACHMENTS_NOT_EDITABLE";
+
+export const isTaskAttachmentForbiddenError = (error: unknown): boolean =>
+  isOperixApiError(error) && (error.code === "FORBIDDEN" || error.status === 403);
