@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { NOTIFICATION_STRINGS } from "../../constants/notification-strings";
 import type {
   NotificationFilterState,
   NotificationReadFilter,
@@ -25,7 +26,7 @@ export const NotificationFilters = ({ filters, onApply, onReset }: NotificationF
       }}
     >
       <label className={styles.field}>
-        <span className={styles.label}>Read status</span>
+        <span className={styles.label}>{NOTIFICATION_STRINGS.filters.readStatusLabel}</span>
         <select
           className={styles.input}
           value={draft.read}
@@ -36,23 +37,23 @@ export const NotificationFilters = ({ filters, onApply, onReset }: NotificationF
             }))
           }
         >
-          <option value="ALL">All</option>
-          <option value="UNREAD">Unread</option>
-          <option value="READ">Read</option>
+          <option value="ALL">{NOTIFICATION_STRINGS.filters.all}</option>
+          <option value="UNREAD">{NOTIFICATION_STRINGS.filters.unread}</option>
+          <option value="READ">{NOTIFICATION_STRINGS.filters.read}</option>
         </select>
       </label>
       <label className={styles.field}>
-        <span className={styles.label}>Type</span>
+        <span className={styles.label}>{NOTIFICATION_STRINGS.filters.typeLabel}</span>
         <input
           className={styles.input}
-          placeholder="Exact type, for example TASK_ASSIGNED"
+          placeholder={NOTIFICATION_STRINGS.filters.typePlaceholder}
           value={draft.type}
           onChange={(event) => setDraft((current) => ({ ...current, type: event.target.value }))}
         />
       </label>
       <div className={styles.actions}>
         <button className={styles.button} type="submit">
-          Apply
+          {NOTIFICATION_STRINGS.filters.apply}
         </button>
         <button
           className={styles.secondaryButton}
@@ -62,7 +63,7 @@ export const NotificationFilters = ({ filters, onApply, onReset }: NotificationF
             onReset();
           }}
         >
-          Reset
+          {NOTIFICATION_STRINGS.filters.reset}
         </button>
       </div>
     </form>
