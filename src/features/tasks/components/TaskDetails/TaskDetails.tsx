@@ -120,6 +120,8 @@ function getWorkflowSteps(status: TaskStatus): WorkflowStep[] {
     let state: WorkflowStep["state"] = "upcoming";
     if (isCancelled) {
       state = "upcoming";
+    } else if (status === "COMPLETED") {
+      state = "completed";
     } else if (index < currentStageIndex) {
       state = "completed";
     } else if (index === currentStageIndex) {
@@ -283,12 +285,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
   }
 
   if (error || !task) {
-    return (
-      <ErrorState
-        message={getTaskErrorView(error).message}
-        onRetry={() => void refresh()}
-      />
-    );
+    return <ErrorState message={getTaskErrorView(error).message} onRetry={() => void refresh()} />;
   }
 
   const workflowSteps = getWorkflowSteps(task.status);
@@ -330,9 +327,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
               }
               aria-label={TASK_DETAILS_STRINGS.referenceCode.copyAria}
             >
-              <span className={styles.refPrefix}>
-                {TASK_DETAILS_STRINGS.referenceCode.label}:
-              </span>
+              <span className={styles.refPrefix}>{TASK_DETAILS_STRINGS.referenceCode.label}:</span>
               <span className={styles.refValue}>{task.referenceCode}</span>
               {copied ? (
                 <CheckCircleIcon size={14} className={styles.copySuccessIcon} />
@@ -369,9 +364,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
             <TaskStatusBadge status={task.status} />
             <TaskPriorityBadge priority={task.priority} />
             {task.isOverdue && (
-              <span className={styles.overduePill}>
-                {TASK_DETAILS_STRINGS.badges.overdue}
-              </span>
+              <span className={styles.overduePill}>{TASK_DETAILS_STRINGS.badges.overdue}</span>
             )}
           </div>
         </div>
@@ -430,10 +423,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
         </div>
         <div className={styles.stepperTrack}>
           {workflowSteps.map((step, idx) => (
-            <div
-              key={step.id}
-              className={`${styles.stepItem} ${styles[`step_${step.state}`]}`}
-            >
+            <div key={step.id} className={`${styles.stepItem} ${styles[`step_${step.state}`]}`}>
               <div className={styles.stepIndicatorWrapper}>
                 <div className={styles.stepNode}>
                   {step.state === "completed" ? (
@@ -466,9 +456,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
           {/* Overview Card */}
           <div className={styles.card}>
             <div className={styles.cardHeader}>
-              <h2 className={styles.cardTitle}>
-                {TASK_DETAILS_STRINGS.sections.overview}
-              </h2>
+              <h2 className={styles.cardTitle}>{TASK_DETAILS_STRINGS.sections.overview}</h2>
             </div>
             <div className={styles.cardBody}>
               <div className={styles.contentSection}>
@@ -487,17 +475,13 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
               </div>
 
               <div className={styles.remarksSection}>
-                <h3 className={styles.sectionSubtitle}>
-                  {TASK_DETAILS_STRINGS.sections.remarks}
-                </h3>
+                <h3 className={styles.sectionSubtitle}>{TASK_DETAILS_STRINGS.sections.remarks}</h3>
                 {task.remarks ? (
                   <div className={styles.remarksCallout}>
                     <p>{task.remarks}</p>
                   </div>
                 ) : (
-                  <p className={styles.emptyText}>
-                    {TASK_DETAILS_STRINGS.metadata.noRemarks}
-                  </p>
+                  <p className={styles.emptyText}>{TASK_DETAILS_STRINGS.metadata.noRemarks}</p>
                 )}
               </div>
             </div>
@@ -550,10 +534,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
 
             <div className={styles.tabContent}>
               {activeTab === "submissions" && (
-                <TaskSubmissions
-                  task={task}
-                  onWorkflowRefresh={refreshTaskAndHistory}
-                />
+                <TaskSubmissions task={task} onWorkflowRefresh={refreshTaskAndHistory} />
               )}
               {activeTab === "attachments" && (
                 <TaskAttachments task={task} onTaskRefresh={refresh} />
@@ -570,17 +551,13 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
           {/* Timeline & Dates Card */}
           <div className={styles.card}>
             <div className={styles.cardHeader}>
-              <h2 className={styles.cardTitle}>
-                {TASK_DETAILS_STRINGS.sections.lifecycle}
-              </h2>
+              <h2 className={styles.cardTitle}>{TASK_DETAILS_STRINGS.sections.lifecycle}</h2>
             </div>
             <dl className={styles.metaList}>
               <div className={styles.metaItemHighlight}>
                 <div className={styles.metaLabelRow}>
                   <CalendarIcon size={14} className={styles.metaIcon} />
-                  <dt className={styles.metaLabel}>
-                    {TASK_DETAILS_STRINGS.metadata.dueDate}
-                  </dt>
+                  <dt className={styles.metaLabel}>{TASK_DETAILS_STRINGS.metadata.dueDate}</dt>
                 </div>
                 <dd className={styles.metaValueHighlight}>
                   {formatOptionalDate(task.dueAt)}
@@ -593,30 +570,20 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
               </div>
 
               <div className={styles.metaItem}>
-                <dt className={styles.metaLabel}>
-                  {TASK_DETAILS_STRINGS.metadata.startedAt}
-                </dt>
-                <dd className={styles.metaValue}>
-                  {formatOptionalDate(task.startedAt)}
-                </dd>
+                <dt className={styles.metaLabel}>{TASK_DETAILS_STRINGS.metadata.startedAt}</dt>
+                <dd className={styles.metaValue}>{formatOptionalDate(task.startedAt)}</dd>
               </div>
 
               {task.completedAt && (
                 <div className={styles.metaItem}>
-                  <dt className={styles.metaLabel}>
-                    {TASK_DETAILS_STRINGS.metadata.completedAt}
-                  </dt>
-                  <dd className={styles.metaValue}>
-                    {formatOptionalDate(task.completedAt)}
-                  </dd>
+                  <dt className={styles.metaLabel}>{TASK_DETAILS_STRINGS.metadata.completedAt}</dt>
+                  <dd className={styles.metaValue}>{formatOptionalDate(task.completedAt)}</dd>
                 </div>
               )}
 
               {task.cancelledAt && (
                 <div className={styles.metaItem}>
-                  <dt className={styles.metaLabel}>
-                    {TASK_DETAILS_STRINGS.metadata.cancelledAt}
-                  </dt>
+                  <dt className={styles.metaLabel}>{TASK_DETAILS_STRINGS.metadata.cancelledAt}</dt>
                   <dd className={styles.metaValueWarning}>
                     {formatOptionalDate(task.cancelledAt)}
                   </dd>
@@ -624,28 +591,18 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
               )}
 
               <div className={styles.metaItem}>
-                <dt className={styles.metaLabel}>
-                  {TASK_DETAILS_STRINGS.metadata.createdAt}
-                </dt>
-                <dd className={styles.metaValue}>
-                  {formatDisplayDate(task.createdAt)}
-                </dd>
+                <dt className={styles.metaLabel}>{TASK_DETAILS_STRINGS.metadata.createdAt}</dt>
+                <dd className={styles.metaValue}>{formatDisplayDate(task.createdAt)}</dd>
               </div>
 
               <div className={styles.metaItem}>
-                <dt className={styles.metaLabel}>
-                  {TASK_DETAILS_STRINGS.metadata.updatedAt}
-                </dt>
-                <dd className={styles.metaValue}>
-                  {formatDisplayDate(task.updatedAt)}
-                </dd>
+                <dt className={styles.metaLabel}>{TASK_DETAILS_STRINGS.metadata.updatedAt}</dt>
+                <dd className={styles.metaValue}>{formatDisplayDate(task.updatedAt)}</dd>
               </div>
 
               {task.recurrence && (
                 <div className={styles.metaItem}>
-                  <dt className={styles.metaLabel}>
-                    {TASK_DETAILS_STRINGS.metadata.recurrence}
-                  </dt>
+                  <dt className={styles.metaLabel}>{TASK_DETAILS_STRINGS.metadata.recurrence}</dt>
                   <dd className={styles.metaValue}>
                     {task.recurrence.frequency === "WEEKLY"
                       ? TASK_DETAILS_STRINGS.metadata.recurrenceWeekly
@@ -665,15 +622,11 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
           {/* Context & Ownership Card */}
           <div className={styles.card}>
             <div className={styles.cardHeader}>
-              <h2 className={styles.cardTitle}>
-                {TASK_DETAILS_STRINGS.sections.ownership}
-              </h2>
+              <h2 className={styles.cardTitle}>{TASK_DETAILS_STRINGS.sections.ownership}</h2>
             </div>
             <dl className={styles.metaList}>
               <div className={styles.metaItem}>
-                <dt className={styles.metaLabel}>
-                  {TASK_DETAILS_STRINGS.metadata.assignedTo}
-                </dt>
+                <dt className={styles.metaLabel}>{TASK_DETAILS_STRINGS.metadata.assignedTo}</dt>
                 <dd className={styles.metaValue}>
                   {task.responsible ? (
                     <span>
@@ -687,9 +640,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
               </div>
 
               <div className={styles.metaItem}>
-                <dt className={styles.metaLabel}>
-                  {TASK_DETAILS_STRINGS.metadata.createdBy}
-                </dt>
+                <dt className={styles.metaLabel}>{TASK_DETAILS_STRINGS.metadata.createdBy}</dt>
                 <dd className={styles.metaValue}>
                   {task.owner?.name ?? obfuscateId(task.createdById, "USR")}
                   {task.owner?.role
@@ -699,9 +650,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
               </div>
 
               <div className={styles.metaItem}>
-                <dt className={styles.metaLabel}>
-                  {TASK_DETAILS_STRINGS.metadata.scope}
-                </dt>
+                <dt className={styles.metaLabel}>{TASK_DETAILS_STRINGS.metadata.scope}</dt>
                 <dd className={styles.metaValue}>
                   {task.scope === "GLOBAL"
                     ? TASK_DETAILS_STRINGS.metadata.scopeGlobal
@@ -710,20 +659,21 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
               </div>
 
               <div className={styles.metaItem}>
-                <dt className={styles.metaLabel}>
-                  {TASK_DETAILS_STRINGS.metadata.team}
-                </dt>
-                <dd className={`${styles.metaValue} ${task.team || task.teamId ? styles.mono : ""}`}>
+                <dt className={styles.metaLabel}>{TASK_DETAILS_STRINGS.metadata.team}</dt>
+                <dd
+                  className={`${styles.metaValue} ${task.team || task.teamId ? styles.mono : ""}`}
+                >
                   {task.scope === "GLOBAL" || (!task.team && !task.teamId)
                     ? TASK_DETAILS_STRINGS.metadata.none
-                    : (task.team?.name ?? (task.teamId ? obfuscateId(task.teamId, "TM") : TASK_DETAILS_STRINGS.metadata.none))}
+                    : (task.team?.name ??
+                      (task.teamId
+                        ? obfuscateId(task.teamId, "TM")
+                        : TASK_DETAILS_STRINGS.metadata.none))}
                 </dd>
               </div>
 
               <div className={styles.metaItem}>
-                <dt className={styles.metaLabel}>
-                  {TASK_DETAILS_STRINGS.metadata.selfClaim}
-                </dt>
+                <dt className={styles.metaLabel}>{TASK_DETAILS_STRINGS.metadata.selfClaim}</dt>
                 <dd className={styles.metaValue}>
                   {task.allowSelfClaim
                     ? TASK_DETAILS_STRINGS.metadata.selfClaimEnabled
@@ -749,17 +699,13 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
                   <dt className={styles.metaLabel}>
                     {TASK_DETAILS_STRINGS.metadata.completionNote}
                   </dt>
-                  <dd className={styles.metaValue}>
-                    {task.completionNote}
-                  </dd>
+                  <dd className={styles.metaValue}>{task.completionNote}</dd>
                 </div>
               )}
 
               {task.distribution && (
                 <div className={styles.metaItem}>
-                  <dt className={styles.metaLabel}>
-                    {TASK_DETAILS_STRINGS.metadata.distribution}
-                  </dt>
+                  <dt className={styles.metaLabel}>{TASK_DETAILS_STRINGS.metadata.distribution}</dt>
                   <dd className={styles.metaValue}>
                     {task.distribution.status === "SENT" ? (
                       <>
@@ -793,80 +739,73 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
                   </dd>
 
                   {/* Distribution Management Actions */}
-                  {canManageDistribution(viewer) &&
-                    task.distribution.status === "PENDING" && (
-                      <div className={styles.distributionActions}>
-                        {distributionError && (
-                          <p className={styles.distributionErrorText}>
-                            {distributionError}
-                          </p>
-                        )}
+                  {canManageDistribution(viewer) && task.distribution.status === "PENDING" && (
+                    <div className={styles.distributionActions}>
+                      {distributionError && (
+                        <p className={styles.distributionErrorText}>{distributionError}</p>
+                      )}
 
-                        {rescheduleOpen ? (
-                          <div className={styles.rescheduleInline}>
-                            <input
-                              type="datetime-local"
-                              value={rescheduleDate}
-                              onChange={(event) =>
-                                setRescheduleDate(event.target.value)
-                              }
-                              className={styles.rescheduleInput}
-                            />
-                            <div className={styles.rescheduleButtonRow}>
-                              <button
-                                type="button"
-                                className={styles.distributionActionButton}
-                                onClick={handleRescheduleDistribution}
-                                disabled={distributionPending || !rescheduleDate}
-                              >
-                                {distributionPending
-                                  ? TASK_CREATE_STRINGS.actions.submitting
-                                  : TASK_DETAILS_STRINGS.distributionManagement.reschedule}
-                              </button>
-                              <button
-                                type="button"
-                                className={styles.distributionCancelButton}
-                                onClick={() => {
-                                  setRescheduleOpen(false);
-                                  setRescheduleDate("");
-                                }}
-                                disabled={distributionPending}
-                              >
-                                {TASK_CREATE_STRINGS.actions.cancel}
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className={styles.distributionButtonRow}>
+                      {rescheduleOpen ? (
+                        <div className={styles.rescheduleInline}>
+                          <input
+                            type="datetime-local"
+                            value={rescheduleDate}
+                            onChange={(event) => setRescheduleDate(event.target.value)}
+                            className={styles.rescheduleInput}
+                          />
+                          <div className={styles.rescheduleButtonRow}>
                             <button
                               type="button"
                               className={styles.distributionActionButton}
-                              onClick={() => setRescheduleOpen(true)}
-                              disabled={distributionPending}
+                              onClick={handleRescheduleDistribution}
+                              disabled={distributionPending || !rescheduleDate}
                             >
-                              {TASK_DETAILS_STRINGS.distributionManagement.reschedule}
+                              {distributionPending
+                                ? TASK_CREATE_STRINGS.actions.submitting
+                                : TASK_DETAILS_STRINGS.distributionManagement.reschedule}
                             </button>
                             <button
                               type="button"
                               className={styles.distributionCancelButton}
-                              onClick={() => setCancelConfirmOpen(true)}
+                              onClick={() => {
+                                setRescheduleOpen(false);
+                                setRescheduleDate("");
+                              }}
                               disabled={distributionPending}
                             >
-                              {TASK_DETAILS_STRINGS.distributionManagement.cancelDistribution}
+                              {TASK_CREATE_STRINGS.actions.cancel}
                             </button>
                           </div>
-                        )}
-                      </div>
-                    )}
+                        </div>
+                      ) : (
+                        <div className={styles.distributionButtonRow}>
+                          <button
+                            type="button"
+                            className={styles.distributionActionButton}
+                            onClick={() => setRescheduleOpen(true)}
+                            disabled={distributionPending}
+                          >
+                            {TASK_DETAILS_STRINGS.distributionManagement.reschedule}
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.distributionCancelButton}
+                            onClick={() => setCancelConfirmOpen(true)}
+                            disabled={distributionPending}
+                          >
+                            {TASK_DETAILS_STRINGS.distributionManagement.cancelDistribution}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
 
               {/* Deadline Reminder */}
               {task.reminderLeadMinutes != null && (
                 <div className={styles.metaItem}>
-                  <dt className={styles.metaLabel}>
-                    {TASK_DETAILS_STRINGS.metadata.reminder}
-                  </dt>
+                  <dt className={styles.metaLabel}>{TASK_DETAILS_STRINGS.metadata.reminder}</dt>
                   <dd className={styles.metaValue}>
                     {TASK_DETAILS_STRINGS.metadata.reminderScheduled}
                     {task.reminderScheduledAt && (
@@ -886,9 +825,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
               )}
 
               <div className={styles.metaItem}>
-                <dt className={styles.metaLabel}>
-                  {TASK_DETAILS_STRINGS.metadata.category}
-                </dt>
+                <dt className={styles.metaLabel}>{TASK_DETAILS_STRINGS.metadata.category}</dt>
                 <dd className={`${styles.metaValue} ${styles.mono}`}>
                   {task.categoryId
                     ? obfuscateId(task.categoryId, "CAT")
@@ -903,9 +840,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
       {/* Task Assignment Dialog */}
       <TaskAssignmentDialog
         task={
-          assignmentOpen && canAssignTask(viewer, task) && task.status === "PENDING"
-            ? task
-            : null
+          assignmentOpen && canAssignTask(viewer, task) && task.status === "PENDING" ? task : null
         }
         pending={assignmentPending}
         error={assignmentError}
@@ -931,9 +866,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
               rows={4}
             />
           </label>
-          {completeError && (
-            <p className={styles.distributionErrorText}>{completeError}</p>
-          )}
+          {completeError && <p className={styles.distributionErrorText}>{completeError}</p>}
           <div className={styles.dialogActions}>
             <button
               type="button"
@@ -943,11 +876,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
             >
               {TASK_DETAILS_STRINGS.directCompletionDialog.cancelButton}
             </button>
-            <button
-              type="submit"
-              className={styles.primaryActionButton}
-              disabled={completePending}
-            >
+            <button type="submit" className={styles.primaryActionButton} disabled={completePending}>
               {completePending
                 ? TASK_DETAILS_STRINGS.actions.completing
                 : TASK_DETAILS_STRINGS.directCompletionDialog.submitButton}

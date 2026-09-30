@@ -89,9 +89,7 @@ export const canClaimTask = (viewer: OperixViewer | null, task: Task): boolean =
   task.recurrence == null;
 
 export const canStartTask = (viewer: OperixViewer | null, task: Task): boolean =>
-  viewer?.role === "MEMBER" &&
-  task.status === "ASSIGNED" &&
-  task.responsible?.id === viewer.userId;
+  viewer?.role === "MEMBER" && task.status === "ASSIGNED" && task.responsible?.id === viewer.userId;
 
 export const canDirectCompleteTask = (viewer: OperixViewer | null, task: Task): boolean => {
   if (!viewer) return false;
@@ -142,57 +140,59 @@ export const canToggleSelfClaim = (viewer: OperixViewer | null, task?: Task): bo
   return true;
 };
 
-export const canMutateTaskAttachments = (viewer: OperixViewer | null, task: Task): boolean => {
+export const isTaskAttachmentLifecycleEditable = (task: Task): boolean =>
+  task.status === "PENDING" || (task.status === "ASSIGNED" && task.startedAt === null);
+
+export const canUploadTaskAttachment = (viewer: OperixViewer | null, task: Task): boolean => {
   if (!viewer) return false;
 
-  if (viewer.role === "SUPER_ADMIN") {
+  if (!isTaskAttachmentLifecycleEditable(task)) {
+    return false;
+  }
+
+  const isSuperAdmin = viewer.role === "SUPER_ADMIN";
+  const ownerId = task.owner?.id ?? task.createdById;
+  const isOwnerAdmin = viewer.role === "ADMIN" && Boolean(ownerId && ownerId === viewer.userId);
+  const isResponsibleMember =
+    viewer.role === "MEMBER" &&
+    Boolean(task.responsible?.id && task.responsible.id === viewer.userId);
+
+  if (isResponsibleMember) {
     return true;
   }
 
-  if (viewer.role === "ADMIN") {
-    const ownerId = task.owner?.id ?? task.createdById;
-    return Boolean(ownerId && ownerId === viewer.userId);
-  }
+  const distributionUnlocked = task.distribution?.status !== "SENT";
 
-  if (viewer.role === "MEMBER") {
-    return Boolean(task.responsible?.id && task.responsible.id === viewer.userId);
-  }
-
-  return false;
+  return (isSuperAdmin || isOwnerAdmin) && distributionUnlocked;
 };
-
-export const areTaskAttachmentsEditable = (task: Task): boolean => {
-  const editableByState =
-    task.status === "PENDING" ||
-    (task.status === "ASSIGNED" && task.startedAt === null);
-
-  return editableByState && task.distribution?.status !== "SENT";
-};
-
-export const canManageTaskAttachments = (viewer: OperixViewer | null, task: Task): boolean =>
-  canMutateTaskAttachments(viewer, task) && areTaskAttachmentsEditable(task);
 
 export const canDeleteTaskAttachment = (
   viewer: OperixViewer | null,
   task: Task,
   attachment: AttachmentResponse,
 ): boolean => {
-  if (!viewer || !canManageTaskAttachments(viewer, task)) {
+  if (!viewer) return false;
+
+  if (!isTaskAttachmentLifecycleEditable(task)) {
     return false;
   }
 
-  if (viewer.role === "SUPER_ADMIN" || viewer.role === "ADMIN") {
-    return true;
-  }
+  const isSuperAdmin = viewer.role === "SUPER_ADMIN";
+  const ownerId = task.owner?.id ?? task.createdById;
+  const isOwnerAdmin = viewer.role === "ADMIN" && Boolean(ownerId && ownerId === viewer.userId);
+  const isResponsibleMember =
+    viewer.role === "MEMBER" &&
+    Boolean(task.responsible?.id && task.responsible.id === viewer.userId);
 
-  if (viewer.role === "MEMBER") {
+  if (isResponsibleMember) {
     const uploaderId = attachment.file.uploadedBy?.id ?? attachment.file.uploadedById;
     return Boolean(uploaderId && uploaderId === viewer.userId);
   }
 
-  return false;
-};
+  const distributionUnlocked = task.distribution?.status !== "SENT";
 
+  return (isSuperAdmin || isOwnerAdmin) && distributionUnlocked;
+};
 
 export const canSubmitTask = (viewer: OperixViewer | null, task: Task): boolean =>
   viewer?.role === "MEMBER" &&
@@ -219,4 +219,3 @@ export const canViewAdminTodos = (viewer: OperixViewer | null): boolean =>
 
 export const canManageDistribution = (viewer: OperixViewer | null): boolean =>
   viewer?.role === "SUPER_ADMIN" || viewer?.role === "ADMIN";
-

@@ -1,22 +1,22 @@
 import { describe, expect, it } from "vitest";
 import {
-  areTaskAttachmentsEditable,
   canAssignTask,
   canClaimTask,
   canCreateGlobalTask,
   canCreateTask,
   canDeleteTaskAttachment,
   canDirectCompleteTask,
-  canManageTaskAttachments,
-  canMutateTaskAttachments,
   canResubmitTask,
   canReviewTaskSubmission,
   canStartTask,
   canSubmitTask,
+  canUploadTaskAttachment,
   canViewTaskCore,
+  isTaskAttachmentLifecycleEditable,
 } from "@/lib/auth/permissions";
 import type { OperixViewer } from "@/types/auth";
 import type { Task } from "@/features/tasks/types/task.types";
+import type { AttachmentResponse } from "@/features/tasks/types/task-attachment.types";
 
 const makeViewer = (role: "SUPER_ADMIN" | "ADMIN" | "MEMBER"): OperixViewer => ({
   userId: "user-test",
@@ -96,7 +96,11 @@ describe("Task permissions", () => {
       const globalTask = { ...makeTask("PENDING"), scope: "GLOBAL" as const, teamId: null };
       expect(canAssignTask(makeViewer("ADMIN"), globalTask)).toBe(false);
 
-      const otherTeamTask = { ...makeTask("PENDING"), scope: "TEAM" as const, teamId: "team-other" };
+      const otherTeamTask = {
+        ...makeTask("PENDING"),
+        scope: "TEAM" as const,
+        teamId: "team-other",
+      };
       expect(canAssignTask(makeViewer("ADMIN"), otherTeamTask)).toBe(false);
     });
 
@@ -219,181 +223,290 @@ describe("Task permissions", () => {
     });
   });
 
-  describe("canManageTaskAttachments, canMutateTaskAttachments, and areTaskAttachmentsEditable", () => {
-    it("allows SUPER_ADMIN for PENDING tasks (always allowed by role)", () => {
-      const sa = makeViewer("SUPER_ADMIN");
-      expect(canManageTaskAttachments(sa, makeTask("PENDING"))).toBe(true);
-      expect(canMutateTaskAttachments(sa, makeTask("PENDING"))).toBe(true);
-    });
-
-    it("allows ADMIN who is the task creator (via createdById or owner.id) for PENDING tasks", () => {
-      const admin = makeViewer("ADMIN");
-      // makeViewer returns userId: "user-test", makeTask returns createdById: "user-test"
-      expect(canManageTaskAttachments(admin, makeTask("PENDING"))).toBe(true);
-
-      const taskWithOwner: Task = {
-        ...makeTask("PENDING"),
-        createdById: undefined,
-        owner: { id: "user-test", name: "Admin Owner", role: "ADMIN" },
-      };
-      expect(canManageTaskAttachments(admin, taskWithOwner)).toBe(true);
-    });
-
-    it("blocks ADMIN who did NOT create the task", () => {
-      const admin = makeViewer("ADMIN");
-      const otherTask = { ...makeTask("PENDING"), createdById: "someone-else" };
-      expect(canManageTaskAttachments(admin, otherTask)).toBe(false);
-      expect(canMutateTaskAttachments(admin, otherTask)).toBe(false);
-    });
-
-    it("blocks MEMBER even if createdById or owner matches viewer", () => {
-      const member = makeViewer("MEMBER");
-      const taskCreatedByMember = { ...makeTask("PENDING"), createdById: "user-test" };
-      expect(canManageTaskAttachments(member, taskCreatedByMember)).toBe(false);
-      expect(canMutateTaskAttachments(member, taskCreatedByMember)).toBe(false);
-    });
-
-    it("evaluates areTaskAttachmentsEditable based on status and distribution locks", () => {
-      expect(areTaskAttachmentsEditable(makeTask("PENDING"))).toBe(true);
-      expect(areTaskAttachmentsEditable(makeTask("ASSIGNED"))).toBe(true);
+  describe("isTaskAttachmentLifecycleEditable, canUploadTaskAttachment, and canDeleteTaskAttachment", () => {
+    it("evaluates isTaskAttachmentLifecycleEditable correctly", () => {
+      expect(isTaskAttachmentLifecycleEditable(makeTask("PENDING"))).toBe(true);
+      expect(isTaskAttachmentLifecycleEditable(makeTask("ASSIGNED"))).toBe(true);
 
       const startedAssigned: Task = {
         ...makeTask("ASSIGNED"),
         startedAt: "2026-09-28T00:00:00.000Z",
       };
-      expect(areTaskAttachmentsEditable(startedAssigned)).toBe(false);
+      expect(isTaskAttachmentLifecycleEditable(startedAssigned)).toBe(false);
+      expect(isTaskAttachmentLifecycleEditable(makeTask("IN_PROGRESS"))).toBe(false);
+      expect(isTaskAttachmentLifecycleEditable(makeTask("SUBMITTED"))).toBe(false);
+      expect(isTaskAttachmentLifecycleEditable(makeTask("UNDER_REVIEW"))).toBe(false);
+      expect(isTaskAttachmentLifecycleEditable(makeTask("REVISION_REQUIRED"))).toBe(false);
+      expect(isTaskAttachmentLifecycleEditable(makeTask("RESUBMITTED"))).toBe(false);
+      expect(isTaskAttachmentLifecycleEditable(makeTask("COMPLETED"))).toBe(false);
+      expect(isTaskAttachmentLifecycleEditable(makeTask("CANCELLED"))).toBe(false);
+    });
 
-      expect(areTaskAttachmentsEditable(makeTask("IN_PROGRESS"))).toBe(false);
+    describe("canUploadTaskAttachment matrix", () => {
+      const responsibleMember = { ...makeViewer("MEMBER"), userId: "resp-member-1" };
+      const unrelatedMember = { ...makeViewer("MEMBER"), userId: "other-member" };
+      const ownerAdmin = { ...makeViewer("ADMIN"), userId: "owner-admin-1" };
+      const otherAdmin = { ...makeViewer("ADMIN"), userId: "other-admin-1" };
+      const sa = makeViewer("SUPER_ADMIN");
 
-      const sentDistribution: Task = {
-        ...makeTask("PENDING"),
+      const sentGlobalTask: Task = {
+        ...makeTask("ASSIGNED"),
+        scope: "GLOBAL",
+        owner: { id: ownerAdmin.userId, name: "Owner Admin", role: "ADMIN" },
+        createdById: ownerAdmin.userId,
+        responsible: { id: responsibleMember.userId, name: "Responsible", role: "MEMBER" },
         distribution: {
           status: "SENT",
           scheduledAt: "2026-09-28T00:00:00.000Z",
           sentAt: "2026-09-28T00:00:00.000Z",
         },
       };
-      expect(areTaskAttachmentsEditable(sentDistribution)).toBe(false);
 
-      const pendingDistribution: Task = {
-        ...makeTask("PENDING"),
+      const pendingDistributionTask: Task = {
+        ...makeTask("ASSIGNED"),
+        scope: "GLOBAL",
+        owner: { id: ownerAdmin.userId, name: "Owner Admin", role: "ADMIN" },
+        createdById: ownerAdmin.userId,
+        responsible: { id: responsibleMember.userId, name: "Responsible", role: "MEMBER" },
         distribution: {
           status: "PENDING",
           scheduledAt: "2026-09-29T00:00:00.000Z",
           sentAt: null,
         },
       };
-      expect(areTaskAttachmentsEditable(pendingDistribution)).toBe(true);
+
+      it("allows Responsible MEMBER on GLOBAL SENT ASSIGNED task (startedAt=null)", () => {
+        expect(canUploadTaskAttachment(responsibleMember, sentGlobalTask)).toBe(true);
+      });
+
+      it("blocks unrelated MEMBER on GLOBAL SENT ASSIGNED task", () => {
+        expect(canUploadTaskAttachment(unrelatedMember, sentGlobalTask)).toBe(false);
+      });
+
+      it("blocks Owner ADMIN on GLOBAL SENT ASSIGNED task", () => {
+        expect(canUploadTaskAttachment(ownerAdmin, sentGlobalTask)).toBe(false);
+      });
+
+      it("blocks SUPER_ADMIN on GLOBAL SENT ASSIGNED task", () => {
+        expect(canUploadTaskAttachment(sa, sentGlobalTask)).toBe(false);
+      });
+
+      it("allows Responsible MEMBER on PENDING distribution ASSIGNED task", () => {
+        expect(canUploadTaskAttachment(responsibleMember, pendingDistributionTask)).toBe(true);
+      });
+
+      it("allows Owner ADMIN on PENDING distribution ASSIGNED task", () => {
+        expect(canUploadTaskAttachment(ownerAdmin, pendingDistributionTask)).toBe(true);
+      });
+
+      it("allows SUPER_ADMIN on PENDING distribution ASSIGNED task", () => {
+        expect(canUploadTaskAttachment(sa, pendingDistributionTask)).toBe(true);
+      });
+
+      it("blocks Responsible MEMBER when task is IN_PROGRESS", () => {
+        const inProgressTask: Task = {
+          ...sentGlobalTask,
+          status: "IN_PROGRESS",
+          startedAt: "2026-09-28T10:00:00.000Z",
+        };
+        expect(canUploadTaskAttachment(responsibleMember, inProgressTask)).toBe(false);
+      });
+
+      it("blocks non-owner ADMIN on editable task with PENDING distribution", () => {
+        expect(canUploadTaskAttachment(otherAdmin, pendingDistributionTask)).toBe(false);
+      });
+
+      it("blocks null viewer", () => {
+        expect(canUploadTaskAttachment(null, sentGlobalTask)).toBe(false);
+      });
     });
 
-    it("blocks SUPER_ADMIN for non-editable statuses", () => {
-      expect(canManageTaskAttachments(makeViewer("SUPER_ADMIN"), makeTask("IN_PROGRESS"))).toBe(false);
-    });
-
-    it("blocks MEMBER for PENDING tasks (not a creator in normal flow)", () => {
-      const member = makeViewer("MEMBER");
-      const taskByOther = { ...makeTask("PENDING"), createdById: "admin-1" };
-      expect(canManageTaskAttachments(member, taskByOther)).toBe(false);
-    });
-
-    it("allows current Responsible MEMBER to mutate attachments on an editable ASSIGNED task", () => {
-      const member = makeViewer("MEMBER");
-      const assignedTask: Task = {
-        ...makeTask("ASSIGNED"),
-        responsible: { id: member.userId, name: "Responsible Member", role: "MEMBER" },
-      };
-      expect(canMutateTaskAttachments(member, assignedTask)).toBe(true);
-      expect(canManageTaskAttachments(member, assignedTask)).toBe(true);
-    });
-
-    it("blocks non-responsible MEMBER on an ASSIGNED task", () => {
-      const member = makeViewer("MEMBER");
-      const assignedTask: Task = {
-        ...makeTask("ASSIGNED"),
-        responsible: { id: "other-member", name: "Other Member", role: "MEMBER" },
-      };
-      expect(canMutateTaskAttachments(member, assignedTask)).toBe(false);
-      expect(canManageTaskAttachments(member, assignedTask)).toBe(false);
-    });
-
-    it("evaluates canDeleteTaskAttachment correctly for all roles and uploaders", () => {
+    describe("canDeleteTaskAttachment matrix", () => {
       const sa = makeViewer("SUPER_ADMIN");
       const ownerAdmin = { ...makeViewer("ADMIN"), userId: "admin-owner-1" };
-      const member = { ...makeViewer("MEMBER"), userId: "member-resp-1" };
+      const responsibleMember = { ...makeViewer("MEMBER"), userId: "member-resp-1" };
+      const otherMember = { ...makeViewer("MEMBER"), userId: "member-other-2" };
 
-      const editableTask: Task = {
+      const sentGlobalTask: Task = {
         ...makeTask("ASSIGNED"),
+        scope: "GLOBAL",
+        owner: { id: ownerAdmin.userId, name: "Owner Admin", role: "ADMIN" },
         createdById: ownerAdmin.userId,
-        responsible: { id: member.userId, name: "Responsible Member", role: "MEMBER" },
+        responsible: { id: responsibleMember.userId, name: "Responsible Member", role: "MEMBER" },
+        distribution: {
+          status: "SENT",
+          scheduledAt: "2026-09-28T00:00:00.000Z",
+          sentAt: "2026-09-28T00:00:00.000Z",
+        },
       };
 
-      const adminAttachment = {
-        id: "att-1",
+      const pendingDistributionTask: Task = {
+        ...sentGlobalTask,
+        distribution: {
+          status: "PENDING",
+          scheduledAt: "2026-09-29T00:00:00.000Z",
+          sentAt: null,
+        },
+      };
+
+      const adminAttachment: AttachmentResponse = {
+        id: "att-admin",
         file: {
           id: "f-1",
           originalName: "admin-brief.pdf",
           mimeType: "application/pdf",
           sizeBytes: 1024,
-          uploadedBy: { id: ownerAdmin.userId, name: "Admin" },
+          uploadedBy: { id: ownerAdmin.userId, name: "Owner Admin" },
           createdAt: "2026-09-28T00:00:00.000Z",
         },
         downloadUrl: "/api/v1/files/f-1/download",
       };
 
-      const memberAttachment = {
-        id: "att-2",
+      const superAdminAttachment: AttachmentResponse = {
+        id: "att-sa",
+        file: {
+          id: "f-sa",
+          originalName: "sa-guideline.pdf",
+          mimeType: "application/pdf",
+          sizeBytes: 1024,
+          uploadedBy: { id: sa.userId, name: "Super Admin" },
+          createdAt: "2026-09-28T00:00:00.000Z",
+        },
+        downloadUrl: "/api/v1/files/f-sa/download",
+      };
+
+      const memberAttachment: AttachmentResponse = {
+        id: "att-member",
         file: {
           id: "f-2",
           originalName: "member-work.pdf",
           mimeType: "application/pdf",
           sizeBytes: 2048,
-          uploadedBy: { id: member.userId, name: "Member" },
+          uploadedBy: { id: responsibleMember.userId, name: "Responsible Member" },
           createdAt: "2026-09-28T00:00:00.000Z",
         },
         downloadUrl: "/api/v1/files/f-2/download",
       };
 
-      // Super Admin can delete both
-      expect(canDeleteTaskAttachment(sa, editableTask, adminAttachment)).toBe(true);
-      expect(canDeleteTaskAttachment(sa, editableTask, memberAttachment)).toBe(true);
+      const otherMemberAttachment: AttachmentResponse = {
+        id: "att-other-member",
+        file: {
+          id: "f-3",
+          originalName: "other-member-notes.pdf",
+          mimeType: "application/pdf",
+          sizeBytes: 2048,
+          uploadedBy: { id: otherMember.userId, name: "Other Member" },
+          createdAt: "2026-09-28T00:00:00.000Z",
+        },
+        downloadUrl: "/api/v1/files/f-3/download",
+      };
 
-      // Task Owner Admin can delete both
-      expect(canDeleteTaskAttachment(ownerAdmin, editableTask, adminAttachment)).toBe(true);
-      expect(canDeleteTaskAttachment(ownerAdmin, editableTask, memberAttachment)).toBe(true);
+      it("allows Responsible Member to delete their own upload on GLOBAL SENT task", () => {
+        expect(canDeleteTaskAttachment(responsibleMember, sentGlobalTask, memberAttachment)).toBe(
+          true,
+        );
+      });
 
-      // Responsible Member can ONLY delete their own upload
-      expect(canDeleteTaskAttachment(member, editableTask, memberAttachment)).toBe(true);
-      expect(canDeleteTaskAttachment(member, editableTask, adminAttachment)).toBe(false);
+      it("blocks Responsible Member from deleting Admin upload", () => {
+        expect(canDeleteTaskAttachment(responsibleMember, sentGlobalTask, adminAttachment)).toBe(
+          false,
+        );
+      });
 
-      // Unrelated Member cannot delete either
-      const otherMember = { ...makeViewer("MEMBER"), userId: "other-user" };
-      expect(canDeleteTaskAttachment(otherMember, editableTask, memberAttachment)).toBe(false);
-      expect(canDeleteTaskAttachment(otherMember, editableTask, adminAttachment)).toBe(false);
+      it("blocks Responsible Member from deleting Super Admin upload", () => {
+        expect(
+          canDeleteTaskAttachment(responsibleMember, sentGlobalTask, superAdminAttachment),
+        ).toBe(false);
+      });
+
+      it("blocks Responsible Member from deleting other Member upload", () => {
+        expect(
+          canDeleteTaskAttachment(responsibleMember, sentGlobalTask, otherMemberAttachment),
+        ).toBe(false);
+      });
+
+      it("blocks Owner Admin from deleting any attachment on GLOBAL SENT task", () => {
+        expect(canDeleteTaskAttachment(ownerAdmin, sentGlobalTask, adminAttachment)).toBe(false);
+        expect(canDeleteTaskAttachment(ownerAdmin, sentGlobalTask, memberAttachment)).toBe(false);
+      });
+
+      it("blocks Super Admin from deleting any attachment on GLOBAL SENT task", () => {
+        expect(canDeleteTaskAttachment(sa, sentGlobalTask, adminAttachment)).toBe(false);
+        expect(canDeleteTaskAttachment(sa, sentGlobalTask, memberAttachment)).toBe(false);
+      });
+
+      it("allows Owner Admin to delete attachments when distribution is PENDING", () => {
+        expect(canDeleteTaskAttachment(ownerAdmin, pendingDistributionTask, adminAttachment)).toBe(
+          true,
+        );
+        expect(canDeleteTaskAttachment(ownerAdmin, pendingDistributionTask, memberAttachment)).toBe(
+          true,
+        );
+      });
+
+      it("allows Super Admin to delete attachments when distribution is PENDING", () => {
+        expect(canDeleteTaskAttachment(sa, pendingDistributionTask, adminAttachment)).toBe(true);
+        expect(canDeleteTaskAttachment(sa, pendingDistributionTask, memberAttachment)).toBe(true);
+      });
+
+      it("blocks unrelated Member from deleting any attachment", () => {
+        expect(
+          canDeleteTaskAttachment(otherMember, pendingDistributionTask, memberAttachment),
+        ).toBe(false);
+        expect(canDeleteTaskAttachment(otherMember, pendingDistributionTask, adminAttachment)).toBe(
+          false,
+        );
+      });
+
+      it("blocks delete when task is IN_PROGRESS", () => {
+        const inProgressTask: Task = {
+          ...pendingDistributionTask,
+          status: "IN_PROGRESS",
+          startedAt: "2026-09-28T10:00:00.000Z",
+        };
+        expect(canDeleteTaskAttachment(responsibleMember, inProgressTask, memberAttachment)).toBe(
+          false,
+        );
+        expect(canDeleteTaskAttachment(ownerAdmin, inProgressTask, adminAttachment)).toBe(false);
+        expect(canDeleteTaskAttachment(sa, inProgressTask, adminAttachment)).toBe(false);
+      });
     });
   });
 
   describe("canStartTask and canSubmitTask", () => {
     it("allows MEMBER who is responsible to start an ASSIGNED task", () => {
       const viewer = makeViewer("MEMBER");
-      const task: Task = { ...makeTask("ASSIGNED"), responsible: { id: viewer.userId, name: "Tupur", role: "MEMBER" } };
+      const task: Task = {
+        ...makeTask("ASSIGNED"),
+        responsible: { id: viewer.userId, name: "Tupur", role: "MEMBER" },
+      };
       expect(canStartTask(viewer, task)).toBe(true);
     });
 
     it("blocks MEMBER who is NOT the responsible user", () => {
       const viewer = makeViewer("MEMBER");
-      const task: Task = { ...makeTask("ASSIGNED"), responsible: { id: "other-user", name: "Other", role: "MEMBER" } };
+      const task: Task = {
+        ...makeTask("ASSIGNED"),
+        responsible: { id: "other-user", name: "Other", role: "MEMBER" },
+      };
       expect(canStartTask(viewer, task)).toBe(false);
     });
 
     it("blocks MEMBER on a non-ASSIGNED task", () => {
       const viewer = makeViewer("MEMBER");
-      const task: Task = { ...makeTask("IN_PROGRESS"), responsible: { id: viewer.userId, name: "Tupur", role: "MEMBER" } };
+      const task: Task = {
+        ...makeTask("IN_PROGRESS"),
+        responsible: { id: viewer.userId, name: "Tupur", role: "MEMBER" },
+      };
       expect(canStartTask(viewer, task)).toBe(false);
     });
 
     it("blocks SUPER_ADMIN from starting a task", () => {
       const viewer = makeViewer("SUPER_ADMIN");
-      const task: Task = { ...makeTask("ASSIGNED"), responsible: { id: viewer.userId, name: "SA", role: "SUPER_ADMIN" } };
+      const task: Task = {
+        ...makeTask("ASSIGNED"),
+        responsible: { id: viewer.userId, name: "SA", role: "SUPER_ADMIN" },
+      };
       expect(canStartTask(viewer, task)).toBe(false);
     });
 
@@ -413,7 +526,9 @@ describe("Task permissions", () => {
       expect(canSubmitTask(null, reviewTask)).toBe(false);
 
       // Non-IN_PROGRESS status cannot submit
-      expect(canSubmitTask(makeViewer("MEMBER"), makeTask("ASSIGNED", "REVIEW_REQUIRED"))).toBe(false);
+      expect(canSubmitTask(makeViewer("MEMBER"), makeTask("ASSIGNED", "REVIEW_REQUIRED"))).toBe(
+        false,
+      );
     });
 
     it("evaluates canResubmitTask correctly for roles and completion modes", () => {
@@ -432,7 +547,9 @@ describe("Task permissions", () => {
       expect(canResubmitTask(null, reviewTask)).toBe(false);
 
       // Non-REVISION_REQUIRED status cannot resubmit
-      expect(canResubmitTask(makeViewer("MEMBER"), makeTask("IN_PROGRESS", "REVIEW_REQUIRED"))).toBe(false);
+      expect(
+        canResubmitTask(makeViewer("MEMBER"), makeTask("IN_PROGRESS", "REVIEW_REQUIRED")),
+      ).toBe(false);
     });
   });
 
@@ -450,7 +567,9 @@ describe("Task permissions", () => {
       expect(canReviewTaskSubmission(makeViewer("MEMBER"), submittedTask)).toBe(false);
 
       // Blocks non-submitted statuses
-      expect(canReviewTaskSubmission(makeViewer("SUPER_ADMIN"), makeTask("IN_PROGRESS"))).toBe(false);
+      expect(canReviewTaskSubmission(makeViewer("SUPER_ADMIN"), makeTask("IN_PROGRESS"))).toBe(
+        false,
+      );
       expect(canReviewTaskSubmission(makeViewer("ADMIN"), makeTask("IN_PROGRESS"))).toBe(false);
     });
   });

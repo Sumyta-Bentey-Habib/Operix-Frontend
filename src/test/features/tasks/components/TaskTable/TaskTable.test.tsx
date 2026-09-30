@@ -89,7 +89,10 @@ describe("TaskTable", () => {
       <TaskTable
         tasks={[
           // ASSIGNED task where member is the responsible user
-          { ...task("ASSIGNED"), responsible: { id: "member-1", name: "Test Member", role: "MEMBER" } },
+          {
+            ...task("ASSIGNED"),
+            responsible: { id: "member-1", name: "Test Member", role: "MEMBER" },
+          },
           // IN_PROGRESS task - no Start button regardless
           { ...task("IN_PROGRESS"), id: "task-2", referenceCode: "TSK-0002" },
         ]}
@@ -193,5 +196,56 @@ describe("TaskTable", () => {
 
     expect(screen.getByText("Global")).toBeInTheDocument();
     expect(screen.getByText("Global Compliance Notice")).toBeInTheDocument();
+  });
+
+  it("renders Recurring badge with correct frequency label for recurring tasks", () => {
+    const weeklyTask: Task = {
+      ...task("PENDING"),
+      id: "task-rec-1",
+      title: "Weekly Sync Review",
+      recurrence: {
+        id: "rec-1",
+        frequency: "WEEKLY",
+        nextOccurrenceAt: "2026-01-08T00:00:00.000Z",
+        reminderLeadMinutes: 60,
+        distributionLeadMinutes: null,
+        isActive: true,
+      },
+    };
+
+    const monthlyTask: Task = {
+      ...task("PENDING"),
+      id: "task-rec-2",
+      title: "Monthly Security Audit",
+      recurrence: {
+        id: "rec-2",
+        frequency: "MONTHLY",
+        nextOccurrenceAt: "2026-02-01T00:00:00.000Z",
+        reminderLeadMinutes: 120,
+        distributionLeadMinutes: null,
+        isActive: true,
+      },
+    };
+
+    const nonRecurringTask: Task = {
+      ...task("PENDING"),
+      id: "task-non-rec",
+      title: "One-off Task",
+      recurrence: null,
+    };
+
+    render(
+      <TaskTable
+        tasks={[weeklyTask, monthlyTask, nonRecurringTask]}
+        viewer={viewer("SUPER_ADMIN")}
+        onAssign={vi.fn()}
+        onStart={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("Weekly Recurring")).toBeInTheDocument();
+    expect(screen.getByText("Monthly Recurring")).toBeInTheDocument();
+    expect(screen.getByTitle("Recurring weekly task")).toBeInTheDocument();
+    expect(screen.getByTitle("Recurring monthly task")).toBeInTheDocument();
   });
 });

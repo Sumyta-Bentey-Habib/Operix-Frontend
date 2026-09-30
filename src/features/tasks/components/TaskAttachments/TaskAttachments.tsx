@@ -2,20 +2,21 @@
 
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import {
-  FilePreviewModal,
-  cleanFilename,
-  fileApi,
-  triggerBrowserDownload,
-} from "@/features/files";
+import { FilePreviewModal, cleanFilename, fileApi, triggerBrowserDownload } from "@/features/files";
 
-import { canDeleteTaskAttachment, canManageTaskAttachments } from "@/lib/auth/permissions";
+import {
+  canDeleteTaskAttachment,
+  canStartTask,
+  canUploadTaskAttachment,
+} from "@/lib/auth/permissions";
+import { taskApi } from "../../api/task.api";
 import { taskAttachmentApi } from "../../api/task-attachment.api";
 import { useTaskAttachments } from "../../hooks/use-task-attachments";
 import type { AttachmentResponse } from "../../types/task-attachment.types";
 import type { Task } from "../../types/task.types";
 import {
   getTaskAttachmentErrorView,
+  isTaskAttachmentForbiddenError,
   isTaskAttachmentsNotEditableError,
 } from "../task-attachment-errors";
 import { TaskAttachmentDeleteDialog } from "../TaskAttachmentDeleteDialog";
@@ -40,7 +41,7 @@ export const TaskAttachments = ({ task, onTaskRefresh }: TaskAttachmentsProps) =
   const [mutationError, setMutationError] = useState<string | null>(null);
 
   const [downloadError, setDownloadError] = useState<string | null>(null);
-  const canManage = viewer ? canManageTaskAttachments(viewer, task) : false;
+  const canUpload = viewer ? canUploadTaskAttachment(viewer, task) : false;
 
   const handleEditabilityConflict = async (conflictError: unknown) => {
     setMutationError(getTaskAttachmentErrorView(conflictError).message);
@@ -55,10 +56,23 @@ export const TaskAttachments = ({ task, onTaskRefresh }: TaskAttachmentsProps) =
 
     try {
       await taskAttachmentApi.upload(task.id, files);
+
+      if (canStartTask(viewer, task)) {
+        try {
+          await taskApi.start(task.id);
+        } catch {
+          // If auto-start fails, task refresh will reconcile state
+        }
+      }
+
+      await onTaskRefresh();
       await refresh();
       return true;
     } catch (uploadError) {
-      if (isTaskAttachmentsNotEditableError(uploadError)) {
+      if (
+        isTaskAttachmentsNotEditableError(uploadError) ||
+        isTaskAttachmentForbiddenError(uploadError)
+      ) {
         await handleEditabilityConflict(uploadError);
       } else {
         setMutationError(getTaskAttachmentErrorView(uploadError).message);
@@ -80,7 +94,10 @@ export const TaskAttachments = ({ task, onTaskRefresh }: TaskAttachmentsProps) =
       setSelectedDelete(null);
       await refresh();
     } catch (deleteError) {
-      if (isTaskAttachmentsNotEditableError(deleteError)) {
+      if (
+        isTaskAttachmentsNotEditableError(deleteError) ||
+        isTaskAttachmentForbiddenError(deleteError)
+      ) {
         await handleEditabilityConflict(deleteError);
       } else {
         setMutationError(getTaskAttachmentErrorView(deleteError).message);
@@ -129,7 +146,7 @@ export const TaskAttachments = ({ task, onTaskRefresh }: TaskAttachmentsProps) =
         </p>
       )}
 
-      {canManage && (
+      {canUpload && (
         <TaskAttachmentUploader
           currentAttachmentCount={attachments.length}
           pending={uploadPending}
@@ -142,10 +159,7 @@ export const TaskAttachments = ({ task, onTaskRefresh }: TaskAttachmentsProps) =
         attachments={attachments}
         loading={loading}
         error={error}
-        canManage={canManage}
-        canDeleteAttachment={(attachment) =>
-          canDeleteTaskAttachment(viewer, task, attachment)
-        }
+        canDeleteAttachment={(attachment) => canDeleteTaskAttachment(viewer, task, attachment)}
         downloadingFileId={downloadingFileId}
         deletingAttachmentId={deletingAttachmentId}
         onRetry={() => void refresh()}
@@ -173,5 +187,4 @@ export const TaskAttachments = ({ task, onTaskRefresh }: TaskAttachmentsProps) =
       />
     </section>
   );
-
 };

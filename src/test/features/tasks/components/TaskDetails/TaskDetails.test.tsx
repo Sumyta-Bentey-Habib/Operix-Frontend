@@ -122,7 +122,9 @@ describe("TaskDetails", () => {
 
     // Overview & Remarks
     expect(screen.getByText(TASK_DETAILS_STRINGS.sections.overview)).toBeInTheDocument();
-    expect(screen.getByText("Comprehensive redesign of operations matrix workflow.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Comprehensive redesign of operations matrix workflow."),
+    ).toBeInTheDocument();
     expect(screen.getByText("Deliver before fiscal quarter end.")).toBeInTheDocument();
 
     // Default active tab is Submissions
@@ -153,12 +155,16 @@ describe("TaskDetails", () => {
     expect(screen.getByTestId("submissions-workspace")).toBeInTheDocument();
 
     // Switch to Attachments
-    const attachmentsTab = screen.getByRole("tab", { name: new RegExp(TASK_DETAILS_STRINGS.tabs.attachments, "i") });
+    const attachmentsTab = screen.getByRole("tab", {
+      name: new RegExp(TASK_DETAILS_STRINGS.tabs.attachments, "i"),
+    });
     fireEvent.click(attachmentsTab);
     expect(screen.getByTestId("attachments-workspace")).toBeInTheDocument();
 
     // Switch to History
-    const historyTab = screen.getByRole("tab", { name: new RegExp(TASK_DETAILS_STRINGS.tabs.history, "i") });
+    const historyTab = screen.getByRole("tab", {
+      name: new RegExp(TASK_DETAILS_STRINGS.tabs.history, "i"),
+    });
     fireEvent.click(historyTab);
     expect(screen.getByTestId("history-workspace")).toBeInTheDocument();
   });
@@ -175,7 +181,9 @@ describe("TaskDetails", () => {
 
     render(<TaskDetails taskId="task-test-id" />);
 
-    const assignButton = screen.getByRole("button", { name: TASK_DETAILS_STRINGS.actions.assignTask });
+    const assignButton = screen.getByRole("button", {
+      name: TASK_DETAILS_STRINGS.actions.assignTask,
+    });
     expect(assignButton).toBeInTheDocument();
     fireEvent.click(assignButton);
 
@@ -220,7 +228,30 @@ describe("TaskDetails", () => {
 
     render(<TaskDetails taskId="task-test-id" />);
 
-    expect(screen.getAllByText(TASK_DETAILS_STRINGS.metadata.scopeGlobal).length).toBeGreaterThanOrEqual(1);
+    expect(
+      screen.getAllByText(TASK_DETAILS_STRINGS.metadata.scopeGlobal).length,
+    ).toBeGreaterThanOrEqual(1);
     expect(screen.getByText(TASK_DETAILS_STRINGS.metadata.distributionSent)).toBeInTheDocument();
+  });
+
+  it("renders all workflow steps as completed (with checkmarks, no number 5) when task is COMPLETED", () => {
+    mocks.useAuth.mockReturnValue({ viewer: { role: "SUPER_ADMIN", id: "super-1" } });
+    mocks.useTask.mockReturnValue({
+      task: {
+        ...mockTask,
+        status: "COMPLETED",
+        completedAt: "2026-10-01T00:00:00.000Z",
+      },
+      loading: false,
+      error: null,
+      setTask: vi.fn(),
+      refresh: vi.fn(),
+    });
+
+    render(<TaskDetails taskId="task-test-id" />);
+
+    // No step should display the number 5 (they are all completed)
+    expect(screen.queryByText("5")).not.toBeInTheDocument();
+    expect(screen.getAllByText("Completed").length).toBeGreaterThanOrEqual(1);
   });
 });

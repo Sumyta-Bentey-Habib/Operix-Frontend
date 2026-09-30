@@ -10,7 +10,7 @@ export interface TaskAttachmentListProps {
   attachments: AttachmentResponse[];
   loading: boolean;
   error: unknown;
-  canManage: boolean;
+  canManage?: boolean;
   canDeleteAttachment?: (attachment: AttachmentResponse) => boolean;
   downloadingFileId: string | null;
   deletingAttachmentId: string | null;
@@ -24,7 +24,7 @@ export const TaskAttachmentList = ({
   attachments,
   loading,
   error,
-  canManage,
+  canManage = false,
   canDeleteAttachment,
   downloadingFileId,
   deletingAttachmentId,
@@ -62,4 +62,3 @@ export const TaskAttachmentList = ({
       ))}
   </div>
 );
-

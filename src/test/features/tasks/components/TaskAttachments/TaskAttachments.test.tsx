@@ -12,6 +12,7 @@ const mocks = vi.hoisted(() => ({
   remove: vi.fn(),
   download: vi.fn(),
   triggerBrowserDownload: vi.fn(),
+  start: vi.fn(),
 }));
 
 vi.mock("@/context/AuthContext", () => ({
@@ -26,6 +27,12 @@ vi.mock("@/features/tasks/api/task-attachment.api", () => ({
   taskAttachmentApi: {
     upload: mocks.upload,
     remove: mocks.remove,
+  },
+}));
+
+vi.mock("@/features/tasks/api/task.api", () => ({
+  taskApi: {
+    start: mocks.start,
   },
 }));
 
@@ -194,7 +201,230 @@ describe("TaskAttachments", () => {
     await waitFor(() => expect(refreshTask).toHaveBeenCalledTimes(1));
     expect(refreshAttachments).toHaveBeenCalledTimes(1);
     expect(mocks.upload).toHaveBeenCalledTimes(1);
-    expect(screen.getByRole("alert")).toHaveTextContent("Task attachments can only be changed");
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Task attachments can no longer be modified.",
+    );
+  });
+
+  it("refreshes Task and attachments on 403 FORBIDDEN upload error", async () => {
+    const refreshTask = vi.fn().mockResolvedValue(undefined);
+    const refreshAttachments = vi.fn().mockResolvedValue(undefined);
+    mocks.useAuth.mockReturnValue({ viewer: viewer("MEMBER") });
+    mocks.useTaskAttachments.mockReturnValue({
+      ...hookValue,
+      refresh: refreshAttachments,
+    });
+    mocks.upload.mockRejectedValueOnce(
+      new OperixApiError("Forbidden", {
+        status: 403,
+        code: "FORBIDDEN",
+      }),
+    );
+
+    const assignedTask: Task = {
+      ...task("ASSIGNED"),
+      responsible: { id: "member-1", name: "Member", role: "MEMBER" },
+    };
+
+    render(<TaskAttachments task={assignedTask} onTaskRefresh={refreshTask} />);
+
+    const input = screen.getByLabelText("Add attachments");
+    fireEvent.change(input, {
+      target: {
+        files: [new File(["content"], "report.pdf", { type: "application/pdf" })],
+      },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Upload" }));
+
+    await waitFor(() => expect(refreshTask).toHaveBeenCalledTimes(1));
+    expect(refreshAttachments).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "You no longer have permission to modify this attachment.",
+    );
+  });
+
+  it("refreshes Task and attachments on 403 FORBIDDEN delete error", async () => {
+    const refreshTask = vi.fn().mockResolvedValue(undefined);
+    const refreshAttachments = vi.fn().mockResolvedValue(undefined);
+    const memberViewer = viewer("MEMBER");
+    mocks.useAuth.mockReturnValue({ viewer: memberViewer });
+
+    const memberAttachment: AttachmentResponse = {
+      id: "attachment-member",
+      downloadUrl: "/api/v1/files/file-2/download",
+      file: {
+        id: "file-2",
+        originalName: "member-file.pdf",
+        mimeType: "application/pdf",
+        sizeBytes: 456,
+        uploadedBy: { id: "member-1", name: "Member" },
+        createdAt: "2026-08-24T00:00:00.000Z",
+      },
+    };
+
+    mocks.useTaskAttachments.mockReturnValue({
+      ...hookValue,
+      attachments: [memberAttachment],
+      refresh: refreshAttachments,
+    });
+    mocks.remove.mockRejectedValueOnce(
+      new OperixApiError("Forbidden", {
+        status: 403,
+        code: "FORBIDDEN",
+      }),
+    );
+
+    const assignedTask: Task = {
+      ...task("ASSIGNED"),
+      responsible: { id: "member-1", name: "Member", role: "MEMBER" },
+    };
+
+    render(<TaskAttachments task={assignedTask} onTaskRefresh={refreshTask} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Remove" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Remove" })[1]);
+
+    await waitFor(() => expect(refreshTask).toHaveBeenCalledTimes(1));
+    expect(refreshAttachments).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "You no longer have permission to modify this attachment.",
+    );
+  });
+
+  it("refreshes Task and attachments on 409 delete error", async () => {
+    const refreshTask = vi.fn().mockResolvedValue(undefined);
+    const refreshAttachments = vi.fn().mockResolvedValue(undefined);
+    const memberViewer = viewer("MEMBER");
+    mocks.useAuth.mockReturnValue({ viewer: memberViewer });
+
+    const memberAttachment: AttachmentResponse = {
+      id: "attachment-member",
+      downloadUrl: "/api/v1/files/file-2/download",
+      file: {
+        id: "file-2",
+        originalName: "member-file.pdf",
+        mimeType: "application/pdf",
+        sizeBytes: 456,
+        uploadedBy: { id: "member-1", name: "Member" },
+        createdAt: "2026-08-24T00:00:00.000Z",
+      },
+    };
+
+    mocks.useTaskAttachments.mockReturnValue({
+      ...hookValue,
+      attachments: [memberAttachment],
+      refresh: refreshAttachments,
+    });
+    mocks.remove.mockRejectedValueOnce(
+      new OperixApiError("Locked", {
+        status: 409,
+        code: "TASK_ATTACHMENTS_NOT_EDITABLE",
+      }),
+    );
+
+    const assignedTask: Task = {
+      ...task("ASSIGNED"),
+      responsible: { id: "member-1", name: "Member", role: "MEMBER" },
+    };
+
+    render(<TaskAttachments task={assignedTask} onTaskRefresh={refreshTask} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Remove" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Remove" })[1]);
+
+    await waitFor(() => expect(refreshTask).toHaveBeenCalledTimes(1));
+    expect(refreshAttachments).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Task attachments can no longer be modified.",
+    );
+  });
+
+  it("renders uploader for Responsible MEMBER on GLOBAL SENT Task when ASSIGNED and not started", () => {
+    mocks.useAuth.mockReturnValue({ viewer: viewer("MEMBER") });
+    const globalSentTask: Task = {
+      ...task("ASSIGNED"),
+      scope: "GLOBAL",
+      responsible: { id: "member-1", name: "Member", role: "MEMBER" },
+      distribution: {
+        status: "SENT",
+        scheduledAt: "2026-08-23T00:00:00.000Z",
+        sentAt: "2026-08-23T00:00:00.000Z",
+      },
+    };
+
+    render(<TaskAttachments task={globalSentTask} onTaskRefresh={vi.fn()} />);
+
+    expect(screen.getByLabelText("Add attachments")).toBeInTheDocument();
+  });
+
+  it("hides uploader for Owner ADMIN and SUPER_ADMIN on GLOBAL SENT Task", () => {
+    const globalSentTask: Task = {
+      ...task("ASSIGNED"),
+      scope: "GLOBAL",
+      owner: { id: "admin-1", name: "Admin", role: "ADMIN" },
+      createdById: "admin-1",
+      responsible: { id: "member-1", name: "Member", role: "MEMBER" },
+      distribution: {
+        status: "SENT",
+        scheduledAt: "2026-08-23T00:00:00.000Z",
+        sentAt: "2026-08-23T00:00:00.000Z",
+      },
+    };
+
+    mocks.useAuth.mockReturnValue({ viewer: viewer("ADMIN") });
+    const { rerender } = render(<TaskAttachments task={globalSentTask} onTaskRefresh={vi.fn()} />);
+    expect(screen.queryByLabelText("Add attachments")).not.toBeInTheDocument();
+
+    mocks.useAuth.mockReturnValue({ viewer: viewer("SUPER_ADMIN") });
+    rerender(<TaskAttachments task={globalSentTask} onTaskRefresh={vi.fn()} />);
+    expect(screen.queryByLabelText("Add attachments")).not.toBeInTheDocument();
+  });
+
+  it("hides uploader for unrelated MEMBER on GLOBAL SENT Task", () => {
+    const unrelatedMember = { ...viewer("MEMBER"), userId: "other-member" };
+    mocks.useAuth.mockReturnValue({ viewer: unrelatedMember });
+    const globalSentTask: Task = {
+      ...task("ASSIGNED"),
+      scope: "GLOBAL",
+      responsible: { id: "member-1", name: "Member", role: "MEMBER" },
+      distribution: {
+        status: "SENT",
+        scheduledAt: "2026-08-23T00:00:00.000Z",
+        sentAt: "2026-08-23T00:00:00.000Z",
+      },
+    };
+
+    render(<TaskAttachments task={globalSentTask} onTaskRefresh={vi.fn()} />);
+    expect(screen.queryByLabelText("Add attachments")).not.toBeInTheDocument();
+  });
+
+  it("automatically starts the task when responsible MEMBER uploads on ASSIGNED task", async () => {
+    mocks.useAuth.mockReturnValue({ viewer: viewer("MEMBER") });
+    mocks.upload.mockResolvedValueOnce(undefined);
+    mocks.start.mockResolvedValueOnce({
+      ...task("IN_PROGRESS"),
+      startedAt: "2026-08-24T00:00:00.000Z",
+    });
+    const refreshTask = vi.fn().mockResolvedValue(undefined);
+
+    const assignedTask: Task = {
+      ...task("ASSIGNED"),
+      responsible: { id: "member-1", name: "Member", role: "MEMBER" },
+    };
+
+    render(<TaskAttachments task={assignedTask} onTaskRefresh={refreshTask} />);
+
+    const input = screen.getByLabelText("Add attachments");
+    fireEvent.change(input, {
+      target: {
+        files: [new File(["content"], "report.pdf", { type: "application/pdf" })],
+      },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Upload" }));
+
+    await waitFor(() => expect(mocks.upload).toHaveBeenCalledWith("task-1", [expect.any(File)]));
+    await waitFor(() => expect(mocks.start).toHaveBeenCalledWith("task-1"));
+    expect(refreshTask).toHaveBeenCalled();
   });
 
   it("allows Responsible MEMBER to upload and delete only their own attachments on editable ASSIGNED task", () => {
@@ -261,9 +491,7 @@ describe("TaskAttachments", () => {
     render(<TaskAttachments task={task("PENDING")} onTaskRefresh={vi.fn()} />);
 
     // Check that displayed name in the list has been cleaned of mojibake
-    expect(
-      screen.getByText("Screenshot 2026-09-07 at 9.50.11 PM.png"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Screenshot 2026-09-07 at 9.50.11 PM.png")).toBeInTheDocument();
 
     const viewButton = screen.getByRole("button", { name: "View" });
     expect(viewButton).toBeInTheDocument();
@@ -280,4 +508,3 @@ describe("TaskAttachments", () => {
     });
   });
 });
-

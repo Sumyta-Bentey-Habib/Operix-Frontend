@@ -54,12 +54,38 @@
   max-width: 260px;
 }
 
+.titleWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
 .taskTitle {
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: normal;
   line-height: 1.4;
+}
+
+.recurringBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--primary-emerald);
+  background: var(--primary-emerald-light);
+  border: 1px solid var(--border-subtle);
+  padding: 1px 6px;
+  border-radius: 6px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.recurringIcon {
+  flex-shrink: 0;
 }
 
 .mono {

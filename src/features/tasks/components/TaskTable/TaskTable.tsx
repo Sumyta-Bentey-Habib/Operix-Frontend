@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ClockIcon } from "@/components/icons";
 import { canAssignTask, canClaimTask, canStartTask } from "@/lib/auth/permissions";
 import type { OperixViewer } from "@/types/auth";
 import { formatDisplayDate } from "@/utils/date";
@@ -19,8 +20,7 @@ export interface TaskTableProps {
   onStart: (task: Task) => void;
 }
 
-const formatOptionalDate = (value: string | null) =>
-  value ? formatDisplayDate(value) : "—";
+const formatOptionalDate = (value: string | null) => (value ? formatDisplayDate(value) : "—");
 
 export const TaskTable = ({ tasks, viewer, onAssign, onClaim, onStart }: TaskTableProps) => (
   <div className={styles.tableWrap}>
@@ -52,7 +52,22 @@ export const TaskTable = ({ tasks, viewer, onAssign, onClaim, onStart }: TaskTab
                 <span className={styles.mono}>{task.referenceCode}</span>
               </td>
               <td className={styles.taskTitleCell} data-label={TASK_TABLE_STRINGS.columns.title}>
-                <span className={styles.taskTitle}>{task.title}</span>
+                <div className={styles.titleWrapper}>
+                  <span className={styles.taskTitle}>{task.title}</span>
+                  {task.recurrence && (
+                    <span
+                      className={styles.recurringBadge}
+                      title={`Recurring ${task.recurrence.frequency.toLowerCase()} task`}
+                    >
+                      <ClockIcon size={12} className={styles.recurringIcon} />
+                      <span>
+                        {task.recurrence.frequency === "WEEKLY"
+                          ? TASK_TABLE_STRINGS.badges.recurringWeekly
+                          : TASK_TABLE_STRINGS.badges.recurringMonthly}
+                      </span>
+                    </span>
+                  )}
+                </div>
               </td>
               <td className={styles.priorityCell} data-label={TASK_TABLE_STRINGS.columns.priority}>
                 <TaskPriorityBadge priority={task.priority} />
@@ -60,7 +75,10 @@ export const TaskTable = ({ tasks, viewer, onAssign, onClaim, onStart }: TaskTab
               <td className={styles.statusCell} data-label={TASK_TABLE_STRINGS.columns.status}>
                 <TaskStatusBadge status={task.status} />
               </td>
-              <td className={styles.assigneeCell} data-label={TASK_TABLE_STRINGS.labels.assigneePrefix}>
+              <td
+                className={styles.assigneeCell}
+                data-label={TASK_TABLE_STRINGS.labels.assigneePrefix}
+              >
                 {task.responsible ? (
                   <div className={styles.personInfo}>
                     <span className={styles.personName}>{task.responsible.name}</span>
@@ -74,14 +92,15 @@ export const TaskTable = ({ tasks, viewer, onAssign, onClaim, onStart }: TaskTab
                   </span>
                 )}
               </td>
-              <td className={styles.creatorCell} data-label={TASK_TABLE_STRINGS.labels.creatorPrefix}>
+              <td
+                className={styles.creatorCell}
+                data-label={TASK_TABLE_STRINGS.labels.creatorPrefix}
+              >
                 <div className={styles.personInfo}>
                   <span className={styles.personName}>
                     {task.owner?.name ?? obfuscateId(task.createdById, "USR")}
                   </span>
-                  {creatorRole && (
-                    <span className={styles.roleBadge}>{creatorRole}</span>
-                  )}
+                  {creatorRole && <span className={styles.roleBadge}>{creatorRole}</span>}
                 </div>
               </td>
               <td className={styles.teamCell} data-label={TASK_TABLE_STRINGS.labels.teamPrefix}>
@@ -95,53 +114,44 @@ export const TaskTable = ({ tasks, viewer, onAssign, onClaim, onStart }: TaskTab
                   </span>
                 )}
               </td>
-            <td className={styles.dueCell} data-label={TASK_TABLE_STRINGS.labels.duePrefix}>
-              <span className={styles.dateCell}>{formatOptionalDate(task.dueAt)}</span>
-            </td>
-            <td className={styles.overdueCell} data-label={TASK_TABLE_STRINGS.columns.overdue}>
-              {task.isOverdue ? (
-                <span className={styles.overdue}>{TASK_TABLE_STRINGS.badges.overdue}</span>
-              ) : (
-                <span className={styles.notOverdue}>{TASK_TABLE_STRINGS.badges.notOverdue}</span>
-              )}
-            </td>
-            <td className={styles.createdCell} data-label={TASK_TABLE_STRINGS.labels.createdPrefix}>
-              <span className={styles.dateCell}>{formatDisplayDate(task.createdAt)}</span>
-            </td>
-            <td className={styles.actionsCell} data-label={TASK_TABLE_STRINGS.columns.actions}>
-              <div className={styles.actions}>
-                <Link className={styles.button} href={`/tasks/${task.id}`}>
-                  {TASK_TABLE_STRINGS.actions.view}
-                </Link>
-                {canAssignTask(viewer, task) && task.status === "PENDING" && (
-                  <button
-                    type="button"
-                    className={styles.button}
-                    onClick={() => onAssign(task)}
-                  >
-                    {TASK_TABLE_STRINGS.actions.assign}
-                  </button>
+              <td className={styles.dueCell} data-label={TASK_TABLE_STRINGS.labels.duePrefix}>
+                <span className={styles.dateCell}>{formatOptionalDate(task.dueAt)}</span>
+              </td>
+              <td className={styles.overdueCell} data-label={TASK_TABLE_STRINGS.columns.overdue}>
+                {task.isOverdue ? (
+                  <span className={styles.overdue}>{TASK_TABLE_STRINGS.badges.overdue}</span>
+                ) : (
+                  <span className={styles.notOverdue}>{TASK_TABLE_STRINGS.badges.notOverdue}</span>
                 )}
-                {canClaimTask(viewer, task) && onClaim && (
-                  <button
-                    type="button"
-                    className={styles.button}
-                    onClick={() => onClaim(task)}
-                  >
-                    {TASK_TABLE_STRINGS.actions.claim}
-                  </button>
-                )}
-                {canStartTask(viewer, task) && onStart && (
-                  <button
-                    type="button"
-                    className={styles.button}
-                    onClick={() => onStart(task)}
-                  >
-                    {TASK_TABLE_STRINGS.actions.start}
-                  </button>
-                )}
-              </div>
-            </td>
+              </td>
+              <td
+                className={styles.createdCell}
+                data-label={TASK_TABLE_STRINGS.labels.createdPrefix}
+              >
+                <span className={styles.dateCell}>{formatDisplayDate(task.createdAt)}</span>
+              </td>
+              <td className={styles.actionsCell} data-label={TASK_TABLE_STRINGS.columns.actions}>
+                <div className={styles.actions}>
+                  <Link className={styles.button} href={`/tasks/${task.id}`}>
+                    {TASK_TABLE_STRINGS.actions.view}
+                  </Link>
+                  {canAssignTask(viewer, task) && task.status === "PENDING" && (
+                    <button type="button" className={styles.button} onClick={() => onAssign(task)}>
+                      {TASK_TABLE_STRINGS.actions.assign}
+                    </button>
+                  )}
+                  {canClaimTask(viewer, task) && onClaim && (
+                    <button type="button" className={styles.button} onClick={() => onClaim(task)}>
+                      {TASK_TABLE_STRINGS.actions.claim}
+                    </button>
+                  )}
+                  {canStartTask(viewer, task) && onStart && (
+                    <button type="button" className={styles.button} onClick={() => onStart(task)}>
+                      {TASK_TABLE_STRINGS.actions.start}
+                    </button>
+                  )}
+                </div>
+              </td>
             </tr>
           );
         })}
