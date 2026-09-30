@@ -1,0 +1,350 @@
+{
+  "role": "ADMIN",
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2026-09-30",
+    "targetAudience": {
+      "en": "Team Admin / Project Manager / Team Lead",
+      "bn": "টিম অ্যাডমিন / প্রজেক্ট ম্যানেজার / টিম লিড"
+    }
+  },
+  "title": {
+    "en": "Operix Admin User Guide",
+    "bn": "অপারেক্স অ্যাডমিন ব্যবহারকারী নির্দেশিকা"
+  },
+  "description": {
+    "en": "Comprehensive user guide for Team Administrators and Project Leads in Operix, covering team task creation, delegation, attachment controls, the core submission review & approval process, member assignments, and team inventory management.",
+    "bn": "অপারেক্স-এ টিম অ্যাডমিন ও প্রজেক্ট লিডদের জন্য পূর্ণাঙ্গ নির্দেশিকা, যার মধ্যে রয়েছে টিমের টাস্ক তৈরি, দায়িত্ব অর্পণ, ফাইল ও অ্যাটাচমেন্ট নিয়ন্ত্রণ, কাজ পর্যালোচনা ও অনুমোদন (Review & Approval) প্রক্রিয়া, টিম মেম্বার বণ্টন এবং ইনভেন্টরি পরিচালনা।"
+  },
+  "scope": {
+    "en": "Scoped to assigned teams (teamIds). Admins manage task lifecycles, review deliverables, delegate work, and oversee inventory and performance for their specific teams.",
+    "bn": "নির্ধারিত দলগুলোর (teamIds) মধ্যে সীমাবদ্ধ। অ্যাডমিনরা তাদের নির্দিষ্ট দলগুলোর টাস্কের শুরু থেকে শেষ পরিচালনা, জমাকৃত কাজ যাচাই ও অনুমোদন, দায়িত্ব বণ্টন এবং ইনভেন্টরি ও কার্যক্ষমতা তত্ত্বাবধান করেন।"
+  },
+  "navigation": {
+    "accessiblePages": [
+      {
+        "id": "dashboard",
+        "route": "/dashboard",
+        "name": { "en": "Dashboard", "bn": "ড্যাশবোর্ড" },
+        "description": {
+          "en": "Operational team dashboard with review queue counts, active tasks, team trends, and activity.",
+          "bn": "টিমের রিভিউ কিউ (পর্যালোচনা বাকি থাকা কাজ), চলতি টাস্ক, টিমের কাজের গতি এবং অ্যাক্টিভিটি সমৃদ্ধ ড্যাশবোর্ড।"
+        }
+      },
+      {
+        "id": "tasks",
+        "route": "/tasks",
+        "name": { "en": "Tasks", "bn": "টাস্ক ব্যবস্থাপনা" },
+        "description": {
+          "en": "Create, assign, monitor, and review tasks for your assigned teams.",
+          "bn": "আপনার টিমের টাস্ক তৈরি, দায়িত্ব অর্পণ, অগ্রগতি পর্যবেক্ষণ এবং কাজ যাচাই ও অনুমোদন করুন।"
+        }
+      },
+      {
+        "id": "members",
+        "route": "/members",
+        "name": { "en": "Members", "bn": "সদস্য তালিকা" },
+        "description": {
+          "en": "View team members and assign members to your teams.",
+          "bn": "টিমের সদস্যদের তালিকা দেখুন এবং সদস্যদের নির্দিষ্ট টিমে যুক্ত করুন।"
+        }
+      },
+      {
+        "id": "teams",
+        "route": "/teams",
+        "name": { "en": "Teams", "bn": "টিমসমূহ" },
+        "description": {
+          "en": "View team structures and assign members to rosters.",
+          "bn": "টিমের কাঠামো দেখুন এবং সদস্যদের রোস্টারে অন্তর্ভুক্ত করুন।"
+        }
+      },
+      {
+        "id": "inventory",
+        "route": "/inventory",
+        "name": { "en": "Inventory", "bn": "ইনভেন্টরি" },
+        "description": {
+          "en": "Manage stock items, assign returnable equipment to members, and process returns.",
+          "bn": "মালামাল স্টক পরিচালনা, সদস্যদের কাজের সামগ্রী বরাদ্দ দেওয়া এবং ফেরত গ্রহণ করা।"
+        }
+      },
+      {
+        "id": "todos",
+        "route": "/todos",
+        "name": { "en": "Todo List", "bn": "টুডু লিস্ট" },
+        "description": {
+          "en": "Create and manage operational checklists and management action items.",
+          "bn": "অপারেশনাল চেকলিস্ট এবং ম্যানেজমেন্টের করণীয় কাজের তালিকা তৈরি ও পরিচালনা।"
+        }
+      },
+      {
+        "id": "reports",
+        "route": "/reports",
+        "name": { "en": "Reports", "bn": "রিপোর্ট" },
+        "description": {
+          "en": "View team productivity, task completion rates, and performance reports.",
+          "bn": "টিমের উৎপাদনশীলতা, কাজ সম্পন্নের হার এবং পারফরম্যান্স সংক্রান্ত রিপোর্ট।"
+        }
+      },
+      {
+        "id": "kpi",
+        "route": "/kpi",
+        "name": { "en": "KPIs", "bn": "কেপিআই" },
+        "description": {
+          "en": "Analyze team performance metrics and review turnaround times.",
+          "bn": "টিমের পারফরম্যান্স সূচক এবং কাজ পর্যালোচনার সময় বিশ্লেষণ করুন।"
+        }
+      },
+      {
+        "id": "documents",
+        "route": "/documents",
+        "name": { "en": "Documents", "bn": "ডকুমেন্টস" },
+        "description": {
+          "en": "Central repository for team SOPs, project specs, and organizational files.",
+          "bn": "টিমের স্ট্যান্ডার্ড অপারেটিং প্রসিডিউর (SOP), প্রজেক্টের স্পেসিফিকেশন ও নথিপত্র।"
+        }
+      },
+      {
+        "id": "contacts",
+        "route": "/contacts",
+        "name": { "en": "Contacts", "bn": "যোগাযোগ ডিরেক্টরি" },
+        "description": {
+          "en": "Internal staff and external partner contact cards.",
+          "bn": "অভ্যন্তরীণ কর্মী এবং বহিরাগত অংশীদারদের যোগাযোগের ঠিকানা ও কার্ড।"
+        }
+      },
+      {
+        "id": "history",
+        "route": "/activity",
+        "name": { "en": "Activity Feed", "bn": "অ্যাক্টিভিটি ফিড" },
+        "description": {
+          "en": "Audit trail of task state changes, submissions, and member actions.",
+          "bn": "টাস্কের স্ট্যাটাস পরিবর্তন, সাবমিশন এবং সদস্যদের কাজের সম্পূর্ণ অডিট ট্রেইল।"
+        }
+      }
+    ],
+    "restrictedPages": [
+      {
+        "route": "/admins",
+        "reason": {
+          "en": "Administrator role provisioning is restricted to Super Admins.",
+          "bn": "অ্যাডমিন তালিকা পরিচালনা ও পারমিশন নির্ধারণ কেবল সুপার অ্যাডমিনদের জন্য।"
+        }
+      },
+      {
+        "route": "/settings",
+        "reason": {
+          "en": "Global system configurations are restricted to Super Admins.",
+          "bn": "সিস্টেমের গ্লোবাল সেটিংস কেবল সুপার অ্যাডমিনরা পরিবর্তন করতে পারেন।"
+        }
+      }
+    ]
+  },
+  "modules": {
+    "dashboard": {
+      "title": { "en": "Admin Dashboard Features", "bn": "অ্যাডমিন ড্যাশবোর্ডের সুবিধাসমূহ" },
+      "metrics": [
+        {
+          "name": { "en": "Review Queue Counter", "bn": "পর্যালোচনা কিউ কাউন্টার" },
+          "description": {
+            "en": "Shows the exact number of submissions waiting for your review. Clicking this filters tasks by SUBMITTED / RESUBMITTED.",
+            "bn": "আপনার অনুমোদনের জন্য অপেক্ষমাণ সাবমিশনের সঠিক সংখ্যা প্রদর্শন করে। এটিতে ক্লিক করলে জমা দেওয়া কাজগুলোর তালিকা পাওয়া যায়।"
+          }
+        },
+        {
+          "name": { "en": "Active Workload KPI", "bn": "সক্রিয় কাজের পরিমাণ" },
+          "description": {
+            "en": "Total tasks, active tasks, completed tasks, and overdue tasks across your managed teams.",
+            "bn": "আপনার আওতাধীন টিমগুলোর মোট টাস্ক, চলমান টাস্ক, সম্পন্ন টাস্ক এবং মেয়াদোত্তীর্ণ টাস্কের পরিসংখ্যান।"
+          }
+        },
+        {
+          "name": { "en": "Managed Scope Card", "bn": "আওতাধীন টিমের পরিধি" },
+          "description": {
+            "en": "Number of scoped teams and total team members under your supervision.",
+            "bn": "আপনার তত্ত্বাবধানে থাকা টিমের সংখ্যা এবং মোট সদস্য সংখ্যা।"
+          }
+        },
+        {
+          "name": { "en": "Team Velocity Trends", "bn": "টিমের গতিশীলতার গ্রাফ" },
+          "description": {
+            "en": "Line and bar chart tracking task completions and submission velocity.",
+            "bn": "কাজ শেষ করার হার এবং সাবমিশনের গতির ট্রেন্ড অ্যানালাইসিস গ্রাফ।"
+          }
+        }
+      ]
+    },
+    "taskCreation": {
+      "title": { "en": "Creating & Configuring Team Tasks", "bn": "টিমের টাস্ক তৈরি ও কনফিগারেশন" },
+      "instructions": [
+        {
+          "step": 1,
+          "title": { "en": "Access the Task Form", "bn": "টাস্ক ফর্মে প্রবেশ" },
+          "content": {
+            "en": "Click '+ New Task' in the top navbar or navigate to /tasks/create.",
+            "bn": "টপ ন্যাভবার থেকে '+ New Task' বাটনে চাপ দিন অথবা /tasks/create পেইজে যান।"
+          }
+        },
+        {
+          "step": 2,
+          "title": { "en": "Core Information", "bn": "মূল তথ্যাদি পূরণ" },
+          "content": {
+            "en": "Enter Title (required, max 180 chars), Detailed Description (max 5000 chars), and Remarks/Special Instructions (max 2000 chars).",
+            "bn": "শিরোনাম (বাধ্যতামূলক, সর্বোচ্চ ১৮০ অক্ষর), বিস্তারিত বিবরণ (সর্বোচ্চ ৫০০০ অক্ষর) এবং বিশেষ নির্দেশনা বা রিমার্কস (সর্বোচ্চ ২০০০ অক্ষর) লিখুন।"
+          }
+        },
+        {
+          "step": 3,
+          "title": { "en": "Team & Member Assignment", "bn": "টিম ও সদস্য নির্বাচন" },
+          "content": {
+            "en": "Select the Target Team from your managed teams. You can either assign a Responsible Member immediately or leave it unassigned (PENDING).",
+            "bn": "আপনার টিমগুলোর মধ্য থেকে সংশ্লিষ্ট টিম সিলেক্ট করুন। চাইলে তাৎক্ষণিকভাবে কোনো সদস্যকে নির্বাচন করতে পারেন অথবা খালি রাখতে পারেন।"
+          }
+        },
+        {
+          "step": 4,
+          "title": { "en": "Priority & Deadline", "bn": "অগ্রাধিকার ও সময়সীমা" },
+          "content": {
+            "en": "Select Priority: LOW (routine), MEDIUM (normal), HIGH (time-sensitive), or URGENT (critical blocker). Set the Due Date & Time using the interactive picker.",
+            "bn": "অগ্রাধিকার নির্বাচন করুন: LOW (সাধারণ), MEDIUM (স্বাভাবিক), HIGH (গুরুত্বপূর্ণ) বা URGENT (জরুরি)। ডেট-টাইম পিকার ব্যবহার করে জমাদানের শেষ সময় নির্ধারণ করুন।"
+          }
+        },
+        {
+          "step": 5,
+          "title": {
+            "en": "Self-Claim & Recurrence Policies",
+            "bn": "সেলফ-ক্লেইম ও পুনরাবৃত্তির নিয়ম"
+          },
+          "content": {
+            "en": "Enable 'Allow Self-Claim' if you want unassigned team members to claim the task themselves. If the task is recurring (WEEKLY or MONTHLY), an assigned responsible member is required and self-claim is automatically disabled.",
+            "bn": "টিমের সদস্যরা যাতে নিজে কাজ ক্লেইম করতে পারে সেজন্য 'Allow Self-Claim' চালু করতে পারেন। টাস্কটি যদি পুনরাবৃত্তিমূলক (সাপ্তাহিক বা মাসিক) হয়, তবে দায়িত্বপ্রাপ্ত সদস্য বাধ্যতামূলক এবং সেলফ-ক্লেইম বন্ধ থাকবে।"
+          }
+        },
+        {
+          "step": 6,
+          "title": { "en": "Submit Creation", "bn": "টাস্ক সম্পন্ন ও সেভ" },
+          "content": {
+            "en": "Click 'Create Task'. You are redirected to the Task Details page where you can upload initial attachments or adjust assignments.",
+            "bn": "'Create Task' বাটনে ক্লিক করুন। টাস্কটি তৈরি হয়ে আপনাকে সরাসরি টাস্কের বিস্তারিত পেইজে নিয়ে যাবে।"
+          }
+        }
+      ]
+    },
+    "submissionReview": {
+      "title": {
+        "en": "The Submission Review & Approval Workflow",
+        "bn": "কাজ পর্যালোচনা ও অনুমোদন প্রক্রিয়া (Review & Approval)"
+      },
+      "overview": {
+        "en": "As an Admin, reviewing member submissions is one of your most vital responsibilities. When a member submits deliverables, the task status becomes 'SUBMITTED' (or 'RESUBMITTED').",
+        "bn": "টিম মেম্বারদের জমাকৃত কাজ নিখুঁতভাবে যাচাই ও অনুমোদন করা অ্যাডমিনের অন্যতম প্রধান দায়িত্ব। মেম্বার কাজ জমা দিলে স্ট্যাটাস 'SUBMITTED' বা 'RESUBMITTED' হয়ে যায়।"
+      },
+      "steps": [
+        {
+          "step": 1,
+          "action": { "en": "Locate Submitted Task", "bn": "জমাকৃত টাস্ক খুঁজে নেওয়া" },
+          "detail": {
+            "en": "From the Dashboard Review Queue or /tasks (filter by status 'SUBMITTED' or 'RESUBMITTED'), open the task.",
+            "bn": "ড্যাশবোর্ডের রিভিউ কিউ অথবা /tasks পেইজে গিয়ে 'SUBMITTED' বা 'RESUBMITTED' ফিল্টার দিয়ে টাস্কটি ওপেন করুন।"
+          }
+        },
+        {
+          "step": 2,
+          "action": { "en": "Inspect Submission & Files", "bn": "জমাকৃত বিবরণ ও ফাইলসমূহ যাচাই" },
+          "detail": {
+            "en": "In Task Details, switch to the 'Submissions' tab. Read the member's submission notes and version number. Click attached files to inspect them in the built-in File Preview Modal (zoom/rotate/view inline) or download them.",
+            "bn": "টাস্কের 'Submissions' ট্যাবে যান। মেম্বারের লেখা নোট এবং ভার্সন নম্বর দেখুন। সংযুক্ত ফাইলগুলোতে ক্লিক করে বিল্ট-ইন প্রিভিউয়ারে দেখে নিন অথবা ডাউনলোড করে পরীক্ষা করুন।"
+          }
+        },
+        {
+          "step": 3,
+          "action": { "en": "Take Review Action", "bn": "অনুমোদন বা রিভিশনের সিদ্ধান্ত গ্রহণ" },
+          "detail": {
+            "en": "Click the 'Review Submission' button to open the decision dialog:",
+            "bn": "'Review Submission' বাটনে ক্লিক করে সিদ্ধান্ত গ্রহণের ডায়ালগ ওপেন করুন:"
+          },
+          "options": [
+            {
+              "decision": "APPROVE",
+              "actionName": {
+                "en": "Option A: Approve Work",
+                "bn": "বিকল্প ক: কাজ অনুমোদন (Approve)"
+              },
+              "explanation": {
+                "en": "Select 'Approve'. You may optionally enter praise or closing feedback. Submitting approval transitions the task to 'COMPLETED' and records the completion timestamp.",
+                "bn": "'Approve' সিলেক্ট করুন। চাইলে প্রশংসাসূচক বা সমাপ্তি মন্তব্য লিখতে পারেন। সাবমিট করলে টাস্কটির স্ট্যাটাস চূড়ান্তভাবে 'COMPLETED' হয়ে যাবে।"
+              }
+            },
+            {
+              "decision": "REQUEST_REVISION",
+              "actionName": {
+                "en": "Option B: Request Revision",
+                "bn": "বিকল্প খ: সংশোধনের নির্দেশ (Request Revision)"
+              },
+              "explanation": {
+                "en": "Select 'Request Revision'. In the feedback text area, provide clear, actionable instructions explaining exactly what must be fixed or re-done (FEEDBACK IS MANDATORY). The task status transitions to 'REVISION_REQUIRED' and alerts the assigned member.",
+                "bn": "'Request Revision' সিলেক্ট করুন। ফিডব্যাক বক্সে স্পষ্টভাবে লিখে দিন কী কী পরিবর্তন বা সংশোধন করতে হবে (ফিডব্যাক দেওয়া বাধ্যতামূলক)। টাস্কটির স্ট্যাটাস 'REVISION_REQUIRED' হয়ে যাবে এবং মেম্বারের কাছে সতর্কতা যাবে।"
+              }
+            }
+          ]
+        },
+        {
+          "step": 4,
+          "action": { "en": "Re-Reviewing Resubmissions", "bn": "সংশোধিত কাজ পুনরায় পর্যালোচনা" },
+          "detail": {
+            "en": "When the member updates their work and resubmits, a new immutable version (e.g. Version 2) is created with status 'RESUBMITTED'. Repeat the review steps above to approve or request further adjustments.",
+            "bn": "মেম্বার কাজ সংশোধন করে আবার জমা দিলে নতুন ভার্সনসহ (Version 2) স্ট্যাটাস 'RESUBMITTED' হবে। আগের মতোই পরীক্ষা করে চূড়ান্ত অনুমোদন দিন।"
+          }
+        }
+      ]
+    },
+    "attachmentManagement": {
+      "title": { "en": "Task Attachment Control", "bn": "টাস্ক অ্যাটাচমেন্ট ব্যবস্থাপনা" },
+      "rules": {
+        "en": "Admins can upload supporting files and delete any attachment on tasks that they own or created, provided the task is in an editable state (PENDING or ASSIGNED before work has started, and distribution has not yet been SENT).",
+        "bn": "অ্যাডমিনরা তাদের তৈরি করা বা তাদের অধীনে থাকা টাস্কে ফাইল আপলোড করতে পারেন এবং যেকোনো অ্যাটাচমেন্ট ডিলিট করতে পারেন, যদি টাস্কটি সম্পাদনাযোগ্য অবস্থায় থাকে (PENDING অথবা কাজ শুরুর পূর্বের ASSIGNED অবস্থায়, এবং নোটিফিকেশন পাঠানো না হয়ে থাকলে)।"
+      }
+    },
+    "inventory": {
+      "title": { "en": "Team Inventory & Asset Allocation", "bn": "টিম ইনভেন্টরি ও সম্পদ বরাদ্দ" },
+      "capabilities": [
+        {
+          "action": { "en": "Stock In / Stock Out", "bn": "স্টক ইন / স্টক আউট" },
+          "description": {
+            "en": "Receive incoming supplies or issue consumable non-returnable materials to team members.",
+            "bn": "নতুন মালামাল গ্রহণ করা অথবা ফেরতযোগ্য নয় এমন ভোগ্যপণ্য মেম্বারদের কাছে সরবরাহ করা।"
+          }
+        },
+        {
+          "action": { "en": "Asset Assignment", "bn": "সম্পদ বা ইকুইপমেন্ট বরাদ্দ" },
+          "description": {
+            "en": "Assign returnable assets (laptops, tools, hardware) to specific members. Track outstanding items.",
+            "bn": "ফেরতযোগ্য সম্পদ (ল্যাপটপ, যন্ত্রাংশ) নির্দিষ্ট মেম্বারের নামে বরাদ্দ দেওয়া এবং কার কাছে কী আছে তা ট্র্যাক করা।"
+          }
+        },
+        {
+          "action": { "en": "Process Returns", "bn": "মালামাল ফেরত গ্রহণ" },
+          "description": {
+            "en": "When a member returns assigned equipment, record the returned quantity to restore available stock.",
+            "bn": "মেম্বার বরাদ্দকৃত সম্পদ ফেরত দিলে তা সিস্টেমে এন্ট্রি করে পুনরায় স্টকে যুক্ত করা।"
+          }
+        }
+      ]
+    }
+  },
+  "rules": {
+    "en": [
+      "Admins can only create and manage tasks within their assigned teams (teamIds).",
+      "Admins cannot review submissions without selecting an action (Approve or Request Revision).",
+      "Revision feedback is strictly required when selecting 'REQUEST_REVISION'.",
+      "Self-claim cannot be enabled on tasks with active recurrence or an existing responsible assignee.",
+      "Task attachments cannot be modified once a task is IN_PROGRESS or distribution is SENT."
+    ],
+    "bn": [
+      "অ্যাডমিনরা কেবল তাদের দায়িত্বপ্রাপ্ত টিমের (teamIds) ভেতরেই টাস্ক তৈরি ও পরিচালনা করতে পারেন।",
+      "অ্যাকশন (Approve বা Request Revision) নির্বাচন না করে সাবমিশন রিভিউ করা যাবে না।",
+      "'REQUEST_REVISION' সিলেক্ট করলে কী সংশোধন করতে হবে তার ফিডব্যাক লেখা বাধ্যতামূলক।",
+      "পুনরাবৃত্তিমূলক (Recurring) টাস্কে অথবা ইতিমধ্যে দায়িত্বপ্রাপ্ত মেম্বার থাকলে সেলফ-ক্লেইম চালু করা যায় না।",
+      "টাস্ক 'IN_PROGRESS' হয়ে গেলে কিংবা নোটিফিকেশন সেন্ড হয়ে গেলে অ্যাটাচমেন্ট আর মুছে ফেলা বা যুক্ত করা যায় না।"
+    ]
+  }
+}

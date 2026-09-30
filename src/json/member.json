@@ -1,0 +1,289 @@
+{
+  "role": "MEMBER",
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2026-09-30",
+    "targetAudience": {
+      "en": "Team Member / Individual Contributor / Employee",
+      "bn": "টিম মেম্বার / ব্যক্তিগত অবদানকারী / কর্মী"
+    }
+  },
+  "title": {
+    "en": "Operix Member User Guide",
+    "bn": "অপারেক্স মেম্বার ব্যবহারকারী নির্দেশিকা"
+  },
+  "description": {
+    "en": "Complete step-by-step user guide for Team Members in Operix, covering authentication, dashboard overview, task self-claiming, starting work, uploading attachments, submitting deliverables, and handling revision requests.",
+    "bn": "অপারেক্স-এ টিম মেম্বারদের জন্য সম্পূর্ণ ধাপে ধাপে নির্দেশিকা, যার মধ্যে রয়েছে লগইন, ড্যাশবোর্ড পরিচিতি, টাস্ক সেলফ-ক্লেইম (নিজে নেওয়া), কাজ শুরু করা, অ্যাটাচমেন্ট আপলোড, কাজ সাবমিট করা এবং রিভিশন রিকোয়েস্ট পরিচালনা।"
+  },
+  "scope": {
+    "en": "Scoped to the assigned team (teamId). Members can view and execute tasks within their team, view team documents and inventory, and manage their personal workload.",
+    "bn": "নির্ধারিত দলের (teamId) মধ্যে সীমাবদ্ধ। মেম্বাররা তাদের দলের ভেতরের টাস্কগুলো দেখতে ও সম্পন্ন করতে পারেন, দলের ডকুমেন্টস এবং ইনভেন্টরি দেখতে পারেন এবং তাদের ব্যক্তিগত কাজের চাপ পরিচালনা করতে পারেন।"
+  },
+  "navigation": {
+    "accessiblePages": [
+      {
+        "id": "dashboard",
+        "route": "/dashboard",
+        "name": { "en": "Dashboard", "bn": "ড্যাশবোর্ড" },
+        "description": {
+          "en": "Personal workspace overview, active tasks, revision alerts, and performance trends.",
+          "bn": "ব্যক্তিগত কাজের সংক্ষিপ্ত বিবরণ, চলতি টাস্ক, রিভিশন সতর্কতা এবং পারফরম্যান্স ট্রেন্ড।"
+        }
+      },
+      {
+        "id": "tasks",
+        "route": "/tasks",
+        "name": { "en": "Tasks", "bn": "টাস্ক তালিকা" },
+        "description": {
+          "en": "List of tasks assigned to you or open for self-claiming within your team.",
+          "bn": "আপনার দায়িত্বে থাকা বা আপনার টিমে নিজে ক্লেইম করার জন্য উন্মুক্ত টাস্কের তালিকা।"
+        }
+      },
+      {
+        "id": "kpi",
+        "route": "/kpi",
+        "name": { "en": "KPIs", "bn": "কেপিআই" },
+        "description": {
+          "en": "Key performance indicators and personal completion efficiency metrics.",
+          "bn": "কাজের মূল কর্মক্ষমতা নির্দেশক এবং ব্যক্তিগত কাজ সম্পন্নের দক্ষতা মেট্রিক।"
+        }
+      },
+      {
+        "id": "documents",
+        "route": "/documents",
+        "name": { "en": "Documents", "bn": "ডকুমেন্টস" },
+        "description": {
+          "en": "Company and team document library for policies, templates, and reference materials.",
+          "bn": "কোম্পানি ও টিমের নীতিমালা, টেমপ্লেট এবং প্রয়োজনীয় রেফারেন্স নথিপত্র।"
+        }
+      },
+      {
+        "id": "inventory",
+        "route": "/inventory",
+        "name": { "en": "Inventory", "bn": "ইনভেন্টরি" },
+        "description": {
+          "en": "View team inventory items, assigned assets, and return status.",
+          "bn": "টিমের মালামাল, আপনাকে বরাদ্দকৃত সম্পদ এবং ফেরতের স্ট্যাটাস দেখুন।"
+        }
+      },
+      {
+        "id": "history",
+        "route": "/activity",
+        "name": { "en": "Activity Feed", "bn": "অ্যাক্টিভিটি ফিড" },
+        "description": {
+          "en": "Chronological audit trail of team events and task status updates.",
+          "bn": "টিমের বিভিন্ন কার্যক্রম ও টাস্কের স্ট্যাটাস পরিবর্তনের সময়ানুক্রমিক তালিকা।"
+        }
+      }
+    ],
+    "restrictedPages": [
+      {
+        "route": "/members",
+        "reason": {
+          "en": "Member management is restricted to Admins and Super Admins.",
+          "bn": "মেম্বার পরিচালনা কেবল অ্যাডমিন এবং সুপার অ্যাডমিনদের জন্য সীমাবদ্ধ।"
+        }
+      },
+      {
+        "route": "/teams",
+        "reason": {
+          "en": "Team management and roster assignment are restricted to Admins and Super Admins.",
+          "bn": "টিম তৈরি ও দলভুক্তকরণ কেবল অ্যাডমিন এবং সুপার অ্যাডমিনদের জন্য সীমাবদ্ধ।"
+        }
+      },
+      {
+        "route": "/admins",
+        "reason": {
+          "en": "Admin roster and system permissions are restricted to Super Admins.",
+          "bn": "অ্যাডমিন তালিকা ও সিস্টেম অনুমতি কেবল সুপার অ্যাডমিনদের জন্য সীমাবদ্ধ।"
+        }
+      },
+      {
+        "route": "/reports",
+        "reason": {
+          "en": "Management and operational reports are restricted to Admins and Super Admins.",
+          "bn": "ম্যানেজমেন্ট ও অপারেশনাল রিপোর্ট কেবল অ্যাডমিন এবং সুপার অ্যাডমিনদের জন্য প্রযোজ্য।"
+        }
+      },
+      {
+        "route": "/todos",
+        "reason": {
+          "en": "Management Todo list is restricted to Admins and Super Admins.",
+          "bn": "ম্যানেজমেন্ট টুডু লিস্ট কেবল অ্যাডমিন এবং সুপার অ্যাডমিনদের জন্য প্রযোজ্য।"
+        }
+      }
+    ]
+  },
+  "modules": {
+    "authentication": {
+      "title": { "en": "Account & Authentication", "bn": "অ্যাকাউন্ট ও লগইন প্রক্রিয়া" },
+      "steps": [
+        {
+          "step": 1,
+          "action": { "en": "Sign-Up Request", "bn": "সাইন-আপ রিকোয়েস্ট পাঠানো" },
+          "instruction": {
+            "en": "Go to /signup, provide your full name and organization email address, then submit the registration request.",
+            "bn": "/signup পেইজে যান, আপনার পুরো নাম এবং প্রাতিষ্ঠানিক ইমেইল দিন এবং রিকোয়েস্ট সাবমিট করুন।"
+          }
+        },
+        {
+          "step": 2,
+          "action": {
+            "en": "Account Approval & Password Setup",
+            "bn": "অ্যাকাউন্ট অনুমোদন ও পাসওয়ার্ড তৈরি"
+          },
+          "instruction": {
+            "en": "Once an administrator approves your registration and assigns your team, open the password setup link (/setup-password?token=...) sent to you and set your secure password.",
+            "bn": "অ্যাডমিন আপনার রিকোয়েস্ট অনুমোদন করে টিম নির্ধারণ করার পর, ইমেইলে পাওয়া পাসওয়ার্ড সেটআপ লিংকে (/setup-password?token=...) গিয়ে নতুন গোপন পাসওয়ার্ড সেট করুন।"
+          }
+        },
+        {
+          "step": 3,
+          "action": { "en": "Sign In", "bn": "সাইন ইন / লগইন" },
+          "instruction": {
+            "en": "Navigate to /login, enter your email and password. Optionally check 'Remember Me' to preserve your session. Click 'Sign In' to enter your Member Dashboard.",
+            "bn": "/login পেইজে গিয়ে ইমেইল ও পাসওয়ার্ড দিন। সেশন ধরে রাখতে চাইলে 'Remember Me' চেক করুন এবং 'Sign In' বাটনে ক্লিক করে ড্যাশবোর্ডে প্রবেশ করুন।"
+          }
+        },
+        {
+          "step": 4,
+          "action": { "en": "Theme & Sign Out", "bn": "থিম পরিবর্তন ও সাইন আউট" },
+          "instruction": {
+            "en": "Toggle dark/light mode using the theme switch in the top navbar. To sign out safely, click your profile icon at the top right or the logout button in the sidebar footer.",
+            "bn": "টপ ন্যাভবারের থিম বাটনে ক্লিক করে ডার্ক বা লাইট মোড সিলেক্ট করুন। নিরাপদে লগআউট করতে ডানদিকের প্রোফাইল মেনু অথবা সাইডবারের নিচের লগআউট বাটনে ক্লিক করুন।"
+          }
+        }
+      ]
+    },
+    "dashboard": {
+      "title": { "en": "Member Dashboard Overview", "bn": "মেম্বার ড্যাশবোর্ড পরিচিতি" },
+      "features": [
+        {
+          "name": { "en": "My Active Tasks KPI", "bn": "আমার সক্রিয় টাস্কসমূহ" },
+          "description": {
+            "en": "Displays total tasks assigned to you, completed count, overdue count, and tasks due soon.",
+            "bn": "আপনাকে দেওয়া মোট টাস্কের সংখ্যা, সম্পন্ন হওয়া টাস্ক, মেয়াদোত্তীর্ণ টাস্ক এবং দ্রুত জমা দেওয়ার ডেডলাইন আছে এমন টাস্ক দেখায়।"
+          }
+        },
+        {
+          "name": { "en": "Task Quality / Revisions Card", "bn": "কাজের মান ও রিভিশন সতর্কতা" },
+          "description": {
+            "en": "Highlights tasks flagged with 'REVISION_REQUIRED', indicating an Admin asked for modifications on your submission.",
+            "bn": "'REVISION_REQUIRED' চিহ্নিত টাস্কগুলো আলাদাভাবে হাইলাইট করে, যাতে আপনি অ্যাডমিনের চাওয়া পরিবর্তনগুলো দ্রুত দেখতে পারেন।"
+          }
+        },
+        {
+          "name": { "en": "Completion Trends Chart", "bn": "কাজ সম্পন্নের গ্রাফ ও ট্রেন্ড" },
+          "description": {
+            "en": "Visual representation of your task completion velocity over the last 7, 14, or 30 days.",
+            "bn": "গত ৭, ১৪ বা ৩০ দিনে আপনার কাজ সম্পন্নের গতির একটি ভিজ্যুয়াল গ্রাফ।"
+          }
+        },
+        {
+          "name": { "en": "Recent Notifications & Feed", "bn": "সাম্প্রতিক নোটিফিকেশন" },
+          "description": {
+            "en": "Quick stream of newly assigned tasks, review feedback, and system announcements.",
+            "bn": "নতুন অ্যাসাইন করা কাজ, পর্যালোচনার ফিডব্যাক এবং নোটিফিকেশনের তাৎক্ষণিক তালিকা।"
+          }
+        }
+      ]
+    },
+    "taskExecution": {
+      "title": {
+        "en": "Task Execution Lifecycle for Members",
+        "bn": "মেম্বারদের টাস্ক সম্পন্ন করার সম্পূর্ণ ধাপসমূহ"
+      },
+      "steps": [
+        {
+          "phase": "FIND_OR_CLAIM",
+          "title": {
+            "en": "1. Finding or Claiming a Task",
+            "bn": "১. টাস্ক খুঁজে পাওয়া বা ক্লেইম করা"
+          },
+          "instruction": {
+            "en": "Open /tasks. If a task has been directly assigned to you, its status will be 'ASSIGNED'. If an unassigned task has 'Self-Claim' enabled (status 'PENDING', no responsible user, no recurrence), click on the task and press the 'Claim Task' button to assign it to yourself.",
+            "bn": "/tasks পেইজ খুলুন। কোনো টাস্ক আপনাকে সরাসরি দেওয়া হলে তার স্ট্যাটাস থাকবে 'ASSIGNED'। আর যদি কোনো খালি টাস্কে 'Self-Claim' চালু থাকে (PENDING স্ট্যাটাস, কেউ অ্যাসাইন করা নেই, রিকারিং নয়), তবে টাস্কের ভেতরে ঢুকে 'Claim Task' বাটনে চাপ দিয়ে কাজটি নিজের নামে গ্রহণ করুন।"
+          }
+        },
+        {
+          "phase": "START_TASK",
+          "title": { "en": "2. Starting Work", "bn": "২. কাজ শুরু করা" },
+          "instruction": {
+            "en": "When ready to begin working on an 'ASSIGNED' task, click the 'Start Task' button in the header. The task transitions to 'IN_PROGRESS' and records your start timestamp.",
+            "bn": "'ASSIGNED' টাস্কে কাজ শুরু করার প্রস্তুতি সম্পন্ন হলে হেডার থেকে 'Start Task' বাটনে ক্লিক করুন। টাস্কটির স্ট্যাটাস 'IN_PROGRESS' হয়ে যাবে এবং শুরুর সময় রেকর্ড হবে।"
+          }
+        },
+        {
+          "phase": "TASK_ATTACHMENTS",
+          "title": {
+            "en": "3. Managing Task Attachments",
+            "bn": "৩. টাস্কের অ্যাটাচমেন্ট পরিচালনা"
+          },
+          "instruction": {
+            "en": "While the task is in PENDING or ASSIGNED state (before starting, and before distribution sent), go to the 'Attachments' tab. You can upload reference files. You can delete only the files that you personally uploaded.",
+            "bn": "টাস্কটি PENDING বা ASSIGNED অবস্থায় থাকা পর্যন্ত (কাজ শুরু করার আগে) 'Attachments' ট্যাবে গিয়ে ফাইল আপলোড করতে পারেন। আপনি নিজে যেসব ফাইল আপলোড করেছেন কেবল সেগুলোই মুছে ফেলতে পারবেন।"
+          }
+        },
+        {
+          "phase": "SUBMISSION",
+          "title": {
+            "en": "4. Submitting Deliverables (Review Required Mode)",
+            "bn": "৪. কাজ সাবমিট করা (রিভিউ মোড)"
+          },
+          "instruction": {
+            "en": "Once your work is complete on an 'IN_PROGRESS' task with REVIEW_REQUIRED mode: 1. Go to the 'Submissions' tab. 2. Click 'Submit Work'. 3. In the dialog, enter your Submission Text (details of work performed, summary, links). 4. Attach deliverable files (documents, images, PDFs). 5. Click 'Submit Work'. The submission becomes an immutable Version 1, and the task status updates to 'SUBMITTED'.",
+            "bn": "'IN_PROGRESS' অবস্থায় কাজ শেষ হলে: ১. 'Submissions' ট্যাবে যান। ২. 'Submit Work' বাটনে ক্লিক করুন। ৩. ডায়ালগে 'Submission Text'-এ কাজের বিস্তারিত বিবরণ বা লিংক লিখুন। ৪. প্রমাণ বা আউটপুট ফাইল (ডকুমেন্ট, ছবি, পিডিএফ) যুক্ত করুন। ৫. 'Submit Work'-এ ক্লিক করুন। এটি অপরিবর্তনযোগ্য 'Version 1' হিসেবে সেভ হবে এবং টাস্কের স্ট্যাটাস 'SUBMITTED' হবে।"
+          }
+        },
+        {
+          "phase": "DIRECT_COMPLETION",
+          "title": {
+            "en": "Alternative: Direct Completion Mode",
+            "bn": "বিকল্প: সরাসরি কাজ সম্পন্ন করা (Direct Mode)"
+          },
+          "instruction": {
+            "en": "If a task was created with DIRECT completion mode, no formal submission is required. While 'IN_PROGRESS', click 'Complete Task', optionally enter a completion note, and the task transitions straight to 'COMPLETED'.",
+            "bn": "যদি কোনো টাস্ক 'DIRECT' মোডে তৈরি হয়ে থাকে, তবে কোনো ফাইল সাবমিশনের প্রয়োজন নেই। 'IN_PROGRESS' থাকা অবস্থায় 'Complete Task' বাটনে ক্লিক করে ঐচ্ছিক নোট দিয়ে কাজটি সরাসরি 'COMPLETED' করতে পারেন।"
+          }
+        },
+        {
+          "phase": "REVISIONS",
+          "title": {
+            "en": "5. Handling Revision Requests",
+            "bn": "৫. রিভিশন বা সংশোধনের অনুরোধ এলে করণীয়"
+          },
+          "instruction": {
+            "en": "If an Admin reviews your submission and requests changes, the task moves to 'REVISION_REQUIRED'. Open the Submissions tab to read the Admin's feedback. Modify your deliverables as instructed, click 'Resubmit Work', write an updated summary of the changes made, attach the revised files, and submit. The task transitions to 'RESUBMITTED' as a new Version for admin approval.",
+            "bn": "অ্যাডমিন যদি আপনার কাজে কোনো পরিবর্তন চান, তবে টাস্কটি 'REVISION_REQUIRED' হবে। Submissions ট্যাবে গিয়ে অ্যাডমিনের ফিডব্যাক পড়ুন। নির্দেশনা অনুযায়ী কাজ সংশোধন করে 'Resubmit Work' বাটনে ক্লিক করুন। কী পরিবর্তন করেছেন তা লিখে নতুন ফাইলসহ সাবমিট করুন। টাস্কটি নতুন ভার্সনসহ 'RESUBMITTED' হবে।"
+          }
+        }
+      ]
+    },
+    "fileHandling": {
+      "title": { "en": "File Previews & Downloads", "bn": "ফাইল প্রিভিউ ও ডাউনলোড সুবিধা" },
+      "details": {
+        "en": "Click on any attachment or submission file to view it in the built-in File Preview Modal. You can view images and documents with zoom and rotate controls, or click Download to download the file directly to your device with sanitized filenames.",
+        "bn": "যেকোনো ফাইল বা অ্যাটাচমেন্টে ক্লিক করলে তা বিল্ট-ইন ফাইল প্রিভিউ মডালে ওপেন হবে। সেখানে জুম ও রোটেট করে দেখা যাবে এবং সরাসরি ডিভাইসে ডাউনলোড করা যাবে।"
+      }
+    }
+  },
+  "rules": {
+    "en": [
+      "You cannot start a task unless it is in 'ASSIGNED' status and you are the designated responsible member.",
+      "You cannot submit work unless the task is in 'IN_PROGRESS' status.",
+      "Submission text is mandatory for all submissions and resubmissions.",
+      "Once a submission is created, its files and text are immutable; revisions require creating a new submission version.",
+      "You can only delete attachments that were uploaded by your own user ID.",
+      "Task attachments cannot be modified once the task has started or distribution has been sent."
+    ],
+    "bn": [
+      "টাস্ক 'ASSIGNED' অবস্থায় না থাকলে এবং আপনি দায়িত্বপ্রাপ্ত না হলে কাজ শুরু ('Start Task') করতে পারবেন না।",
+      "টাস্ক 'IN_PROGRESS' অবস্থায় না থাকলে কাজ সাবমিট করা যাবে না।",
+      "যেকোনো সাবমিশন বা রি-সাবমিশনে কাজের বিবরণ (Submission Text) দেওয়া বাধ্যতামূলক।",
+      "একবার সাবমিট হয়ে গেলে সেই ভার্সন পরিবর্তন করা যায় না; কোনো সংশোধন করতে হলে নতুন ভার্সনে 'Resubmit' করতে হবে।",
+      "আপনি কেবল নিজের আপলোড করা অ্যাটাচমেন্ট ফাইল ডিলিট করতে পারবেন, অন্যের ফাইল নয়।",
+      "কাজ শুরু হয়ে গেলে অথবা নোটিফিকেশন ডিস্ট্রিবিউট হয়ে গেলে টাস্কের মূল অ্যাটাচমেন্ট আর পরিবর্তন করা যায় না।"
+    ]
+  }
+}

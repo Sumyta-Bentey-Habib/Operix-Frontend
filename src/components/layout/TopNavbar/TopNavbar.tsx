@@ -22,6 +22,7 @@ import {
   DocumentsIcon,
   TodoIcon,
   HistoryIcon,
+  FileDocIcon,
 } from "@/components/icons";
 import { ThemeToggle } from "../ThemeToggle";
 import {
@@ -331,6 +332,15 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
           <SearchIcon size={18} />
         </button>
 
+        <Link
+          href="/guide"
+          className={styles.iconButton}
+          aria-label="User Guide"
+          title="User Guide"
+        >
+          <FileDocIcon size={18} />
+        </Link>
+
         <NotificationBell
           ariaLabel={APP_STRINGS.ariaLabels.notifications}
           title={APP_STRINGS.actions.notifications}
@@ -378,6 +388,16 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
                 <div className={styles.dropdownEmail}>{currentUser.email}</div>
                 <span className={styles.dropdownRole}>{currentUser.roleLabel}</span>
               </div>
+
+              <Link
+                href="/guide"
+                className={styles.dropdownItem}
+                onClick={() => setIsMenuOpen(false)}
+                style={{ textDecoration: "none" }}
+              >
+                <FileDocIcon size={16} />
+                <span>User Guide</span>
+              </Link>
 
               <button
                 type="button"
