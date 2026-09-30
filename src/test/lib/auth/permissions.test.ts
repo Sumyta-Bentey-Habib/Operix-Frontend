@@ -147,12 +147,39 @@ describe("Task permissions", () => {
   });
 
   describe("canDirectCompleteTask", () => {
-    it("allows direct completion for DIRECT mode in IN_PROGRESS status", () => {
+    it("allows direct completion for TEAM tasks in DIRECT mode for ADMIN and SUPER_ADMIN", () => {
       const task = {
         ...makeTask("IN_PROGRESS"),
+        scope: "TEAM" as const,
         completionMode: "DIRECT" as const,
       };
       expect(canDirectCompleteTask(makeViewer("ADMIN"), task)).toBe(true);
+      expect(canDirectCompleteTask(makeViewer("SUPER_ADMIN"), task)).toBe(true);
+    });
+
+    it("blocks direct completion of GLOBAL tasks for ADMIN, but allows for SUPER_ADMIN", () => {
+      const globalTask = {
+        ...makeTask("IN_PROGRESS"),
+        scope: "GLOBAL" as const,
+        completionMode: "DIRECT" as const,
+      };
+      expect(canDirectCompleteTask(makeViewer("ADMIN"), globalTask)).toBe(false);
+      expect(canDirectCompleteTask(makeViewer("SUPER_ADMIN"), globalTask)).toBe(true);
+    });
+
+    it("allows assigned MEMBER to direct complete, but blocks unassigned MEMBER", () => {
+      const task = {
+        ...makeTask("IN_PROGRESS"),
+        completionMode: "DIRECT" as const,
+        responsible: { id: "user-test", name: "Assigned Member", role: "MEMBER" },
+      };
+      expect(canDirectCompleteTask(makeViewer("MEMBER"), task)).toBe(true);
+
+      const unassignedTask = {
+        ...task,
+        responsible: { id: "other-user", name: "Other Member", role: "MEMBER" },
+      };
+      expect(canDirectCompleteTask(makeViewer("MEMBER"), unassignedTask)).toBe(false);
     });
 
     it("blocks direct completion when completionMode is not DIRECT", () => {

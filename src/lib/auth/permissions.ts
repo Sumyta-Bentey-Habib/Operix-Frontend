@@ -78,12 +78,35 @@ export const canStartTask = (viewer: OperixViewer | null, task: Task): boolean =
   task.status === "ASSIGNED" &&
   task.responsible?.id === viewer.userId;
 
-export const canDirectCompleteTask = (viewer: OperixViewer | null, task: Task): boolean =>
-  task.completionMode === "DIRECT" &&
-  task.status === "IN_PROGRESS" &&
-  (viewer?.role === "SUPER_ADMIN" ||
-    viewer?.role === "ADMIN" ||
-    (viewer?.role === "MEMBER" && task.responsible?.id === viewer.userId));
+export const canDirectCompleteTask = (viewer: OperixViewer | null, task: Task): boolean => {
+  if (!viewer) return false;
+  if (task.completionMode !== "DIRECT" || task.status !== "IN_PROGRESS") {
+    return false;
+  }
+
+  if (task.scope === "GLOBAL") {
+    return (
+      viewer.role === "SUPER_ADMIN" ||
+      (viewer.role === "MEMBER" && task.responsible?.id === viewer.userId)
+    );
+  }
+
+
+  if (viewer.role === "SUPER_ADMIN") return true;
+
+  if (viewer.role === "ADMIN") {
+    if (viewer.scope.type === "ADMIN" && task.teamId) {
+      return viewer.scope.teamIds.includes(task.teamId);
+    }
+    return true;
+  }
+
+  if (viewer.role === "MEMBER") {
+    return Boolean(task.responsible?.id && task.responsible.id === viewer.userId);
+  }
+
+  return false;
+};
 
 export const canToggleSelfClaim = (viewer: OperixViewer | null, task?: Task): boolean => {
   if (!viewer) return false;
