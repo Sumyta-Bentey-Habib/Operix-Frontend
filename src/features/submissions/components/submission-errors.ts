@@ -15,6 +15,10 @@ const MESSAGES: Record<string, Omit<SubmissionErrorView, "code">> = {
     title: "Submission unavailable",
     message: "This Task is not currently ready for submission.",
   },
+  TASK_DIRECT_COMPLETION_REQUIRED: {
+    title: "Direct completion required",
+    message: "This Task requires direct completion and does not accept submissions.",
+  },
   REVIEW_NOT_ALLOWED: {
     title: "Review unavailable",
     message: "This Submission can no longer be reviewed. Refresh and try again.",
@@ -86,4 +90,6 @@ export const shouldReconcileWorkflowAfterError = (error: unknown): boolean =>
   isOperixApiError(error) &&
   (error.code === "NETWORK_ERROR" ||
     error.code === "CONCURRENT_MODIFICATION" ||
-    error.code === "REVIEW_NOT_ALLOWED");
+    error.code === "REVIEW_NOT_ALLOWED" ||
+    error.code === "SUBMISSION_NOT_ALLOWED" ||
+    error.code === "TASK_DIRECT_COMPLETION_REQUIRED");

@@ -47,6 +47,20 @@ export const TaskSubmissions = ({ task, onWorkflowRefresh }: TaskSubmissionsProp
 
   const handleSubmit = async (input: CreateSubmissionInput): Promise<boolean> => {
     if (submissionPending) return false;
+
+    const isEligible =
+      submissionDialogMode === "submit"
+        ? canSubmitTask(viewer, task)
+        : submissionDialogMode === "resubmit"
+          ? canResubmitTask(viewer, task)
+          : false;
+
+    if (!isEligible) {
+      setSubmissionError("This task is not currently eligible for submission.");
+      await refreshWorkflow();
+      return false;
+    }
+
     setSubmissionPending(true);
     setSubmissionError(null);
 

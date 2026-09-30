@@ -113,7 +113,7 @@ export const TaskTable = ({ tasks, viewer, onAssign, onClaim, onStart }: TaskTab
                 <Link className={styles.button} href={`/tasks/${task.id}`}>
                   {TASK_TABLE_STRINGS.actions.view}
                 </Link>
-                {canAssignTask(viewer) && task.status === "PENDING" && (
+                {canAssignTask(viewer, task) && task.status === "PENDING" && (
                   <button
                     type="button"
                     className={styles.button}

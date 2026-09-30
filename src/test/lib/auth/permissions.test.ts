@@ -9,6 +9,8 @@ import {
   canDirectCompleteTask,
   canManageTaskAttachments,
   canMutateTaskAttachments,
+  canResubmitTask,
+  canReviewTaskSubmission,
   canStartTask,
   canSubmitTask,
   canViewTaskCore,
@@ -23,7 +25,10 @@ const makeViewer = (role: "SUPER_ADMIN" | "ADMIN" | "MEMBER"): OperixViewer => (
   scope: role === "SUPER_ADMIN" ? { type: "GLOBAL" } : { type: "ADMIN", teamIds: ["team-1"] },
 });
 
-const makeTask = (status: Task["status"]): Task => ({
+const makeTask = (
+  status: Task["status"],
+  completionMode: Task["completionMode"] = "REVIEW_REQUIRED",
+): Task => ({
   id: "task-1",
   referenceCode: "TSK-001",
   title: "Test Task",
@@ -31,6 +36,7 @@ const makeTask = (status: Task["status"]): Task => ({
   remarks: null,
   priority: "MEDIUM",
   status,
+  completionMode,
   dueAt: null,
   startedAt: null,
   completedAt: null,
@@ -81,12 +87,24 @@ describe("Task permissions", () => {
   });
 
   describe("canAssignTask", () => {
-    it("allows ADMIN to assign tasks", () => {
-      expect(canAssignTask(makeViewer("ADMIN"))).toBe(true);
+    it("allows ADMIN to assign tasks within their team", () => {
+      const teamTask = { ...makeTask("PENDING"), scope: "TEAM" as const, teamId: "team-1" };
+      expect(canAssignTask(makeViewer("ADMIN"), teamTask)).toBe(true);
     });
 
-    it("allows SUPER_ADMIN to assign tasks", () => {
-      expect(canAssignTask(makeViewer("SUPER_ADMIN"))).toBe(true);
+    it("blocks ADMIN from assigning GLOBAL tasks or tasks from other teams", () => {
+      const globalTask = { ...makeTask("PENDING"), scope: "GLOBAL" as const, teamId: null };
+      expect(canAssignTask(makeViewer("ADMIN"), globalTask)).toBe(false);
+
+      const otherTeamTask = { ...makeTask("PENDING"), scope: "TEAM" as const, teamId: "team-other" };
+      expect(canAssignTask(makeViewer("ADMIN"), otherTeamTask)).toBe(false);
+    });
+
+    it("allows SUPER_ADMIN to assign both TEAM and GLOBAL tasks", () => {
+      const teamTask = { ...makeTask("PENDING"), scope: "TEAM" as const, teamId: "team-1" };
+      const globalTask = { ...makeTask("PENDING"), scope: "GLOBAL" as const, teamId: null };
+      expect(canAssignTask(makeViewer("SUPER_ADMIN"), teamTask)).toBe(true);
+      expect(canAssignTask(makeViewer("SUPER_ADMIN"), globalTask)).toBe(true);
     });
 
     it("blocks MEMBER from assigning tasks", () => {
@@ -157,19 +175,22 @@ describe("Task permissions", () => {
       expect(canDirectCompleteTask(makeViewer("SUPER_ADMIN"), task)).toBe(true);
     });
 
-    it("blocks direct completion of GLOBAL tasks for ADMIN, but allows for SUPER_ADMIN", () => {
+    it("blocks direct completion of GLOBAL tasks for ADMIN, but allows for SUPER_ADMIN and assigned MEMBER", () => {
       const globalTask = {
         ...makeTask("IN_PROGRESS"),
         scope: "GLOBAL" as const,
         completionMode: "DIRECT" as const,
+        responsible: { id: "user-test", name: "Assigned Member", role: "MEMBER" },
       };
       expect(canDirectCompleteTask(makeViewer("ADMIN"), globalTask)).toBe(false);
+      expect(canDirectCompleteTask(makeViewer("MEMBER"), globalTask)).toBe(true);
       expect(canDirectCompleteTask(makeViewer("SUPER_ADMIN"), globalTask)).toBe(true);
     });
 
-    it("allows assigned MEMBER to direct complete, but blocks unassigned MEMBER", () => {
+    it("allows assigned MEMBER to direct complete tasks, but blocks unassigned MEMBER", () => {
       const task = {
         ...makeTask("IN_PROGRESS"),
+        scope: "TEAM" as const,
         completionMode: "DIRECT" as const,
         responsible: { id: "user-test", name: "Assigned Member", role: "MEMBER" },
       };
@@ -177,9 +198,15 @@ describe("Task permissions", () => {
 
       const unassignedTask = {
         ...task,
-        responsible: { id: "other-user", name: "Other Member", role: "MEMBER" },
+        responsible: null,
       };
       expect(canDirectCompleteTask(makeViewer("MEMBER"), unassignedTask)).toBe(false);
+
+      const otherUserTask = {
+        ...task,
+        responsible: { id: "other-user", name: "Other Member", role: "MEMBER" },
+      };
+      expect(canDirectCompleteTask(makeViewer("MEMBER"), otherUserTask)).toBe(false);
     });
 
     it("blocks direct completion when completionMode is not DIRECT", () => {
@@ -188,6 +215,7 @@ describe("Task permissions", () => {
         completionMode: "REVIEW_REQUIRED" as const,
       };
       expect(canDirectCompleteTask(makeViewer("ADMIN"), task)).toBe(false);
+      expect(canDirectCompleteTask(makeViewer("SUPER_ADMIN"), task)).toBe(false);
     });
   });
 
@@ -369,9 +397,61 @@ describe("Task permissions", () => {
       expect(canStartTask(viewer, task)).toBe(false);
     });
 
-    it("allows MEMBER to submit IN_PROGRESS task", () => {
-      expect(canSubmitTask(makeViewer("MEMBER"), makeTask("IN_PROGRESS"))).toBe(true);
-      expect(canSubmitTask(makeViewer("SUPER_ADMIN"), makeTask("IN_PROGRESS"))).toBe(false);
+    it("evaluates canSubmitTask correctly for roles and completion modes", () => {
+      const reviewTask = makeTask("IN_PROGRESS", "REVIEW_REQUIRED");
+      const directTask = makeTask("IN_PROGRESS", "DIRECT");
+
+      // MEMBER + IN_PROGRESS + REVIEW_REQUIRED can submit
+      expect(canSubmitTask(makeViewer("MEMBER"), reviewTask)).toBe(true);
+
+      // MEMBER + IN_PROGRESS + DIRECT cannot submit
+      expect(canSubmitTask(makeViewer("MEMBER"), directTask)).toBe(false);
+
+      // Non-member roles cannot submit
+      expect(canSubmitTask(makeViewer("ADMIN"), reviewTask)).toBe(false);
+      expect(canSubmitTask(makeViewer("SUPER_ADMIN"), reviewTask)).toBe(false);
+      expect(canSubmitTask(null, reviewTask)).toBe(false);
+
+      // Non-IN_PROGRESS status cannot submit
+      expect(canSubmitTask(makeViewer("MEMBER"), makeTask("ASSIGNED", "REVIEW_REQUIRED"))).toBe(false);
+    });
+
+    it("evaluates canResubmitTask correctly for roles and completion modes", () => {
+      const reviewTask = makeTask("REVISION_REQUIRED", "REVIEW_REQUIRED");
+      const directTask = makeTask("REVISION_REQUIRED", "DIRECT");
+
+      // MEMBER + REVISION_REQUIRED + REVIEW_REQUIRED can resubmit
+      expect(canResubmitTask(makeViewer("MEMBER"), reviewTask)).toBe(true);
+
+      // MEMBER + REVISION_REQUIRED + DIRECT cannot resubmit
+      expect(canResubmitTask(makeViewer("MEMBER"), directTask)).toBe(false);
+
+      // Non-member roles cannot resubmit
+      expect(canResubmitTask(makeViewer("ADMIN"), reviewTask)).toBe(false);
+      expect(canResubmitTask(makeViewer("SUPER_ADMIN"), reviewTask)).toBe(false);
+      expect(canResubmitTask(null, reviewTask)).toBe(false);
+
+      // Non-REVISION_REQUIRED status cannot resubmit
+      expect(canResubmitTask(makeViewer("MEMBER"), makeTask("IN_PROGRESS", "REVIEW_REQUIRED"))).toBe(false);
+    });
+  });
+
+  describe("canReviewTaskSubmission", () => {
+    it("allows SUPER_ADMIN and ADMIN to review submitted and resubmitted tasks", () => {
+      const submittedTask = makeTask("SUBMITTED");
+      const resubmittedTask = makeTask("RESUBMITTED");
+
+      expect(canReviewTaskSubmission(makeViewer("SUPER_ADMIN"), submittedTask)).toBe(true);
+      expect(canReviewTaskSubmission(makeViewer("ADMIN"), submittedTask)).toBe(true);
+      expect(canReviewTaskSubmission(makeViewer("SUPER_ADMIN"), resubmittedTask)).toBe(true);
+      expect(canReviewTaskSubmission(makeViewer("ADMIN"), resubmittedTask)).toBe(true);
+
+      // Blocks MEMBER
+      expect(canReviewTaskSubmission(makeViewer("MEMBER"), submittedTask)).toBe(false);
+
+      // Blocks non-submitted statuses
+      expect(canReviewTaskSubmission(makeViewer("SUPER_ADMIN"), makeTask("IN_PROGRESS"))).toBe(false);
+      expect(canReviewTaskSubmission(makeViewer("ADMIN"), makeTask("IN_PROGRESS"))).toBe(false);
     });
   });
 

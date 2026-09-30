@@ -63,8 +63,23 @@ export const canCreateTask = (viewer: OperixViewer | null): boolean =>
 export const canCreateGlobalTask = (viewer: OperixViewer | null): boolean =>
   viewer?.role === "SUPER_ADMIN";
 
-export const canAssignTask = (viewer: OperixViewer | null): boolean =>
-  viewer?.role === "SUPER_ADMIN" || viewer?.role === "ADMIN";
+export const canAssignTask = (viewer: OperixViewer | null, task?: Task): boolean => {
+  if (!viewer) return false;
+  if (viewer.role === "SUPER_ADMIN") return true;
+  if (viewer.role !== "ADMIN") return false;
+
+  if (task) {
+    if (task.scope === "GLOBAL" || !task.teamId) {
+      return false;
+    }
+    const teamId = task.teamId ?? task.team?.id;
+    if (viewer.scope?.type === "ADMIN" && teamId) {
+      return viewer.scope.teamIds?.includes(teamId) ?? false;
+    }
+  }
+
+  return true;
+};
 
 export const canClaimTask = (viewer: OperixViewer | null, task: Task): boolean =>
   viewer?.role === "MEMBER" &&
@@ -84,25 +99,28 @@ export const canDirectCompleteTask = (viewer: OperixViewer | null, task: Task): 
     return false;
   }
 
-  if (task.scope === "GLOBAL") {
-    return (
-      viewer.role === "SUPER_ADMIN" ||
-      (viewer.role === "MEMBER" && task.responsible?.id === viewer.userId)
-    );
+  // Assigned responsible member can direct-complete their assigned DIRECT task
+  if (viewer.role === "MEMBER") {
+    return Boolean(task.responsible?.id && task.responsible.id === viewer.userId);
   }
 
-
-  if (viewer.role === "SUPER_ADMIN") return true;
-
-  if (viewer.role === "ADMIN") {
-    if (viewer.scope.type === "ADMIN" && task.teamId) {
-      return viewer.scope.teamIds.includes(task.teamId);
-    }
+  // Super Admin can complete any task directly (both GLOBAL and TEAM)
+  if (viewer.role === "SUPER_ADMIN") {
     return true;
   }
 
-  if (viewer.role === "MEMBER") {
-    return Boolean(task.responsible?.id && task.responsible.id === viewer.userId);
+  // Global tasks cannot be completed by Admins (only Super Admin or assigned Member)
+  if (task.scope === "GLOBAL") {
+    return false;
+  }
+
+  // For TEAM tasks, Admin can complete if within their assigned teams
+  if (viewer.role === "ADMIN") {
+    const teamId = task.teamId ?? task.team?.id;
+    if (viewer.scope.type === "ADMIN" && teamId) {
+      return viewer.scope.teamIds.includes(teamId);
+    }
+    return true;
   }
 
   return false;
@@ -177,13 +195,18 @@ export const canDeleteTaskAttachment = (
 
 
 export const canSubmitTask = (viewer: OperixViewer | null, task: Task): boolean =>
-  viewer?.role === "MEMBER" && task.status === "IN_PROGRESS";
+  viewer?.role === "MEMBER" &&
+  task.status === "IN_PROGRESS" &&
+  task.completionMode === "REVIEW_REQUIRED";
 
 export const canResubmitTask = (viewer: OperixViewer | null, task: Task): boolean =>
-  viewer?.role === "MEMBER" && task.status === "REVISION_REQUIRED";
+  viewer?.role === "MEMBER" &&
+  task.status === "REVISION_REQUIRED" &&
+  task.completionMode === "REVIEW_REQUIRED";
 
 export const canReviewTaskSubmission = (viewer: OperixViewer | null, task: Task): boolean =>
-  viewer?.role === "ADMIN" && (task.status === "SUBMITTED" || task.status === "RESUBMITTED");
+  (viewer?.role === "SUPER_ADMIN" || viewer?.role === "ADMIN") &&
+  (task.status === "SUBMITTED" || task.status === "RESUBMITTED");
 
 export const canFilterTasksByTeam = (viewer: OperixViewer | null): boolean =>
   viewer?.role === "SUPER_ADMIN";

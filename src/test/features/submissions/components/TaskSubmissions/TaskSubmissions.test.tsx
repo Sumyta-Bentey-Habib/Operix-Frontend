@@ -32,7 +32,10 @@ vi.mock("@/features/submissions/api/review.api", () => ({
   },
 }));
 
-const task = (status: Task["status"]): Task => ({
+const task = (
+  status: Task["status"],
+  completionMode: Task["completionMode"] = "REVIEW_REQUIRED",
+): Task => ({
   id: "task-1",
   referenceCode: "TSK-1",
   title: "Task",
@@ -40,6 +43,7 @@ const task = (status: Task["status"]): Task => ({
   remarks: null,
   priority: "HIGH",
   status,
+  completionMode,
   dueAt: null,
   startedAt: null,
   completedAt: null,
@@ -215,5 +219,143 @@ describe("TaskSubmissions", () => {
     await waitFor(() => expect(refreshWorkflow).toHaveBeenCalledTimes(1));
     expect(hookValue.refresh).toHaveBeenCalledTimes(1);
     expect(mocks.submissionCreate).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows Submit Work for REVIEW_REQUIRED IN_PROGRESS and hides for DIRECT IN_PROGRESS", () => {
+    mocks.useAuth.mockReturnValue({ viewer: viewer("MEMBER") });
+    const { rerender } = render(
+      <TaskSubmissions
+        task={task("IN_PROGRESS", "REVIEW_REQUIRED")}
+        onWorkflowRefresh={vi.fn()}
+      />,
+    );
+    expect(screen.getByRole("button", { name: "Submit Work" })).toBeInTheDocument();
+
+    rerender(
+      <TaskSubmissions
+        task={task("IN_PROGRESS", "DIRECT")}
+        onWorkflowRefresh={vi.fn()}
+      />,
+    );
+    expect(screen.queryByRole("button", { name: "Submit Work" })).not.toBeInTheDocument();
+  });
+
+  it("shows Resubmit Work for REVIEW_REQUIRED REVISION_REQUIRED and hides for DIRECT REVISION_REQUIRED", () => {
+    mocks.useAuth.mockReturnValue({ viewer: viewer("MEMBER") });
+    const { rerender } = render(
+      <TaskSubmissions
+        task={task("REVISION_REQUIRED", "REVIEW_REQUIRED")}
+        onWorkflowRefresh={vi.fn()}
+      />,
+    );
+    expect(screen.getByRole("button", { name: "Resubmit Work" })).toBeInTheDocument();
+
+    rerender(
+      <TaskSubmissions
+        task={task("REVISION_REQUIRED", "DIRECT")}
+        onWorkflowRefresh={vi.fn()}
+      />,
+    );
+    expect(screen.queryByRole("button", { name: "Resubmit Work" })).not.toBeInTheDocument();
+  });
+
+  it("defensively prevents submit and refreshes workflow when task is not eligible at submit time", async () => {
+    mocks.useAuth.mockReturnValue({ viewer: viewer("MEMBER") });
+    const refreshWorkflow = vi.fn().mockResolvedValue(undefined);
+
+    const { rerender } = render(
+      <TaskSubmissions
+        task={task("IN_PROGRESS", "REVIEW_REQUIRED")}
+        onWorkflowRefresh={refreshWorkflow}
+      />,
+    );
+
+    // Open submit dialog while eligible
+    fireEvent.click(screen.getByRole("button", { name: "Submit Work" }));
+    fireEvent.change(screen.getByLabelText(/Submission Text/), {
+      target: { value: "Ready to submit" },
+    });
+
+    // Task becomes DIRECT before clicking submit
+    rerender(
+      <TaskSubmissions
+        task={task("IN_PROGRESS", "DIRECT")}
+        onWorkflowRefresh={refreshWorkflow}
+      />,
+    );
+
+    // The header Submit Work button is now gone, so only the modal submit button remains
+    fireEvent.click(screen.getByRole("button", { name: "Submit Work" }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toHaveTextContent(
+        "This task is not currently eligible for submission.",
+      );
+    });
+    expect(mocks.submissionCreate).not.toHaveBeenCalled();
+    expect(refreshWorkflow).toHaveBeenCalledTimes(1);
+    expect(hookValue.refresh).toHaveBeenCalledTimes(1);
+  });
+
+  it("reconciles workflow after SUBMISSION_NOT_ALLOWED without retrying", async () => {
+    mocks.useAuth.mockReturnValue({ viewer: viewer("MEMBER") });
+    mocks.submissionCreate.mockRejectedValueOnce(
+      new OperixApiError("Submission not allowed", {
+        status: 409,
+        code: "SUBMISSION_NOT_ALLOWED",
+      }),
+    );
+    const refreshWorkflow = vi.fn().mockResolvedValue(undefined);
+
+    render(
+      <TaskSubmissions
+        task={task("IN_PROGRESS", "REVIEW_REQUIRED")}
+        onWorkflowRefresh={refreshWorkflow}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Submit Work" }));
+    fireEvent.change(screen.getByLabelText(/Submission Text/), {
+      target: { value: "Done" },
+    });
+    fireEvent.click(screen.getAllByRole("button", { name: "Submit Work" })[1]);
+
+    await waitFor(() => expect(refreshWorkflow).toHaveBeenCalledTimes(1));
+    expect(hookValue.refresh).toHaveBeenCalledTimes(1);
+    expect(mocks.submissionCreate).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "This Task is not currently ready for submission.",
+    );
+  });
+
+  it("reconciles workflow after TASK_DIRECT_COMPLETION_REQUIRED without retrying", async () => {
+    mocks.useAuth.mockReturnValue({ viewer: viewer("MEMBER") });
+    mocks.submissionCreate.mockRejectedValueOnce(
+      new OperixApiError("Direct completion required", {
+        status: 409,
+        code: "TASK_DIRECT_COMPLETION_REQUIRED",
+      }),
+    );
+    const refreshWorkflow = vi.fn().mockResolvedValue(undefined);
+
+    render(
+      <TaskSubmissions
+        task={task("IN_PROGRESS", "REVIEW_REQUIRED")}
+        onWorkflowRefresh={refreshWorkflow}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Submit Work" }));
+    fireEvent.change(screen.getByLabelText(/Submission Text/), {
+      target: { value: "Done" },
+    });
+    fireEvent.click(screen.getAllByRole("button", { name: "Submit Work" })[1]);
+
+    await waitFor(() => expect(refreshWorkflow).toHaveBeenCalledTimes(1));
+    expect(hookValue.refresh).toHaveBeenCalledTimes(1);
+    expect(mocks.submissionCreate).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "This Task requires direct completion and does not accept submissions.",
+    );
   });
 });
