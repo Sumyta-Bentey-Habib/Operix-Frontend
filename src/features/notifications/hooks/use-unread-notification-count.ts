@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { OperixApiError } from "@/lib/api";
 import { notificationApi } from "../api/notification.api";
+import { NOTIFICATIONS_CHANGED_EVENT } from "../utils/deleted-notifications-storage";
 
 export const useUnreadNotificationCount = (enabled: boolean) => {
   const [count, setCount] = useState(0);
@@ -49,6 +50,17 @@ export const useUnreadNotificationCount = (enabled: boolean) => {
     return () => {
       window.clearTimeout(timeoutId);
       controller.abort();
+    };
+  }, [enabled, refresh]);
+
+  useEffect(() => {
+    if (!enabled || typeof window === "undefined") return;
+    const handleNotificationsChanged = () => {
+      void refresh();
+    };
+    window.addEventListener(NOTIFICATIONS_CHANGED_EVENT, handleNotificationsChanged);
+    return () => {
+      window.removeEventListener(NOTIFICATIONS_CHANGED_EVENT, handleNotificationsChanged);
     };
   }, [enabled, refresh]);
 

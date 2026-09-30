@@ -28,6 +28,8 @@ export const NotificationBell = ({
     loading,
     error,
     refresh: refreshPreview,
+    deleteNotification,
+    deletingNotificationId,
   } = useNotifications(1, 5, enabled);
   const [isOpen, setIsOpen] = useState(false);
   const [markingNotificationId, setMarkingNotificationId] = useState<string | null>(null);
@@ -87,7 +89,9 @@ export const NotificationBell = ({
           loading={loading}
           error={mutationError ?? error}
           markingNotificationId={markingNotificationId}
+          deletingNotificationId={deletingNotificationId}
           onMarkRead={(notification) => void handleMarkRead(notification)}
+          onDelete={(notification) => void deleteNotification(notification)}
         />
       )}
     </div>
