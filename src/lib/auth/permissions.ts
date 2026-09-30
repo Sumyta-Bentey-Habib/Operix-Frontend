@@ -16,7 +16,8 @@ const NAV_ROLES: Record<string, UserRole[]> = {
   contacts: ["SUPER_ADMIN", "ADMIN"],
   workspace: ["SUPER_ADMIN", "ADMIN", "MEMBER"],
   settings: ["SUPER_ADMIN"],
-  todos: ["SUPER_ADMIN", "ADMIN"],
+  todos: ["SUPER_ADMIN", "ADMIN", "MEMBER"],
+  guide: ["SUPER_ADMIN", "ADMIN", "MEMBER"],
 };
 
 export const canSeeNavigationItem = (viewer: OperixViewer | null, itemId: string): boolean => {

@@ -1,0 +1,257 @@
+{
+  "role": "SUPER_ADMIN",
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2026-09-30",
+    "targetAudience": {
+      "en": "Organization Owner / Executive Director / System Administrator",
+      "bn": "প্রতিষ্ঠানের স্বত্বাধিকারী / নির্বাহী পরিচালক / সিস্টেম অ্যাডমিনিস্ট্রেটর"
+    }
+  },
+  "title": {
+    "en": "Operix Super Admin User Guide",
+    "bn": "অপারেক্স সুপার অ্যাডমিন ব্যবহারকারী নির্দেশিকা"
+  },
+  "description": {
+    "en": "Master user manual for Super Administrators in Operix, covering global organization setup, team creation, user management, global and team task orchestration, distribution broadcasts, administrative oversight, and inventory category controls.",
+    "bn": "অপারেক্স-এ সুপার অ্যাডমিনদের জন্য মাস্টার নির্দেশিকা, যার মধ্যে রয়েছে প্রাতিষ্ঠানিক সেটআপ, টিম তৈরি, ইউজার ও মেম্বার ব্যবস্থাপনা, গ্লোবাল ও টিম টাস্ক পরিচালনা, ব্রডকাস্ট ডিস্ট্রিবিউশন শিডিউলিং, অ্যাডমিন নিয়ন্ত্রণ এবং ইনভেন্টরি ক্যাটাগরি কনফিগারেশন।"
+  },
+  "scope": {
+    "en": "Global Scope. Super Admins have unrestricted system-wide access to all teams, members, tasks, reports, inventory records, and settings.",
+    "bn": "গ্লোবাল বা সার্বিক পরিধি। সুপার অ্যাডমিনদের সম্পূর্ণ সিস্টেমে প্রতিটি টিম, মেম্বার, টাস্ক, রিপোর্ট, ইনভেন্টরি এবং সেটিংসের ওপর নিরঙ্কুশ নিয়ন্ত্রণাধিকার রয়েছে।"
+  },
+  "navigation": {
+    "accessiblePages": [
+      {
+        "id": "dashboard",
+        "route": "/dashboard",
+        "name": { "en": "Executive Dashboard", "bn": "এক্সিকিউটিভ ড্যাশবোর্ড" },
+        "description": {
+          "en": "Macro-level organization analytics, total teams, total admins, members, global completion trends, and system audit logs.",
+          "bn": "প্রতিষ্ঠানের সার্বিক অ্যানালিটিক্স, মোট টিম, অ্যাডমিন, মেম্বার, গ্লোবাল কাজের গতি এবং অডিট লগ।"
+        }
+      },
+      {
+        "id": "tasks",
+        "route": "/tasks",
+        "name": { "en": "Global Tasks", "bn": "সার্বিক টাস্ক ব্যবস্থাপনা" },
+        "description": {
+          "en": "Manage, create, filter, and oversee all team and organization-wide tasks.",
+          "bn": "সমস্ত টিম এবং প্রতিষ্ঠানের সার্বিক টাস্ক তৈরি, ফিল্টারিং ও তত্ত্বাবধান।"
+        }
+      },
+      {
+        "id": "members",
+        "route": "/members",
+        "name": { "en": "Member Management", "bn": "মেম্বার ব্যবস্থাপনা" },
+        "description": {
+          "en": "Create members, update designations and employee IDs, change user status, and transfer members across teams.",
+          "bn": "নতুন মেম্বার তৈরি, পদবি ও আইডি আপডেট, মেম্বার স্ট্যাটাস পরিবর্তন এবং এক টিম থেকে অন্য টিমে বদলি।"
+        }
+      },
+      {
+        "id": "teams",
+        "route": "/teams",
+        "name": { "en": "Team Management", "bn": "টিম ব্যবস্থাপনা" },
+        "description": {
+          "en": "Create teams, edit team metadata, reassign team administrators, and configure rosters.",
+          "bn": "নতুন টিম তৈরি, টিমের তথ্য সম্পাদনা, টিম অ্যাডমিন পরিবর্তন এবং সদস্য বণ্টন।"
+        }
+      },
+      {
+        "id": "admins",
+        "route": "/admins",
+        "name": { "en": "Admin Access & Roles", "bn": "অ্যাডমিন তালিকা ও ভূমিকা" },
+        "description": {
+          "en": "Manage privileged administrator accounts and system responsibilities.",
+          "bn": "অ্যাডমিনিস্ট্রেটর অ্যাকাউন্ট ও তাদের দায়িত্বসমূহ পরিচালনা।"
+        }
+      },
+      {
+        "id": "inventory",
+        "route": "/inventory",
+        "name": { "en": "Global Inventory", "bn": "সার্বিক ইনভেন্টরি" },
+        "description": {
+          "en": "Create inventory categories, manage all items, track all member equipment assignments, and audit transactions.",
+          "bn": "ইনভেন্টরি ক্যাটাগরি তৈরি, সমস্ত মালামাল পরিচালনা, কার কাছে কী আছে তা ট্র্যাক করা এবং অডিট ট্রেইল দেখা।"
+        }
+      },
+      {
+        "id": "reports",
+        "route": "/reports",
+        "name": { "en": "Reports & Analytics", "bn": "রিপোর্ট ও অ্যানালিটিক্স" },
+        "description": {
+          "en": "Executive operational reports, completion velocity, and audit summaries.",
+          "bn": "প্রতিষ্ঠানের অপারেশনাল রিপোর্ট, কাজের গতি এবং নিরীক্ষা সারাংশ।"
+        }
+      },
+      {
+        "id": "todos",
+        "route": "/todos",
+        "name": { "en": "Management Todos", "bn": "ম্যানেজমেন্ট টুডু" },
+        "description": {
+          "en": "Organization-wide operational action items and executive checklists.",
+          "bn": "প্রতিষ্ঠানের গুরুত্বপূর্ণ কাজ ও এক্সিকিউটিভ চেকলিস্ট।"
+        }
+      },
+      {
+        "id": "documents",
+        "route": "/documents",
+        "name": { "en": "Document Repository", "bn": "ডকুমেন্ট ভান্ডার" },
+        "description": {
+          "en": "Central archive for all corporate governance, SOPs, and project documentation.",
+          "bn": "কোম্পানির সমস্ত নীতিমালা, এসওপি এবং গুরুত্বপূর্ণ নথিপত্রের কেন্দ্রীয় আর্কাইভ।"
+        }
+      },
+      {
+        "id": "history",
+        "route": "/activity",
+        "name": { "en": "Global Audit Trail", "bn": "সার্বিক অ্যাক্টিভিটি ও অডিট লগ" },
+        "description": {
+          "en": "Comprehensive audit feed tracking every user action, assignment, and status transition.",
+          "bn": "সিস্টেমের প্রতিটি কাজ, অ্যাসাইনমেন্ট এবং পরিবর্তনের বিস্তারিত সময়ানুক্রমিক লগ।"
+        }
+      }
+    ],
+    "restrictedPages": []
+  },
+  "modules": {
+    "userManagement": {
+      "title": { "en": "Member & User Administration", "bn": "ইউজার ও মেম্বার প্রশাসন" },
+      "operations": [
+        {
+          "operation": { "en": "Creating a New Member", "bn": "নতুন মেম্বার তৈরি" },
+          "steps": {
+            "en": "Navigate to /members, click 'Add Member', enter full name, email, employee ID, designation, and initial password. The user can then immediately sign in.",
+            "bn": "/members পেইজে গিয়ে 'Add Member' চাপুন। নাম, ইমেইল, আইডি, পদবি এবং প্রাথমিক পাসওয়ার্ড দিয়ে মেম্বার তৈরি করুন।"
+          }
+        },
+        {
+          "operation": { "en": "Status Lifecycle Control", "bn": "ইউজার স্ট্যাটাস পরিবর্তন" },
+          "steps": {
+            "en": "Change any user's status between ACTIVE (normal access), INACTIVE (temporarily disabled), or SUSPENDED (blocked access).",
+            "bn": "যেকোনো ইউজারের স্ট্যাটাস পরিবর্তন করুন: ACTIVE (সক্রিয়), INACTIVE (সাময়িক নিষ্ক্রিয়) বা SUSPENDED (স্থগিত/ব্লক)।"
+          }
+        },
+        {
+          "operation": { "en": "Cross-Team Member Transfers", "bn": "টিম পরিবর্তন বা ট্রান্সফার" },
+          "steps": {
+            "en": "Super Admins can transfer a member from their current team to any other target team with a single action.",
+            "bn": "সুপার অ্যাডমিনরা সহজেই একজন কর্মীকে তার বর্তমান টিম থেকে অন্য যেকোনো টার্গেট টিমে স্থানান্তর করতে পারেন।"
+          }
+        }
+      ]
+    },
+    "teamManagement": {
+      "title": { "en": "Team Structure Management", "bn": "টিম কাঠামো পরিচালনা" },
+      "operations": [
+        {
+          "operation": { "en": "Create New Team", "bn": "নতুন টিম খোলা" },
+          "steps": {
+            "en": "Go to /teams, click 'Create Team', provide a unique team name, and appoint a Team Admin from the administrator roster.",
+            "bn": "/teams পেইজে গিয়ে 'Create Team' চাপুন, টিমের নাম দিন এবং অ্যাডমিনদের মধ্য থেকে একজনকে টিম অ্যাডমিন হিসেবে নিয়োগ দিন।"
+          }
+        },
+        {
+          "operation": { "en": "Reassigning Team Admin", "bn": "টিম অ্যাডমিন রদবদল" },
+          "steps": {
+            "en": "If a team lead changes, open the team settings and reassign leadership to another available admin.",
+            "bn": "টিম লিড পরিবর্তন করতে টিমের সেটিংসে গিয়ে অন্য অ্যাডমিনকে দায়িত্ব অর্পণ করুন।"
+          }
+        }
+      ]
+    },
+    "globalTaskManagement": {
+      "title": { "en": "Global & Team Task Orchestration", "bn": "গ্লোবাল ও টিম টাস্ক পরিচালনা" },
+      "capabilities": [
+        {
+          "feature": {
+            "en": "Global vs Team Scope Selection",
+            "bn": "গ্লোবাল বনাম টিম স্কোপ নির্বাচন"
+          },
+          "explanation": {
+            "en": "Only Super Admins can toggle between TEAM scope and GLOBAL scope. Global tasks do not require a team assignment and can be broadcast to the entire organization.",
+            "bn": "কেবলমাত্র সুপার অ্যাডমিনরা TEAM এবং GLOBAL স্কোপের মধ্যে নির্বাচন করতে পারেন। গ্লোবাল টাস্কের জন্য কোনো নির্দিষ্ট টিমের প্রয়োজন হয় না এবং এটি পুরো প্রতিষ্ঠানে ছড়িয়ে দেওয়া যায়।"
+          }
+        },
+        {
+          "feature": {
+            "en": "Distribution Broadcast Scheduling",
+            "bn": "ডিস্ট্রিবিউশন নোটিফিকেশন শিডিউলিং"
+          },
+          "explanation": {
+            "en": "When creating a Global task with 'Notify All' enabled, choose between: 1. IMMEDIATE (alerts everyone upon creation), 2. SCHEDULED (specify a future broadcast date and time), or 3. LEAD TIME (broadcast a set number of hours/days before the task deadline).",
+            "bn": "গ্লোবাল টাস্কে 'Notify All' চালু থাকলে তিনটি বিকল্পের যেকোনো একটি বেছে নেওয়া যায়: ১. IMMEDIATE (তাত্ক্ষণিক নোটিফিকেশন), ২. SCHEDULED (ভবিষ্যতের নির্দিষ্ট তারিখে নোটিফিকেশন), বা ৩. LEAD TIME (ডেডলাইনের নির্দিষ্ট সময় আগে নোটিফিকেশন)।"
+          }
+        },
+        {
+          "feature": {
+            "en": "Rescheduling or Cancelling Distributions",
+            "bn": "ডিস্ট্রিবিউশন পরিবর্তন বা বাতিল"
+          },
+          "explanation": {
+            "en": "If a task distribution is pending, open the task details and click 'Reschedule' to pick a new release time, or 'Cancel Distribution' to abort the broadcast.",
+            "bn": "টাস্কের নোটিফিকেশন অপেক্ষমাণ থাকলে Task Details থেকে 'Reschedule' করে নতুন সময় দিতে পারেন অথবা 'Cancel Distribution' দিয়ে নোটিফিকেশন বাতিল করতে পারেন।"
+          }
+        },
+        {
+          "feature": { "en": "Global Filtering & Delegation", "bn": "গ্লোবাল ফিল্টারিং ও অর্পণ" },
+          "explanation": {
+            "en": "In /tasks, Super Admins can filter by any Team, any Assigned Member, Priority, Status, or Overdue state to inspect organizational progress.",
+            "bn": "/tasks পেইজে সুপার অ্যাডমিনরা যেকোনো টিম, নির্দিষ্ট মেম্বার, অগ্রাধিকার, স্ট্যাটাস বা মেয়াদোত্তীর্ণতার ভিত্তিতে ফিল্টার করে সামগ্রিক কাজের অগ্রগতি যাচাই করতে পারেন।"
+          }
+        }
+      ]
+    },
+    "attachmentAndFileGovernance": {
+      "title": {
+        "en": "Master Attachment & File Governance",
+        "bn": "ফাইল ও অ্যাটাচমেন্টের চূড়ান্ত কর্তৃত্ব"
+      },
+      "rules": {
+        "en": "Super Admins can upload files to any task and delete any attachment across the platform, provided the task is in an editable lifecycle state (PENDING or ASSIGNED before started, and distribution not SENT).",
+        "bn": "সুপার অ্যাডমিনরা যেকোনো টাস্কে ফাইল আপলোড করতে পারেন এবং যেকোনো ব্যবহারকারীর আপলোড করা ফাইল ডিলিট করতে পারেন, যদি টাস্কটি সম্পাদনাযোগ্য অবস্থায় থাকে (PENDING অথবা কাজ শুরুর আগের ASSIGNED অবস্থায়, এবং নোটিফিকেশন না পাঠিয়ে থাকলে)।"
+      }
+    },
+    "inventoryGovernance": {
+      "title": {
+        "en": "Inventory & Category Configuration",
+        "bn": "ইনভেন্টরি ও ক্যাটাগরি কনফিগারেশন"
+      },
+      "features": [
+        {
+          "feature": { "en": "Manage Categories", "bn": "ক্যাটাগরি তৈরি ও পরিচালনা" },
+          "description": {
+            "en": "Exclusive authority to create, edit, and toggle active status for inventory categories (e.g., Electronics, Stationery, Machinery).",
+            "bn": "ইনভেন্টরির ক্যাটাগরি (যেমন ইলেকট্রনিক্স, স্টেশনারি, যন্ত্রপাতি ইত্যাদি) তৈরি ও সম্পাদনা করার একক ক্ষমতা।"
+          }
+        },
+        {
+          "feature": { "en": "Complete Asset Audit", "bn": "সম্পূর্ণ সম্পদ নিরীক্ষা" },
+          "description": {
+            "en": "View all outstanding returnable items assigned to any member across all teams and oversee organization-wide stock balance.",
+            "bn": "সকল টিমের কোন কর্মীর কাছে কী কী সরঞ্জাম বরাদ্দ রয়েছে তা এক নজরে নিরীক্ষা এবং সার্বিক স্টক তদারকি।"
+          }
+        }
+      ]
+    }
+  },
+  "rules": {
+    "en": [
+      "Only Super Admins can create GLOBAL tasks with organization-wide distribution.",
+      "Only Super Admins can create new members, edit employee IDs, change user status, and execute team transfers.",
+      "Only Super Admins can create and edit team structures and assign Team Admins.",
+      "Only Super Admins can manage inventory categories.",
+      "Recurring tasks cannot have self-claim enabled and must specify an assigned responsible member.",
+      "Task attachments cannot be modified once the task has started or distribution has been sent."
+    ],
+    "bn": [
+      "কেবলমাত্র সুপার অ্যাডমিনরা গ্লোবাল টাস্ক তৈরি এবং সার্বিক নোটিফিকেশন শিডিউল করতে পারেন।",
+      "কেবলমাত্র সুপার অ্যাডমিনরা নতুন মেম্বার তৈরি, আইডি পরিবর্তন, স্ট্যাটাস পরিবর্তন এবং টিম ট্রান্সফার করতে পারেন।",
+      "কেবলমাত্র সুপার অ্যাডমিনরা নতুন টিম তৈরি এবং টিম অ্যাডমিন নির্ধারণ করতে পারেন।",
+      "ইনভেন্টরির ক্যাটাগরি কেবল সুপার অ্যাডমিনরা তৈরি ও পরিচালনা করতে পারেন।",
+      "পুনরাবৃত্তিমূলক (Recurring) টাস্কে সেলফ-ক্লেইম চালু করা যায় না এবং দায়িত্বপ্রাপ্ত মেম্বার দেওয়া বাধ্যতামূলক।",
+      "কাজ শুরু হয়ে গেলে অথবা নোটিফিকেশন ডিস্ট্রিবিউট হয়ে গেলে টাস্কের মূল অ্যাটাচমেন্ট পরিবর্তন করা যায় না।"
+    ]
+  }
+}

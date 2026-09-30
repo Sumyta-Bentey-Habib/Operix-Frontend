@@ -20,6 +20,8 @@ vi.mock("@/features/files", () => ({
   triggerBrowserDownload: mocks.triggerBrowserDownload,
   formatFileSize: (value: number) => `${value} B`,
   formatFileType: () => "PDF",
+  cleanFilename: (name: string) => name,
+  FilePreviewModal: () => null,
 }));
 
 const submission = {
