@@ -5,6 +5,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { Pagination } from "@/components/ui/Pagination";
 import { useAuth } from "@/context/AuthContext";
+import { HistoryIcon } from "@/components/icons";
 import { getActivityErrorMessage } from "../../activity-errors";
 import { useActivities } from "../../hooks/use-activities";
 import { ActivityFilters } from "../ActivityFilters";
@@ -32,13 +33,22 @@ export const ActivityFeed = () => {
   return (
     <section className={styles.section}>
       <header className={styles.header}>
-        <p className={styles.eyebrow}>Audit</p>
-        <h1 className={styles.title}>Activity Feed</h1>
-        <p className={styles.description}>
-          Scoped operational audit trail visible to your account. Activity records are returned by
-          the backend according to your role and scope.
-        </p>
-        <p className={styles.total}>Current query total: {meta.total}</p>
+        <div className={styles.headerContent}>
+          <div className={styles.metaRow}>
+            <span className={styles.eyebrowBadge}>
+              <HistoryIcon size={14} className={styles.eyebrowIcon} />
+              <span>Audit Trail</span>
+            </span>
+            <span className={styles.countBadge}>
+              {meta.total} {meta.total === 1 ? "Record" : "Records"}
+            </span>
+          </div>
+          <h1 className={styles.title}>Activity Feed</h1>
+          <p className={styles.description}>
+            Scoped operational audit log visible to your account. Activity records are returned by
+            the backend according to your role and scope.
+          </p>
+        </div>
       </header>
 
       <ActivityFilters

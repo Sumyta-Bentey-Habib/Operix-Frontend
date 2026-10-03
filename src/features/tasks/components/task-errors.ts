@@ -33,6 +33,13 @@ const TASK_ERROR_MESSAGES: Record<string, string> = {
 
 export const getTaskErrorView = (error: unknown): TaskErrorView => {
   if (error instanceof OperixApiError) {
+    if (error.status === 500) {
+      return {
+        code: error.code || "INTERNAL_SERVER_ERROR",
+        message: "Unable to load tasks from server (Backend 500 Internal Server Error). Please run production database migrations or check backend server logs.",
+      };
+    }
+
     return {
       code: error.code,
       message: TASK_ERROR_MESSAGES[error.code] ?? error.message,
