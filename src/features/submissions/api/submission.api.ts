@@ -1,6 +1,6 @@
 import { apiMultipartRequest, apiRequest } from "@/lib/api";
 import type { PaginatedResponse } from "@/types/pagination";
-import type { FileAttachmentResponse } from "@/features/files";
+import type { SubmissionAttachmentResponse } from "@/features/files";
 import type { CreateSubmissionInput, Submission } from "../types/submission.types";
 
 const buildSubmissionFormData = (input: CreateSubmissionInput): FormData => {
@@ -32,7 +32,7 @@ export const submissionApi = {
   listAttachments: (
     submissionId: string,
     options?: { signal?: AbortSignal },
-  ): Promise<FileAttachmentResponse[]> =>
+  ): Promise<SubmissionAttachmentResponse[]> =>
     apiRequest(`/submissions/${submissionId}/attachments`, {
       signal: options?.signal,
     }),

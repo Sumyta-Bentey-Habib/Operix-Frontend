@@ -1,15 +1,21 @@
+"use client";
+
 import { cleanFilename, formatFileSize, formatFileType } from "@/features/files";
+import type { SubmissionAttachmentResponse } from "@/features/files";
 import { formatDisplayDate } from "@/utils/date";
-import { obfuscateId } from "@/utils/id-obfuscator";
-import type { FileAttachmentResponse } from "@/features/files";
-import styles from "./SubmissionAttachmentItem.module.css";
 
 export interface SubmissionAttachmentItemProps {
-  attachment: FileAttachmentResponse;
+  attachment: SubmissionAttachmentResponse;
   downloading: boolean;
-  onDownload: (attachment: FileAttachmentResponse) => void;
-  onView?: (attachment: FileAttachmentResponse) => void;
+  onDownload: (attachment: SubmissionAttachmentResponse) => void;
+  onView?: (attachment: SubmissionAttachmentResponse) => void;
 }
+
+const ACTION_BUTTON_CLASS =
+  "inline-flex min-h-10 cursor-pointer items-center justify-center rounded-xl border border-[var(--border-default)] bg-[var(--bg-card-subtle)] px-4 py-2 text-sm font-bold text-[var(--text-primary)] transition-all duration-200 hover:border-[var(--border-hover)] hover:bg-[var(--bg-card-hover)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary-emerald)] disabled:cursor-not-allowed disabled:opacity-60";
+
+const DT_CLASS = "text-[0.72rem] font-bold uppercase text-[var(--text-muted)]";
+const DD_CLASS = "mt-0.5 break-words text-[0.82rem] text-[var(--text-primary)]";
 
 export const SubmissionAttachmentItem = ({
   attachment,
@@ -20,34 +26,34 @@ export const SubmissionAttachmentItem = ({
   const { file } = attachment;
   const displayName = cleanFilename(file.originalName);
 
+  const metaItems: Array<[string, string]> = [
+    ["Type", formatFileType(file.mimeType, displayName)],
+    ["Size", formatFileSize(file.sizeBytes)],
+    ["Uploaded", formatDisplayDate(file.createdAt)],
+    ["Uploaded By", file.uploadedBy?.name ?? "Unknown"],
+  ];
+
   return (
-    <article className={styles.item}>
-      <div className={styles.main}>
-        <h3 className={styles.name}>{displayName}</h3>
-        <dl className={styles.meta}>
-          <div>
-            <dt>Type</dt>
-            <dd>{formatFileType(file.mimeType, displayName)}</dd>
-          </div>
-          <div>
-            <dt>Size</dt>
-            <dd>{formatFileSize(file.sizeBytes)}</dd>
-          </div>
-          <div>
-            <dt>Uploaded</dt>
-            <dd>{formatDisplayDate(file.createdAt)}</dd>
-          </div>
-          <div>
-            <dt>Uploaded By</dt>
-            <dd className={styles.mono}>{obfuscateId(file.uploadedById, "USR")}</dd>
-          </div>
+    <article className="grid gap-3.5 rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-card)] p-[18px] shadow-[var(--card-shadow)] transition-all duration-200 hover:border-[var(--border-hover)] hover:shadow-[var(--card-hover-shadow)]">
+      <div className="grid gap-3">
+        <h3 className="break-words text-[0.95rem] font-bold text-[var(--text-primary)]">
+          {displayName}
+        </h3>
+        <dl className="m-0 grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-3">
+          {metaItems.map(([label, value]) => (
+            <div key={label}>
+              <dt className={DT_CLASS}>{label}</dt>
+              <dd className={DD_CLASS}>{value}</dd>
+            </div>
+          ))}
         </dl>
       </div>
-      <div className={styles.actions}>
+      <div className="flex flex-wrap gap-2">
         {onView && (
           <button
             type="button"
-            className={styles.viewButton}
+            className={ACTION_BUTTON_CLASS}
+            aria-label={`Preview ${displayName}`}
             onClick={() => onView(attachment)}
           >
             View
@@ -55,7 +61,8 @@ export const SubmissionAttachmentItem = ({
         )}
         <button
           type="button"
-          className={styles.downloadButton}
+          className={ACTION_BUTTON_CLASS}
+          aria-label={`Download ${displayName}`}
           onClick={() => onDownload(attachment)}
           disabled={downloading}
         >
@@ -65,4 +72,3 @@ export const SubmissionAttachmentItem = ({
     </article>
   );
 };
-

@@ -608,9 +608,9 @@
 }
 
 .metaItem {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(110px, auto) minmax(0, 1fr);
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
   padding-bottom: 10px;
   border-bottom: 1px solid var(--border-subtle);
@@ -656,7 +656,9 @@
   color: var(--text-primary);
   margin: 0;
   text-align: right;
-  word-break: break-all;
+  min-width: 0;
+  word-break: normal;
+  overflow-wrap: anywhere;
 }
 
 .metaValueHighlight {
@@ -762,6 +764,7 @@
   font-weight: 500;
   color: var(--text-muted);
   margin-top: 2px;
+  line-height: 1.4;
 }
 
 .distributionActions {
@@ -770,11 +773,14 @@
   gap: 8px;
   margin-top: 8px;
   width: 100%;
+  grid-column: 1 / -1;
 }
 
 .distributionButtonRow {
   display: flex;
   gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .distributionActionButton {
@@ -859,6 +865,8 @@
 .rescheduleButtonRow {
   display: flex;
   gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .distributionErrorText {
@@ -1153,9 +1161,7 @@
   }
 
   .metaItem {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
+    grid-template-columns: minmax(96px, auto) minmax(0, 1fr);
     gap: 8px;
   }
 
@@ -1167,7 +1173,7 @@
 /* Extra small screens (<= 380px) */
 @media (max-width: 380px) {
   .metaItem {
-    flex-direction: column;
+    grid-template-columns: 1fr;
     align-items: flex-start;
     gap: 4px;
   }

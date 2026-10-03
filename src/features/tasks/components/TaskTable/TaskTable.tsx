@@ -27,7 +27,6 @@ export const TaskTable = ({ tasks, viewer, onAssign, onClaim, onStart }: TaskTab
     <table className={styles.table}>
       <thead className={styles.thead}>
         <tr>
-          <th>{TASK_TABLE_STRINGS.columns.reference}</th>
           <th>{TASK_TABLE_STRINGS.columns.title}</th>
           <th>{TASK_TABLE_STRINGS.columns.priority}</th>
           <th>{TASK_TABLE_STRINGS.columns.status}</th>
@@ -48,9 +47,6 @@ export const TaskTable = ({ tasks, viewer, onAssign, onClaim, onStart }: TaskTab
 
           return (
             <tr key={task.id} className={styles.row}>
-              <td className={styles.refCell} data-label={TASK_TABLE_STRINGS.columns.reference}>
-                <span className={styles.mono}>{task.referenceCode}</span>
-              </td>
               <td className={styles.taskTitleCell} data-label={TASK_TABLE_STRINGS.columns.title}>
                 <div className={styles.titleWrapper}>
                   <span className={styles.taskTitle}>{task.title}</span>

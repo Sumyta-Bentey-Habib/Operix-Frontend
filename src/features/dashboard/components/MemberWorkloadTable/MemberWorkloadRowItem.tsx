@@ -6,7 +6,12 @@ import type { NormalizedMemberWorkload } from "../../utils/workload-normalizer";
 import styles from "./MemberWorkloadTable.module.css";
 import { AlertTriangleIcon } from "./WorkloadIcons";
 
-const AVATAR_CLASSES = [styles.avatar, styles.avatarAlt, styles.avatarWarm, styles.avatarPurple];
+const AVATAR_CLASSES = [
+  styles.avatar,
+  `${styles.avatar} ${styles.avatarAlt}`,
+  `${styles.avatar} ${styles.avatarWarm}`,
+  `${styles.avatar} ${styles.avatarPurple}`,
+];
 
 export interface MemberWorkloadRowItemProps {
   member: NormalizedMemberWorkload;

@@ -8,7 +8,12 @@ import { formatAverageMinutes, formatNumber, formatRate } from "../../utils/perf
 import { PERFORMANCE_TABLE_STRINGS } from "../../utils/performance-strings";
 import styles from "./MemberPerformanceTable.module.css";
 
-const AVATAR_CLASSES = [styles.avatar, styles.avatarAlt, styles.avatarWarm, styles.avatarPurple];
+const AVATAR_CLASSES = [
+  styles.avatar,
+  `${styles.avatar} ${styles.avatarAlt}`,
+  `${styles.avatar} ${styles.avatarWarm}`,
+  `${styles.avatar} ${styles.avatarPurple}`,
+];
 
 const getInitials = (name: string): string => {
   const parts = name.trim().split(/\s+/).filter(Boolean);
