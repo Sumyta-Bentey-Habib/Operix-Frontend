@@ -16,3 +16,8 @@ export interface FileAttachmentResponse {
   file: FileAssetSummary;
   downloadUrl: string;
 }
+
+export interface SubmissionAttachmentResponse {
+  file: FileAssetSummary;
+  downloadUrl: string;
+}

@@ -140,6 +140,11 @@ export const TaskSubmissions = ({ task, onWorkflowRefresh }: TaskSubmissionsProp
         canReviewLatest={canReviewTaskSubmission(viewer, task)}
         onRetry={() => void refresh()}
         onPageChange={setPage}
+        getSubmitterName={(submission) => {
+          if (submission.submittedBy?.name) return submission.submittedBy.name;
+          if (task.responsible?.id === submission.submittedById) return task.responsible.name;
+          return null;
+        }}
         onReview={(submission) => {
           setReviewError(null);
           setReviewSubmission(submission);

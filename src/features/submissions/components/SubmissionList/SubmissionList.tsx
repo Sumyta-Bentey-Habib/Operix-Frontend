@@ -17,6 +17,7 @@ export interface SubmissionListProps {
   onRetry: () => void;
   onPageChange: (page: number) => void;
   onReview: (submission: Submission) => void;
+  getSubmitterName?: (submission: Submission) => string | null;
 }
 
 export const SubmissionList = ({
@@ -28,6 +29,7 @@ export const SubmissionList = ({
   onRetry,
   onPageChange,
   onReview,
+  getSubmitterName,
 }: SubmissionListProps) => (
   <div className={styles.list}>
     {loading && <LoadingState message="Loading Submissions..." />}
@@ -50,6 +52,7 @@ export const SubmissionList = ({
           latest={meta.page === 1 && index === 0}
           canReview={canReviewLatest && meta.page === 1 && index === 0}
           onReview={onReview}
+          submitterName={getSubmitterName?.(submission)}
         />
       ))}
     {!loading && !error && submissions.length > 0 && (

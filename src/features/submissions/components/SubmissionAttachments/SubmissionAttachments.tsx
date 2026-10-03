@@ -2,27 +2,23 @@
 
 import { useState } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
-import {
-  FilePreviewModal,
-  cleanFilename,
-  fileApi,
-  triggerBrowserDownload,
-} from "@/features/files";
-import type { FileAttachmentResponse } from "@/features/files";
+import { FilePreviewModal, cleanFilename, fileApi, triggerBrowserDownload } from "@/features/files";
+import type { SubmissionAttachmentResponse } from "@/features/files";
 import { getSubmissionErrorView } from "../submission-errors";
 import { SubmissionAttachmentItem } from "../SubmissionAttachmentItem";
-import styles from "./SubmissionAttachments.module.css";
 
 export interface SubmissionAttachmentsProps {
-  attachments: FileAttachmentResponse[];
+  attachments: SubmissionAttachmentResponse[];
 }
 
 export const SubmissionAttachments = ({ attachments }: SubmissionAttachmentsProps) => {
   const [downloadingFileId, setDownloadingFileId] = useState<string | null>(null);
   const [downloadError, setDownloadError] = useState<string | null>(null);
-  const [previewAttachment, setPreviewAttachment] = useState<FileAttachmentResponse | null>(null);
+  const [previewAttachment, setPreviewAttachment] = useState<SubmissionAttachmentResponse | null>(
+    null,
+  );
 
-  const handleDownload = async (attachment: FileAttachmentResponse) => {
+  const handleDownload = async (attachment: SubmissionAttachmentResponse) => {
     if (downloadingFileId) return;
     setDownloadingFileId(attachment.file.id);
     setDownloadError(null);
@@ -42,23 +38,27 @@ export const SubmissionAttachments = ({ attachments }: SubmissionAttachmentsProp
   };
 
   return (
-    <section className={styles.section}>
+    <section className="grid gap-3.5">
       <div>
-        <h2 className={styles.title}>Submission Attachments</h2>
-        <p className={styles.description}>Immutable evidence uploaded with this Submission.</p>
+        <h2 className="text-[1.2rem] font-bold text-[var(--text-primary)]">
+          Submission Attachments
+        </h2>
+        <p className="text-sm text-[var(--text-secondary)]">
+          Immutable evidence uploaded with this Submission.
+        </p>
       </div>
       {downloadError && (
-        <p className={styles.error} role="alert">
+        <p className="font-semibold text-[var(--destructive)]" role="alert">
           {downloadError}
         </p>
       )}
       {attachments.length === 0 ? (
         <EmptyState title="No attachments found" message="This Submission has no attachments." />
       ) : (
-        <div className={styles.list}>
+        <div className="grid gap-3">
           {attachments.map((attachment) => (
             <SubmissionAttachmentItem
-              key={attachment.id}
+              key={attachment.file.id}
               attachment={attachment}
               downloading={downloadingFileId === attachment.file.id}
               onDownload={(nextAttachment) => void handleDownload(nextAttachment)}
@@ -81,4 +81,3 @@ export const SubmissionAttachments = ({ attachments }: SubmissionAttachmentsProp
     </section>
   );
 };
-

@@ -1,14 +1,15 @@
-import type { FileAttachmentResponse } from "@/features/files";
+import type { SubmissionAttachmentResponse } from "@/features/files";
 
 export interface Submission {
   id: string;
   taskId: string;
   submittedById: string;
+  submittedBy?: { id?: string; name?: string | null } | null;
   version: number;
   submissionText: string | null;
   submittedAt: string;
   createdAt: string;
-  attachments?: FileAttachmentResponse[];
+  attachments?: SubmissionAttachmentResponse[];
 }
 
 export interface CreateSubmissionInput {

@@ -1,5 +1,9 @@
 export { fileApi } from "./api/file.api";
-export type { FileAssetSummary, FileAttachmentResponse } from "./types/file.types";
+export type {
+  FileAssetSummary,
+  FileAttachmentResponse,
+  SubmissionAttachmentResponse,
+} from "./types/file.types";
 export { triggerBrowserDownload, resolveBrowserDownloadFilename } from "./utils/browser-download";
 export { formatFileSize, formatFileType } from "./utils/format-file-size";
 export {
@@ -17,5 +21,3 @@ export type { ValidatedFileSelection } from "./utils/file-validation";
 export { cleanFilename, sanitizeUploadFile } from "./utils/clean-filename";
 export { FilePreviewModal } from "./components/FilePreviewModal";
 export type { FilePreviewModalProps, FilePreviewTarget } from "./components/FilePreviewModal";
-
-

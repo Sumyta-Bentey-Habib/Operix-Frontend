@@ -34,14 +34,13 @@ const submission = {
   createdAt: "2026-08-23T00:00:00.000Z",
   attachments: [
     {
-      id: "attachment-1",
       downloadUrl: "/api/v1/files/file-1/download",
       file: {
         id: "file-1",
         originalName: "evidence.pdf",
         mimeType: "application/pdf",
         sizeBytes: 123,
-        uploadedById: "member-1",
+        uploadedBy: { id: "member-public-1", name: "Member One" },
         createdAt: "2026-08-23T00:00:00.000Z",
       },
     },
@@ -68,13 +67,13 @@ describe("SubmissionDetails", () => {
     render(<SubmissionDetails submissionId="submission-1" />);
 
     expect(screen.getByText("Version 1")).toBeInTheDocument();
+    expect(screen.getByText("Member One")).toBeInTheDocument();
     expect(screen.queryByText(/Review History/)).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Remove|Delete|Upload/ })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Download" }));
 
     await waitFor(() => expect(mocks.download).toHaveBeenCalledWith("file-1"));
-    expect(mocks.download).not.toHaveBeenCalledWith("attachment-1");
     expect(mocks.download).not.toHaveBeenCalledWith("/api/v1/files/file-1/download");
     expect(mocks.triggerBrowserDownload).toHaveBeenCalledWith({
       blob: expect.any(Blob),

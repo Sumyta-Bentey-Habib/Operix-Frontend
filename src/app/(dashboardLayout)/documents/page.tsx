@@ -2,16 +2,13 @@
 
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { AuthGuard } from "@/components/auth/AuthGuard";
-import { EmptyState } from "@/components/ui/EmptyState";
+import { DocumentsPage } from "@/features/documents";
 
-export default function DocumentsPage() {
+export default function DocumentsPageRoute() {
   return (
     <AuthGuard>
-      <DashboardShell activeTab="documents" header={<h1>Documents</h1>}>
-        <EmptyState
-          title="No Documents available"
-          message="This section is not connected to a live Documents workflow yet."
-        />
+      <DashboardShell activeTab="documents">
+        <DocumentsPage />
       </DashboardShell>
     </AuthGuard>
   );

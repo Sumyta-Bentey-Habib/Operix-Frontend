@@ -1,7 +1,6 @@
 import Link from "next/link";
 import type { Submission } from "../../types/submission.types";
 import { formatDisplayDate } from "@/utils/date";
-import { obfuscateId } from "@/utils/id-obfuscator";
 import styles from "./SubmissionCard.module.css";
 
 export interface SubmissionCardProps {
@@ -9,6 +8,7 @@ export interface SubmissionCardProps {
   latest: boolean;
   canReview: boolean;
   onReview: (submission: Submission) => void;
+  submitterName?: string | null;
 }
 
 export const SubmissionCard = ({
@@ -16,6 +16,7 @@ export const SubmissionCard = ({
   latest,
   canReview,
   onReview,
+  submitterName,
 }: SubmissionCardProps) => (
   <article className={styles.card}>
     <header className={styles.header}>
@@ -39,7 +40,7 @@ export const SubmissionCard = ({
     <dl className={styles.details}>
       <div>
         <dt>Submitted By</dt>
-        <dd>{obfuscateId(submission.submittedById, "MEM")}</dd>
+        <dd>{submitterName ?? submission.submittedBy?.name ?? "Unknown member"}</dd>
       </div>
       <div>
         <dt>Attachments</dt>
