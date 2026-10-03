@@ -71,7 +71,7 @@ export const TASK_DETAILS_STRINGS = {
     distributionPending: "Scheduled broadcast",
     distributionCancelled: "Distribution cancelled",
     overdue: "Overdue",
-    team: "Team Reference",
+    team: "Team",
     category: "Category Reference",
     createdBy: "Created By",
     assignedTo: "Assigned To",

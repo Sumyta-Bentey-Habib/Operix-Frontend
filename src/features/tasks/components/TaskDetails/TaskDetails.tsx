@@ -660,15 +660,10 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
 
               <div className={styles.metaItem}>
                 <dt className={styles.metaLabel}>{TASK_DETAILS_STRINGS.metadata.team}</dt>
-                <dd
-                  className={`${styles.metaValue} ${task.team || task.teamId ? styles.mono : ""}`}
-                >
+                <dd className={`${styles.metaValue} ${task.team ? styles.mono : ""}`}>
                   {task.scope === "GLOBAL" || (!task.team && !task.teamId)
                     ? TASK_DETAILS_STRINGS.metadata.none
-                    : (task.team?.name ??
-                      (task.teamId
-                        ? obfuscateId(task.teamId, "TM")
-                        : TASK_DETAILS_STRINGS.metadata.none))}
+                    : (task.team?.name ?? TASK_DETAILS_STRINGS.metadata.none)}
                 </dd>
               </div>
 

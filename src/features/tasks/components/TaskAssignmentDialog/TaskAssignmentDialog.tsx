@@ -3,7 +3,6 @@
 import { FormEvent, useState } from "react";
 import { Modal } from "@/components/ui/Modal";
 import type { Member } from "@/features/members";
-import { obfuscateId } from "@/utils/id-obfuscator";
 import type { AssignTaskInput, Task } from "../../types/task.types";
 import { TaskAssigneePicker } from "../TaskAssigneePicker";
 import styles from "./TaskAssignmentDialog.module.css";
@@ -49,7 +48,6 @@ export const TaskAssignmentDialog = ({
           <div className={styles.summary}>
             <strong>{task.referenceCode}</strong>
             <span>{task.title}</span>
-            <span>Team Ref: {obfuscateId(task.teamId, "TM")}</span>
           </div>
           <TaskAssigneePicker
             selectedMemberId={selectedMember?.id ?? ""}

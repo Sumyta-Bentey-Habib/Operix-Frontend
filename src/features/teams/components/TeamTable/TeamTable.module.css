@@ -10,8 +10,27 @@
 
 .table {
   width: 100%;
-  min-width: 860px;
+  min-width: 640px;
   border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.table th:nth-child(1),
+.table td:nth-child(1) {
+  width: 34%;
+}
+
+.table th:nth-child(2),
+.table td:nth-child(2),
+.table th:nth-child(3),
+.table td:nth-child(3) {
+  width: 18%;
+}
+
+.table th:nth-child(4),
+.table td:nth-child(4) {
+  width: 30%;
+  text-align: center;
 }
 
 .table th,
@@ -44,15 +63,11 @@
   border-bottom: 0;
 }
 
-.mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.82rem;
-}
-
 .actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  justify-content: center;
 }
 
 .button {

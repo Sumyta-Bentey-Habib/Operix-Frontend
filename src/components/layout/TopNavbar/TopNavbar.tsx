@@ -7,7 +7,6 @@ import { usePathname, useRouter } from "next/navigation";
 import styles from "./TopNavbar.module.css";
 import {
   LogoIcon,
-  SearchIcon,
   LogoutIcon,
   ChevronDownIcon,
   DashboardIcon,
@@ -82,7 +81,6 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
   activeTabId,
   className,
   onTabChange,
-  onSearchClick,
 }) => {
   const { viewer, profile, signOut } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -322,16 +320,6 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
 
       {/* Right Controls Section */}
       <div className={styles.rightSection}>
-        <button
-          type="button"
-          className={styles.iconButton}
-          aria-label={APP_STRINGS.ariaLabels.search}
-          title={APP_STRINGS.actions.searchPlaceholder}
-          onClick={onSearchClick}
-        >
-          <SearchIcon size={18} />
-        </button>
-
         <Link
           href="/guide"
           className={styles.iconButton}

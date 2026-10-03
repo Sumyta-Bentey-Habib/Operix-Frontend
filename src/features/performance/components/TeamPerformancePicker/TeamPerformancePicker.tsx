@@ -5,7 +5,6 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { Pagination } from "@/components/ui/Pagination";
 import { formatDisplayDate } from "@/utils/date";
-import { obfuscateId } from "@/utils/id-obfuscator";
 import { useTeams } from "@/features/teams/hooks/use-teams";
 import styles from "../Performance.module.css";
 
@@ -36,7 +35,6 @@ export const TeamPerformancePicker = () => {
               onClick={() => router.push(`/kpi/teams/${team.id}`)}
             >
               <strong>{team.name}</strong>
-              <span className={styles.muted}>Admin Ref: {obfuscateId(team.adminId, "ADM")}</span>
               <span className={styles.muted}>Updated {formatDisplayDate(team.updatedAt)}</span>
             </button>
           ))}

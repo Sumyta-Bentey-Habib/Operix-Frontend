@@ -1,5 +1,4 @@
 import { EmptyState } from "@/components/ui/EmptyState";
-import { obfuscateId } from "@/utils/id-obfuscator";
 import { formatDashboardNumber } from "../../utils/dashboard-format";
 import { DASHBOARD_STRINGS } from "@/utils/dashboard-strings";
 import type { TeamWorkloadTableProps } from "./WorkloadContent.types";
@@ -20,11 +19,10 @@ export const TeamWorkloadTable = ({ teams }: TeamWorkloadTableProps) => {
 
   return (
     <div className={styles.tableWrap}>
-      <table className={styles.table}>
+      <table className={`${styles.table} ${styles.teamWorkloadTable}`}>
         <thead>
           <tr>
             <th>{t.team}</th>
-            <th>{t.adminHandle}</th>
             <th>{t.active}</th>
             <th>{t.overdue}</th>
             <th>{t.pending}</th>
@@ -36,7 +34,6 @@ export const TeamWorkloadTable = ({ teams }: TeamWorkloadTableProps) => {
           {teams.map((team) => (
             <tr key={team.teamId}>
               <td>{team.teamName}</td>
-              <td>{obfuscateId(team.adminId, "ADM")}</td>
               <td>{formatDashboardNumber(team.workload?.activeTasks)}</td>
               <td>{formatDashboardNumber(team.workload?.overdueTasks)}</td>
               <td>{formatDashboardNumber(getWorkloadStatusCount(team.workload, "PENDING"))}</td>

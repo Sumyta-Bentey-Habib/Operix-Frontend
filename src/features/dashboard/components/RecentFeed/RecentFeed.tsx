@@ -9,7 +9,6 @@ import {
   formatNotificationType,
 } from "@/features/notifications/utils/notification-display";
 import { resolveNotificationTargetHref } from "@/features/notifications/utils/notification-target";
-import { obfuscateId } from "@/utils/id-obfuscator";
 import { formatDashboardAsOf } from "../../utils/dashboard-format";
 import type {
   SuperAdminDashboardOverview,
@@ -43,12 +42,7 @@ export const DashboardRecentActivity = ({
             <article key={activity.id} className={styles.previewItem}>
               <div>
                 <h4>{title}</h4>
-                <p>
-                  {getActivityActorName(activity)} · {activity.entityType}
-                  {activity.entityId
-                    ? ` ${obfuscateId(activity.entityId, activity.entityType.slice(0, 3))}`
-                    : ""}
-                </p>
+                <p>{getActivityActorName(activity)}</p>
                 <small>{formatDashboardAsOf(activity.createdAt)}</small>
               </div>
               {href ? <Link href={href}>Open</Link> : null}

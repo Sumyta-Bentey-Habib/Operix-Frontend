@@ -5,7 +5,6 @@ import { LoadingState } from "@/components/ui/LoadingState";
 import { Pagination } from "@/components/ui/Pagination";
 import type { Team } from "@/features/teams";
 import { useTeams } from "@/features/teams/hooks/use-teams";
-import { obfuscateId } from "@/utils/id-obfuscator";
 import styles from "../Reports.module.css";
 
 export interface ReportTeamPickerProps {
@@ -44,8 +43,6 @@ export const ReportTeamPicker = ({ selectedTeamId, onSelect }: ReportTeamPickerP
               onClick={() => onSelect(team)}
             >
               <strong>{team.name}</strong>
-              <span className={styles.muted}>Team Ref: {obfuscateId(team.id, "TM")}</span>
-              <span className={styles.muted}>Admin Ref: {obfuscateId(team.adminId, "ADM")}</span>
             </button>
           ))}
           <Pagination meta={meta} onPageChange={setPage} disabled={loading} />

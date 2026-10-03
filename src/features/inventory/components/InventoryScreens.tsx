@@ -967,10 +967,6 @@ const InventoryItemForm = ({
         {editMode ? (
           <div className={styles.detailGrid}>
             <Detail label="Team Name" value={item?.team.name ?? "—"} />
-            <Detail
-              label="Team Reference"
-              value={item?.team.id ? obfuscateId(item.team.id, "TM") : "—"}
-            />
           </div>
         ) : (
           <div className={styles.teamPickerContainer}>
@@ -992,7 +988,6 @@ const InventoryItemForm = ({
                   </svg>
                   <div>
                     <strong>{selectedTeamName}</strong>
-                    <span>Team Ref: {obfuscateId(values.teamId, "TM")}</span>
                   </div>
                 </div>
                 <button
@@ -1358,7 +1353,7 @@ export const InventoryItemDetails = ({ itemId }: { itemId: string }) => {
               <Detail label="SKU" value={item.sku} />
               <Detail
                 label="Team"
-                value={`${item.team.name} (${obfuscateId(item.team.id, "TM")})`}
+                value={item.team.name}
               />
               <Detail
                 label="Category"

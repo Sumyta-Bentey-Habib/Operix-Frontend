@@ -102,6 +102,30 @@
   border-collapse: collapse;
 }
 
+.teamWorkloadTable {
+  min-width: 640px;
+  table-layout: fixed;
+}
+
+.teamWorkloadTable th:nth-child(1),
+.teamWorkloadTable td:nth-child(1) {
+  width: 28%;
+}
+
+.teamWorkloadTable th:nth-child(2),
+.teamWorkloadTable td:nth-child(2),
+.teamWorkloadTable th:nth-child(3),
+.teamWorkloadTable td:nth-child(3),
+.teamWorkloadTable th:nth-child(4),
+.teamWorkloadTable td:nth-child(4),
+.teamWorkloadTable th:nth-child(5),
+.teamWorkloadTable td:nth-child(5),
+.teamWorkloadTable th:nth-child(6),
+.teamWorkloadTable td:nth-child(6) {
+  width: 14.4%;
+  text-align: center;
+}
+
 .table th,
 .table td {
   border-bottom: 1px solid var(--border-subtle);

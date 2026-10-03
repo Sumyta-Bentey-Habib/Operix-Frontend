@@ -110,7 +110,7 @@ export const TaskTable = ({ tasks, viewer, onAssign, onClaim, onStart }: TaskTab
                   </span>
                 ) : (
                   <span className={styles.teamName}>
-                    {task.team?.name ?? (task.teamId ? obfuscateId(task.teamId, "TM") : "—")}
+                    {task.team?.name ?? "—"}
                   </span>
                 )}
               </td>

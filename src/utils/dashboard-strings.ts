@@ -19,7 +19,7 @@ export const DASHBOARD_STRINGS = {
     workloadTitle: "Workload",
     workloadDesc: "Current workload distribution and team capacity.",
     directDataStreamNotice:
-      "Direct Operational Data Stream — Exposed directly to eliminate manual spreadsheet collection & calculations.",
+      "Direct Operational Data Stream - Exposed directly to eliminate manual spreadsheet collection & calculations.",
     emptyOverviewTitle: "No Overview data",
     emptyOverviewMessage: "No Dashboard Overview was returned.",
     emptyWorkloadTitle: "No Workload data",
@@ -126,7 +126,6 @@ export const DASHBOARD_STRINGS = {
     scopedTeam: "Scoped Team",
     table: {
       team: "Team",
-      adminHandle: "Admin Handle",
       active: "Active",
       overdue: "Overdue",
       pending: "Pending",
