@@ -19,18 +19,31 @@ import {
 import { DashboardRecentActivity } from "../RecentFeed/RecentFeed";
 import styles from "../DashboardAnalytics.module.css";
 
+import type { Task } from "@/features/tasks/types/task.types";
+import type { DashboardWorkloadResponse } from "../../types/dashboard.types";
+import {
+  extractActivePriorityCounts,
+  extractTaskStatusCounts,
+} from "../../utils/dashboard-breakdown-helpers";
+
 export const SuperAdminDashboard = ({
   overview: rawOverview,
+  workload,
+  tasks,
   trends,
   days = 7,
   setDays,
 }: {
   overview: SuperAdminDashboardOverview;
+  workload?: DashboardWorkloadResponse | null;
+  tasks?: Task[] | null;
   trends?: DashboardTrendsResponse | null;
   days?: DashboardTrendDays;
   setDays?: (days: DashboardTrendDays) => void;
 }) => {
   const overview = (normalizeDashboardOverview(rawOverview) ?? rawOverview) as SuperAdminDashboardOverview;
+  const activePriorityCounts = extractActivePriorityCounts(overview, workload, tasks);
+  const taskStatusCounts = extractTaskStatusCounts(overview, workload, tasks);
 
   const modernKpis: ModernKpiCardData[] = [
     {
@@ -173,16 +186,14 @@ export const SuperAdminDashboard = ({
         ) : (
           <ManagementReportStatusBreakdown counts={overview.managementReportStatusCounts} />
         )}
-        <TaskStatusBreakdown counts={overview.taskStatusCounts} />
+        <TaskStatusBreakdown counts={taskStatusCounts} />
       </div>
 
       <div className={styles.modernBottomGrid}>
         {trends ? (
           <ManagementReportStatusBreakdown counts={overview.managementReportStatusCounts} />
         ) : (
-          <ActivePriorityBreakdown
-            counts={{ LOW: 0, MEDIUM: 0, HIGH: 0, URGENT: 0 }}
-          />
+          <ActivePriorityBreakdown counts={activePriorityCounts} />
         )}
         <DashboardRecentActivity activities={overview.recentActivity} />
       </div>

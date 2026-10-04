@@ -66,7 +66,7 @@ export const MemberWorkloadRowItem: React.FC<MemberWorkloadRowItemProps> = ({ me
             {member.activeTasks}
           </span>
         ) : (
-          <span className={styles.dimmed}>—</span>
+          <span className={styles.dimmed}>0</span>
         )}
       </td>
 
@@ -78,7 +78,7 @@ export const MemberWorkloadRowItem: React.FC<MemberWorkloadRowItemProps> = ({ me
             {member.overdueTasks}
           </span>
         ) : (
-          <span className={styles.overdueBadgeClear}>—</span>
+          <span className={styles.overdueBadgeClear}>0</span>
         )}
       </td>
 

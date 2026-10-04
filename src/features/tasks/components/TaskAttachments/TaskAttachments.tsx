@@ -7,7 +7,8 @@ import { FilePreviewModal, cleanFilename, fileApi, triggerBrowserDownload } from
 import {
   canDeleteTaskAttachment,
   canStartTask,
-  canUploadTaskAttachment,
+  getTaskAttachmentUploadState,
+  type TaskAttachmentUploadUnavailableReason,
 } from "@/lib/auth/permissions";
 import { taskApi } from "../../api/task.api";
 import { taskAttachmentApi } from "../../api/task-attachment.api";
@@ -29,6 +30,14 @@ export interface TaskAttachmentsProps {
   onTaskRefresh: () => Promise<void> | void;
 }
 
+const UPLOAD_UNAVAILABLE_MESSAGES: Record<TaskAttachmentUploadUnavailableReason, string> = {
+  NOT_AUTHORIZED: "You do not have permission to add attachments to this Task.",
+  NOT_RESPONSIBLE: "Only the current Responsible Member can add attachments to this Task.",
+  LIFECYCLE_LOCKED: "Task attachments are locked for the current Task state.",
+  DISTRIBUTION_LOCKED: "Attachments are locked after this Global Task was distributed.",
+  LIMIT_REACHED: "Maximum of 5 Task attachments reached.",
+};
+
 export const TaskAttachments = ({ task, onTaskRefresh }: TaskAttachmentsProps) => {
   const { viewer } = useAuth();
   const { attachments, loading, error, refresh } = useTaskAttachments(task.id);
@@ -41,7 +50,7 @@ export const TaskAttachments = ({ task, onTaskRefresh }: TaskAttachmentsProps) =
   const [mutationError, setMutationError] = useState<string | null>(null);
 
   const [downloadError, setDownloadError] = useState<string | null>(null);
-  const canUpload = viewer ? canUploadTaskAttachment(viewer, task) : false;
+  const uploadState = getTaskAttachmentUploadState(viewer, task, attachments.length);
 
   const handleEditabilityConflict = async (conflictError: unknown) => {
     setMutationError(getTaskAttachmentErrorView(conflictError).message);
@@ -146,13 +155,15 @@ export const TaskAttachments = ({ task, onTaskRefresh }: TaskAttachmentsProps) =
         </p>
       )}
 
-      {canUpload && (
+      {uploadState.canUpload ? (
         <TaskAttachmentUploader
           currentAttachmentCount={attachments.length}
           pending={uploadPending}
           error={null}
           onUpload={handleUpload}
         />
+      ) : (
+        <p className={styles.notice}>{UPLOAD_UNAVAILABLE_MESSAGES[uploadState.reason]}</p>
       )}
 
       <TaskAttachmentList

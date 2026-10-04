@@ -4,21 +4,22 @@
   justify-content: center;
   width: 38px;
   height: 38px;
-  border-radius: 9999px;
-  background-color: var(--bg-canvas);
+  border-radius: 12px;
+  background-color: var(--bg-card-subtle);
   border: 1px solid var(--border-default);
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   overflow: hidden;
 }
 
 .toggleButton:hover {
   background-color: var(--bg-card-hover);
-  border-color: var(--border-hover);
-  color: var(--text-primary);
-  transform: translateY(-1px);
+  border-color: var(--primary-emerald);
+  color: var(--primary-emerald);
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 14px var(--primary-emerald-glow);
 }
 
 .toggleButton:focus-visible {
@@ -43,13 +44,13 @@
   color: #60a5fa;
 }
 
-/* Subtle pulse glow on hover when dark */
+/* Glow on hover when dark */
 :global([data-theme="dark"]) .toggleButton:hover,
 :global(.dark) .toggleButton:hover {
-  box-shadow: 0 0 12px rgba(96, 165, 250, 0.25);
+  box-shadow: 0 4px 14px var(--primary-emerald-glow);
 }
 
-/* Subtle warm glow on hover when light */
+/* Glow on hover when light */
 :global(:not([data-theme="dark"]):not(.dark)) .toggleButton:hover {
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
+  box-shadow: 0 4px 14px var(--primary-emerald-glow);
 }

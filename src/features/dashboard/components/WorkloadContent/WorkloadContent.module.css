@@ -1,7 +1,7 @@
 .stack {
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 20px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -27,72 +27,244 @@
   letter-spacing: -0.02em;
 }
 
-.identityCard {
+/* Modern Identity Header Card */
+.identityHeaderCard {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 18px 24px;
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card-subtle) 100%);
   border: 1px solid var(--border-default);
   border-radius: 20px;
-  background: var(--bg-card);
   box-shadow: var(--card-shadow);
-  box-sizing: border-box;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
-  padding: 14px;
+  transition: all 0.2s ease;
 }
 
-.identityCard > div {
-  display: grid;
-  gap: 3px;
+.identityHeaderCard:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--card-hover-shadow);
 }
 
-.identityCard span {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  font-weight: 600;
+.identityLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
-.identityCard strong {
-  font-size: 0.95rem;
-  color: var(--text-primary);
+.avatarCircle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--primary-emerald) 0%, var(--primary-emerald-hover) 100%);
+  color: #ffffff;
+  font-size: 1.2rem;
+  font-weight: 800;
+  box-shadow: 0 4px 12px var(--primary-emerald-glow);
 }
 
-.workloadTiles {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+.identityInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metaLabelRow {
+  display: flex;
+  align-items: center;
   gap: 10px;
 }
 
-.metricCard {
-  display: grid;
-  gap: 4px;
-  padding: 14px;
-  background: var(--bg-card-subtle);
-  border: 1px solid var(--border-default);
-  border-radius: 14px;
+.fieldLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
 }
 
-.metricCard span {
-  font-size: 0.78rem;
-  color: var(--text-secondary);
-  font-weight: 600;
+.activePulseBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: rgba(34, 197, 94, 0.12);
+  color: #22c55e;
+  font-size: 0.7rem;
+  font-weight: 700;
 }
 
-.metricCard strong {
-  font-size: 1.25rem;
+.pulseDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #22c55e;
+  box-shadow: 0 0 6px #22c55e;
+  animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+}
+
+.memberName {
+  margin: 0;
+  font-size: 1.1rem;
   font-weight: 800;
   color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 
-.metricCard small {
+.identityRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.teamPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 12px;
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+/* Modern Workload Metric Tiles */
+.workloadTiles {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.modernMetricCard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px 24px;
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card-subtle) 100%);
+  border: 1px solid var(--border-default);
+  border-radius: 20px;
+  box-shadow: var(--card-shadow);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.modernMetricCard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: transparent;
+  transition: background 0.3s ease;
+}
+
+.metricActive::before {
+  background: linear-gradient(90deg, #10b981 0%, rgba(16, 185, 129, 0) 100%);
+}
+
+.metricOverdue::before {
+  background: linear-gradient(90deg, #ef4444 0%, rgba(239, 68, 68, 0) 100%);
+}
+
+.modernMetricCard:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+}
+
+.metricHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.metricLabel {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.metricIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  transition: transform 0.2s ease;
+}
+
+.metricActive .metricIconWrap {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+}
+
+.metricOverdue .metricIconWrap {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.15);
+}
+
+.modernMetricCard:hover .metricIconWrap {
+  transform: scale(1.08);
+}
+
+.metricIndicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary-emerald);
+  box-shadow: 0 0 8px var(--primary-emerald-glow);
+}
+
+.metricValue {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.metricHint {
   color: var(--text-secondary);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
 }
 
 .tableWrap {
   width: 100%;
   overflow-x: auto;
   border: 1px solid var(--border-default);
-  border-radius: 16px;
-  background: var(--bg-card);
+  border-radius: 20px;
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card-subtle) 100%);
+  box-shadow: var(--card-shadow);
   box-sizing: border-box;
 }
 
@@ -123,24 +295,28 @@
 .teamWorkloadTable th:nth-child(6),
 .teamWorkloadTable td:nth-child(6) {
   width: 14.4%;
-  text-align: center;
 }
 
-.table th,
+.table th {
+  border-bottom: 1px solid var(--border-default);
+  padding: 14px 16px;
+  text-align: left;
+  vertical-align: middle;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: rgba(255, 255, 255, 0.02);
+}
+
 .table td {
   border-bottom: 1px solid var(--border-subtle);
   padding: 14px 16px;
   text-align: left;
   vertical-align: middle;
-}
-
-.table th {
-  color: var(--text-muted);
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  background: var(--bg-card);
+  font-size: 0.85rem;
+  color: var(--text-primary);
 }
 
 .table tbody tr {
@@ -148,5 +324,121 @@
 }
 
 .table tbody tr:hover {
-  background-color: var(--table-row-hover);
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.teamCellInner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.teamAvatarCircle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+  flex-shrink: 0;
+}
+
+.teamNameText {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.numCellHeader {
+  text-align: center !important;
+}
+
+.numCell {
+  text-align: center !important;
+}
+
+.tableDimmed {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.teamActiveBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: rgba(59, 130, 246, 0.12);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+.teamOverdueBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.teamPendingBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: rgba(245, 158, 11, 0.12);
+  color: #fbbf24;
+}
+
+.teamProgressBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: rgba(59, 130, 246, 0.12);
+  color: #60a5fa;
+}
+
+.teamCompletedBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+}
+
+@media (max-width: 640px) {
+  .identityHeaderCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .identityRight {
+    align-items: flex-start;
+  }
+
+  .workloadTiles {
+    grid-template-columns: 1fr;
+  }
 }

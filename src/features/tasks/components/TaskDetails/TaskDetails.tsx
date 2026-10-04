@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { LoadingState } from "@/components/ui/LoadingState";
@@ -15,10 +15,11 @@ import {
 } from "@/lib/auth/permissions";
 import { formatDisplayDate } from "@/utils/date";
 import { obfuscateId } from "@/utils/id-obfuscator";
-import { TASK_CREATE_STRINGS, TASK_DETAILS_STRINGS, TASK_ROLE_LABELS } from "@/utils/task-strings";
+import { TASK_CREATE_STRINGS, TASK_DETAILS_STRINGS } from "@/utils/task-strings";
+import type { OperixViewer } from "@/types/auth";
 import { taskApi } from "../../api/task.api";
 import { useTask } from "../../hooks/use-task";
-import type { AssignTaskInput, TaskStatus } from "../../types/task.types";
+import type { AssignTaskInput, Task, TaskStatus } from "../../types/task.types";
 import {
   getDistributionErrorMessage,
   getTaskAssignmentErrorMessage,
@@ -39,7 +40,6 @@ import {
   CheckCircleIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  CopyIcon,
   FileDocIcon,
   HistoryIcon,
   SendIcon,
@@ -52,6 +52,39 @@ export interface TaskDetailsProps {
 
 type TabKey = "submissions" | "attachments" | "history";
 
+const SUBMISSION_PRIMARY_STATUSES: TaskStatus[] = [
+  "REVISION_REQUIRED",
+  "SUBMITTED",
+  "UNDER_REVIEW",
+  "RESUBMITTED",
+];
+
+export const getDefaultTaskDetailsTab = (
+  viewer: OperixViewer | null,
+  task: Task,
+): TabKey => {
+  if (SUBMISSION_PRIMARY_STATUSES.includes(task.status)) {
+    return "submissions";
+  }
+
+  const isResponsibleMember =
+    viewer?.role === "MEMBER" &&
+    Boolean(task.responsible?.id && task.responsible.id === viewer.userId);
+
+  if (isResponsibleMember && (task.status === "ASSIGNED" || task.status === "IN_PROGRESS")) {
+    return "attachments";
+  }
+
+  if (
+    task.completionMode === "DIRECT" &&
+    (task.status === "ASSIGNED" || task.status === "IN_PROGRESS")
+  ) {
+    return "attachments";
+  }
+
+  return "submissions";
+};
+
 interface WorkflowStep {
   id: string;
   label: string;
@@ -61,6 +94,18 @@ interface WorkflowStep {
 
 const formatOptionalDate = (value: string | null) =>
   value ? formatDisplayDate(value) : TASK_DETAILS_STRINGS.metadata.notApplicable;
+
+const getSelfClaimPolicyLabel = (task: Task) => {
+  if (task.scope === "GLOBAL") {
+    if (task.recurrence) return TASK_DETAILS_STRINGS.metadata.selfClaimGlobalRecurring;
+    if (task.responsible) return TASK_DETAILS_STRINGS.metadata.selfClaimGlobalAssigned;
+    return TASK_DETAILS_STRINGS.metadata.selfClaimGlobalOpen;
+  }
+
+  return task.allowSelfClaim
+    ? TASK_DETAILS_STRINGS.metadata.selfClaimTeamEnabled
+    : TASK_DETAILS_STRINGS.metadata.selfClaimTeamDisabled;
+};
 
 function getWorkflowSteps(status: TaskStatus): WorkflowStep[] {
   const isCancelled = status === "CANCELLED";
@@ -141,9 +186,10 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
   const [startError, setStartError] = useState<string | null>(null);
   const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
   const [activeTab, setActiveTab] = useState<TabKey>("submissions");
-  const [copied, setCopied] = useState(false);
+  const tabInitializedRef = useRef(false);
   const [claimPending, setClaimPending] = useState(false);
   const [claimError, setClaimError] = useState<string | null>(null);
+  const [selfClaimPending, setSelfClaimPending] = useState(false);
   const [completeOpen, setCompleteOpen] = useState(false);
   const [completeNote, setCompleteNote] = useState("");
   const [completePending, setCompletePending] = useState(false);
@@ -154,22 +200,17 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
   const [rescheduleOpen, setRescheduleOpen] = useState(false);
   const [rescheduleDate, setRescheduleDate] = useState("");
 
+  useEffect(() => {
+    if (tabInitializedRef.current || !viewer || !task) return;
+    setActiveTab(getDefaultTaskDetailsTab(viewer, task));
+    tabInitializedRef.current = true;
+  }, [task, viewer]);
+
   if (!viewer) return null;
 
   const refreshTaskAndHistory = async () => {
     await refresh();
     setHistoryRefreshKey((value) => value + 1);
-  };
-
-  const handleCopyReference = async () => {
-    if (!task?.referenceCode) return;
-    try {
-      await navigator.clipboard.writeText(task.referenceCode);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Ignore clipboard error
-    }
   };
 
   const handleAssign = async (input: AssignTaskInput) => {
@@ -197,11 +238,28 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
     try {
       const updatedTask = await taskApi.claim(task.id);
       setTask(updatedTask);
+      setActiveTab("attachments");
       await refreshTaskAndHistory();
     } catch (claimErr) {
       setClaimError(getTaskClaimErrorMessage(claimErr));
     } finally {
       setClaimPending(false);
+    }
+  };
+
+  const handleEnableSelfClaim = async () => {
+    if (!task || selfClaimPending) return;
+    setSelfClaimPending(true);
+    setClaimError(null);
+
+    try {
+      const updatedTask = await taskApi.updateSelfClaim(task.id, { enabled: true });
+      setTask(updatedTask);
+      await refreshTaskAndHistory();
+    } catch (selfClaimError) {
+      setClaimError(getTaskClaimErrorMessage(selfClaimError));
+    } finally {
+      setSelfClaimPending(false);
     }
   };
 
@@ -213,6 +271,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
     try {
       const updatedTask = await taskApi.start(task.id);
       setTask(updatedTask);
+      setActiveTab("attachments");
       await refreshTaskAndHistory();
     } catch (startTaskError) {
       setStartError(getTaskStartErrorMessage(startTaskError));
@@ -289,6 +348,13 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
   }
 
   const workflowSteps = getWorkflowSteps(task.status);
+  const canEnableLegacyGlobalSelfClaim =
+    viewer.role === "SUPER_ADMIN" &&
+    task.scope === "GLOBAL" &&
+    task.status === "PENDING" &&
+    !task.responsible &&
+    !task.recurrence &&
+    !task.allowSelfClaim;
 
   return (
     <section className={styles.container}>
@@ -302,8 +368,6 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
           <Link href="/tasks" className={styles.breadcrumbLink}>
             {TASK_DETAILS_STRINGS.breadcrumbs.tasks}
           </Link>
-          <ChevronRightIcon size={12} className={styles.breadcrumbSeparator} />
-          <span className={styles.breadcrumbCurrent}>{task.referenceCode}</span>
         </nav>
         <Link href="/tasks" className={styles.backButton}>
           <ChevronLeftIcon size={14} />
@@ -316,30 +380,6 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
         <div className={styles.headerMain}>
           <div className={styles.eyebrowRow}>
             <span className={styles.eyebrow}>{TASK_DETAILS_STRINGS.eyebrow}</span>
-            <button
-              type="button"
-              onClick={handleCopyReference}
-              className={styles.refCodeBadge}
-              title={
-                copied
-                  ? TASK_DETAILS_STRINGS.referenceCode.copied
-                  : TASK_DETAILS_STRINGS.referenceCode.copyTitle
-              }
-              aria-label={TASK_DETAILS_STRINGS.referenceCode.copyAria}
-            >
-              <span className={styles.refPrefix}>{TASK_DETAILS_STRINGS.referenceCode.label}:</span>
-              <span className={styles.refValue}>{task.referenceCode}</span>
-              {copied ? (
-                <CheckCircleIcon size={14} className={styles.copySuccessIcon} />
-              ) : (
-                <CopyIcon size={14} className={styles.copyIcon} />
-              )}
-              {copied && (
-                <span className={styles.copiedTooltip}>
-                  {TASK_DETAILS_STRINGS.referenceCode.copied}
-                </span>
-              )}
-            </button>
           </div>
           <h1 className={styles.title}>{task.title}</h1>
           <div className={styles.badgeRow}>
@@ -391,8 +431,24 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
                 : TASK_DETAILS_STRINGS.actions.claimTask}
             </button>
           )}
+          {canEnableLegacyGlobalSelfClaim && (
+            <button
+              type="button"
+              className={styles.primaryActionButton}
+              onClick={handleEnableSelfClaim}
+              disabled={selfClaimPending}
+            >
+              {selfClaimPending
+                ? TASK_DETAILS_STRINGS.actions.enablingSelfClaim
+                : TASK_DETAILS_STRINGS.actions.enableSelfClaim}
+            </button>
+          )}
           {canStartTask(viewer, task) && (
-            <TaskStartButton pending={startPending} onStart={handleStart} />
+            <TaskStartButton
+              pending={startPending}
+              onStart={handleStart}
+              className={styles.primaryActionButton}
+            />
           )}
           {canDirectCompleteTask(viewer, task) && (
             <button
@@ -629,10 +685,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
                 <dt className={styles.metaLabel}>{TASK_DETAILS_STRINGS.metadata.assignedTo}</dt>
                 <dd className={styles.metaValue}>
                   {task.responsible ? (
-                    <span>
-                      {task.responsible.name}
-                      {task.responsible.designation ? ` (${task.responsible.designation})` : ""}
-                    </span>
+                    <span>{task.responsible.name}</span>
                   ) : (
                     <span>{TASK_DETAILS_STRINGS.metadata.unassigned}</span>
                   )}
@@ -643,9 +696,6 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
                 <dt className={styles.metaLabel}>{TASK_DETAILS_STRINGS.metadata.createdBy}</dt>
                 <dd className={styles.metaValue}>
                   {task.owner?.name ?? obfuscateId(task.createdById, "USR")}
-                  {task.owner?.role
-                    ? ` (${TASK_ROLE_LABELS[task.owner.role] ?? task.owner.role})`
-                    : ""}
                 </dd>
               </div>
 
@@ -669,11 +719,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
 
               <div className={styles.metaItem}>
                 <dt className={styles.metaLabel}>{TASK_DETAILS_STRINGS.metadata.selfClaim}</dt>
-                <dd className={styles.metaValue}>
-                  {task.allowSelfClaim
-                    ? TASK_DETAILS_STRINGS.metadata.selfClaimEnabled
-                    : TASK_DETAILS_STRINGS.metadata.selfClaimDisabled}
-                </dd>
+                <dd className={styles.metaValue}>{getSelfClaimPolicyLabel(task)}</dd>
               </div>
 
               {task.completionMode && (

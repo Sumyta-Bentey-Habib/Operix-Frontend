@@ -358,15 +358,26 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
             <span className={styles.userRoleBadge}>{currentUser.roleLabel}</span>
           </div>
 
-          {currentUser.avatarUrl && (
+          {currentUser.avatarUrl ? (
             <Image
               src={currentUser.avatarUrl}
               alt={currentUser.name}
-              width={38}
-              height={38}
+              width={34}
+              height={34}
               className={styles.avatarImage}
               unoptimized
             />
+          ) : (
+            <div className={styles.avatarFallback} aria-hidden="true">
+              {currentUser.name
+                .trim()
+                .split(" ")
+                .map((word) => word[0])
+                .filter(Boolean)
+                .slice(0, 2)
+                .join("")
+                .toUpperCase() || "OP"}
+            </div>
           )}
 
           {isMenuOpen && (

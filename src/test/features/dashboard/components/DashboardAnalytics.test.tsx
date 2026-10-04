@@ -128,7 +128,7 @@ describe("DashboardAnalytics components", () => {
     );
 
     expect(screen.getByText("Some Future Action")).toBeInTheDocument();
-    expect(screen.getByText("View all Activity")).toHaveAttribute("href", "/activity");
+    expect(screen.getByText(/View all Activity/i)).toHaveAttribute("href", "/activity");
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
@@ -156,7 +156,7 @@ describe("DashboardAnalytics components", () => {
     );
 
     expect(screen.getByText("A useful notice")).toBeInTheDocument();
-    expect(screen.getByText("View all Notifications")).toHaveAttribute("href", "/notifications");
+    expect(screen.getByText(/View all Notifications/i)).toHaveAttribute("href", "/notifications");
     expect(screen.queryByRole("button", { name: /mark/i })).not.toBeInTheDocument();
     expect(fetchMock).not.toHaveBeenCalled();
   });

@@ -3,6 +3,7 @@
 import React, { ReactNode, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { LoadingState } from "@/components/ui/LoadingState";
 
 export const AuthGuard: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { viewer, isAuthenticated, isLoading, hydrationStatus, hydrationError, retryHydration } =
@@ -60,39 +61,7 @@ export const AuthGuard: React.FC<{ children: ReactNode }> = ({ children }) => {
   }
 
   if (isLoading || !isAuthenticated) {
-    return (
-      <div
-        style={{
-          minHeight: "100vh",
-          backgroundColor: "var(--bg-canvas)",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "var(--text-primary)",
-          gap: "16px",
-        }}
-      >
-        <style>{`
-          @keyframes authSpin {
-            to { transform: rotate(360deg); }
-          }
-        `}</style>
-        <div
-          style={{
-            width: "36px",
-            height: "36px",
-            border: "3px solid var(--border-default)",
-            borderTopColor: "var(--primary-emerald)",
-            borderRadius: "50%",
-            animation: "authSpin 0.75s linear infinite",
-          }}
-        />
-        <span style={{ fontSize: "0.88rem", color: "var(--text-secondary)", fontWeight: 500 }}>
-          Checking your session...
-        </span>
-      </div>
-    );
+    return <LoadingState message="Checking your session..." fullPage />;
   }
 
   return <>{children}</>;

@@ -1,3 +1,6 @@
+/* ==========================================================================
+   Modern Dark Glassmorphic Task Table
+   ========================================================================== */
 .tableWrap {
   background: var(--bg-card);
   border: 1px solid var(--border-default);
@@ -8,10 +11,16 @@
   scrollbar-width: thin;
   width: 100%;
   box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tableWrap:hover {
+  border-color: var(--border-hover);
 }
 
 .table {
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   min-width: 980px;
   width: 100%;
 }
@@ -19,7 +28,7 @@
 .table th,
 .table td {
   border-bottom: 1px solid var(--border-subtle);
-  padding: 14px 18px;
+  padding: 15px 18px;
   text-align: left;
   vertical-align: middle;
   box-sizing: border-box;
@@ -27,7 +36,7 @@
 
 .table th {
   color: var(--text-muted);
-  font-size: 0.72rem;
+  font-size: 0.73rem;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -36,11 +45,11 @@
 }
 
 .table tbody tr {
-  transition: background-color 0.15s ease;
+  transition: background-color 0.18s ease;
 }
 
 .table tbody tr:hover {
-  background-color: var(--table-row-hover);
+  background-color: var(--bg-card-hover);
 }
 
 .table tbody tr:last-child td {
@@ -51,14 +60,14 @@
   font-weight: 700;
   color: var(--text-primary);
   font-size: 0.88rem;
-  max-width: 260px;
+  max-width: 280px;
 }
 
 .titleWrapper {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 4px;
+  gap: 5px;
 }
 
 .taskTitle {
@@ -67,19 +76,20 @@
   text-overflow: ellipsis;
   white-space: normal;
   line-height: 1.4;
+  font-weight: 700;
 }
 
 .recurringBadge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   font-size: 0.68rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--primary-emerald);
   background: var(--primary-emerald-light);
-  border: 1px solid var(--border-subtle);
-  padding: 1px 6px;
-  border-radius: 6px;
+  border: 1px solid var(--primary-emerald-glow);
+  padding: 2px 8px;
+  border-radius: 20px;
   letter-spacing: 0.02em;
   white-space: nowrap;
 }
@@ -105,13 +115,13 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: var(--negative-bg);
-  color: var(--negative-text);
+  background: var(--badge-negative-bg);
+  color: var(--badge-negative-text);
   font-weight: 800;
   font-size: 0.72rem;
-  padding: 3px 8px;
+  padding: 3px 9px;
   border-radius: 9999px;
-  border: 1px solid var(--destructive);
+  border: 1px solid rgba(239, 68, 68, 0.4);
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }
@@ -119,44 +129,59 @@
 .notOverdue {
   color: var(--text-muted);
   font-size: 0.82rem;
+  font-weight: 600;
 }
 
 .dateCell {
   color: var(--text-secondary);
   font-size: 0.82rem;
+  font-weight: 600;
   white-space: nowrap;
 }
 
 .actions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   white-space: nowrap;
 }
 
 .button {
   background: var(--bg-card-subtle);
   border: 1px solid var(--border-default);
-  border-radius: 8px;
+  border-radius: 10px;
   color: var(--text-primary);
   cursor: pointer;
   font-size: 0.78rem;
   font-weight: 700;
-  padding: 6px 12px;
-  min-height: 32px;
+  padding: 6px 14px;
+  min-height: 34px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;
 }
 
 .button:hover {
   border-color: var(--primary-emerald);
   color: var(--primary-emerald);
-  background: var(--primary-emerald-light);
+  background: var(--bg-card-hover);
   transform: translateY(-1px);
+}
+
+.buttonPrimary {
+  background: var(--primary-emerald);
+  color: var(--text-on-primary);
+  border: 1px solid var(--primary-emerald);
+  box-shadow: 0 2px 8px var(--primary-emerald-glow);
+}
+
+.buttonPrimary:hover {
+  background: var(--primary-emerald-hover);
+  color: var(--text-on-primary);
+  box-shadow: 0 4px 14px var(--primary-emerald-glow);
 }
 
 .personInfo {
@@ -168,13 +193,14 @@
 .personName {
   font-weight: 700;
   color: var(--text-primary);
-  font-size: 0.82rem;
+  font-size: 0.83rem;
   white-space: nowrap;
 }
 
 .personMeta {
   color: var(--text-muted);
   font-size: 0.72rem;
+  font-weight: 600;
   white-space: nowrap;
 }
 
@@ -183,8 +209,8 @@
   align-items: center;
   font-size: 0.68rem;
   font-weight: 700;
-  padding: 1px 6px;
-  border-radius: 4px;
+  padding: 1.5px 7px;
+  border-radius: 6px;
   background: var(--bg-card-subtle);
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
@@ -195,11 +221,11 @@
   display: inline-flex;
   align-items: center;
   font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--warning-text);
-  background: var(--warning-bg);
-  border: 1px dashed var(--border-default);
-  padding: 2px 8px;
+  font-weight: 800;
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px dashed rgba(245, 158, 11, 0.4);
+  padding: 3px 10px;
   border-radius: 9999px;
   letter-spacing: 0.02em;
 }
@@ -208,11 +234,11 @@
   display: inline-flex;
   align-items: center;
   font-size: 0.72rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--primary-emerald);
   background: var(--primary-emerald-light);
-  border: 1px solid var(--border-subtle);
-  padding: 2px 8px;
+  border: 1px solid var(--primary-emerald-glow);
+  padding: 3px 10px;
   border-radius: 9999px;
   letter-spacing: 0.02em;
 }
@@ -225,7 +251,6 @@
 
 /* ==========================================================================
    Mobile Responsive Transformation (<= 768px)
-   Transforms the wide <table> into a sleek, accessible card list on mobile.
    ========================================================================== */
 @media (max-width: 768px) {
   .tableWrap {
@@ -258,7 +283,7 @@
     gap: 10px;
     background: var(--bg-card);
     border: 1px solid var(--border-default);
-    border-radius: 16px;
+    border-radius: 18px;
     padding: 16px;
     box-shadow: var(--card-shadow);
     width: 100%;
@@ -269,7 +294,6 @@
   .row:hover {
     border-color: var(--border-hover);
     box-shadow: var(--card-hover-shadow);
-    background-color: var(--bg-card);
   }
 
   .table td {
@@ -292,14 +316,6 @@
     margin-right: 8px;
     min-width: 54px;
     display: inline-block;
-  }
-
-  /* Reference in top row */
-  .refCell {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 2px;
   }
 
   .taskTitleCell {
@@ -332,7 +348,6 @@
     font-size: 0.8125rem;
   }
 
-  /* Actions at bottom of mobile card */
   .actionsCell {
     padding-top: 12px !important;
     border-top: 1px solid var(--border-subtle) !important;
@@ -348,8 +363,8 @@
 
   .actions .button {
     flex: 1;
-    min-height: 44px;
+    min-height: 42px;
     font-size: 0.875rem;
-    border-radius: 10px;
+    border-radius: 12px;
   }
 }

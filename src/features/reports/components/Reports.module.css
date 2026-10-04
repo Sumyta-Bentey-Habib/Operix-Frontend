@@ -79,21 +79,25 @@
   border-radius: 20px;
   background: var(--bg-card);
   box-shadow: var(--card-shadow);
-  padding: 20px 24px;
-  display: grid;
-  gap: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .filterGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 16px;
   align-items: flex-start;
 }
 
 .field {
-  display: grid;
-  gap: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .fieldHeader {
@@ -101,27 +105,29 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  min-height: 24px;
 }
 
-.fieldHeader label,
-.fieldHeader span {
+.fieldHeader label {
   color: var(--text-primary);
   font-size: 0.84rem;
   font-weight: 700;
+  letter-spacing: 0.01em;
 }
 
 .compactPager {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   font-size: 0.75rem;
+  font-weight: 600;
   color: var(--text-muted);
 }
 
 .compactPagerBtn {
   background: var(--bg-card-subtle);
   border: 1px solid var(--border-default);
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--text-primary);
   cursor: pointer;
   padding: 2px 8px;
@@ -130,19 +136,71 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 28px;
-  transition: all 0.15s ease;
+  min-height: 26px;
+  min-width: 26px;
+  transition: all 0.2s ease;
 }
 
 .compactPagerBtn:hover:not(:disabled) {
-  background: var(--bg-card-hover);
+  background: var(--primary-emerald-light);
   border-color: var(--primary-emerald);
   color: var(--primary-emerald);
+  transform: translateY(-1px);
 }
 
 .compactPagerBtn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 14px;
+  pointer-events: none;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.inputWithIcon {
+  width: 100%;
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 10px 14px 10px 40px;
+  min-height: 44px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.inputWithIcon:hover {
+  border-color: var(--border-hover);
+}
+
+.inputWithIcon:focus {
+  border-color: var(--primary-emerald);
+  box-shadow: 0 0 0 3px var(--primary-emerald-glow);
+}
+
+.inputWithIcon:focus + .inputIcon,
+.inputWrapper:focus-within .inputIcon {
+  color: var(--primary-emerald);
+}
+
+.selectWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
 .input,
@@ -155,10 +213,19 @@
   color: var(--text-primary);
   font: inherit;
   font-size: 0.9rem;
-  padding: 11px 14px;
+  font-weight: 500;
+  padding: 10px 38px 10px 14px;
   min-height: 44px;
   outline: none;
+  appearance: none;
+  cursor: pointer;
   transition: all 0.2s ease;
+}
+
+.select:hover,
+.input:hover,
+.textarea:hover {
+  border-color: var(--border-hover);
 }
 
 .input:focus,
@@ -166,6 +233,19 @@
 .select:focus {
   border-color: var(--primary-emerald);
   box-shadow: 0 0 0 3px var(--primary-emerald-glow);
+}
+
+.selectChevron {
+  position: absolute;
+  right: 14px;
+  pointer-events: none;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.select:focus + .selectChevron,
+.select:hover + .selectChevron {
+  color: var(--primary-emerald);
 }
 
 .textarea {
@@ -178,9 +258,10 @@
   gap: 12px;
   align-items: center;
   justify-content: flex-end;
-  padding-top: 12px;
+  padding-top: 16px;
   border-top: 1px solid var(--border-subtle);
 }
+
 
 .button,
 .primaryButton,

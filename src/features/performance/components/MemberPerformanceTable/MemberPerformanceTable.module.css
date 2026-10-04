@@ -165,17 +165,36 @@
 }
 
 .desktopActionLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 10px;
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-default);
   color: var(--primary-emerald);
   font-weight: 700;
+  font-size: 0.82rem;
   text-decoration: none;
-  font-size: 0.85rem;
-  transition: color 0.15s ease;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .desktopActionLink:hover {
-  text-decoration: underline;
-  color: var(--primary-emerald-hover);
+  background: var(--primary-emerald-light);
+  border-color: var(--primary-emerald);
+  color: var(--primary-emerald);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--primary-emerald-glow);
+  text-decoration: none;
 }
+
+.ratePerfect {
+  color: var(--primary-emerald);
+  font-weight: 800;
+}
+
 
 /* Hidden elements on desktop */
 .mobileCardHeader,

@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 export interface UserIdentityProps {
   name: string;
   email: string;
@@ -42,22 +44,14 @@ export const UserIdentity = ({ name, email, avatarUrl, className = "" }: UserIde
         aria-hidden="true"
       >
         {avatarUrl ? (
-          <img
-            src={avatarUrl}
-            alt={name}
-            className="size-full rounded-full object-cover"
-          />
+          <Image src={avatarUrl} alt={name} className="size-full rounded-full object-cover" />
         ) : (
           initials
         )}
       </div>
       <div className="flex flex-col gap-0.5 min-w-0">
-        <span className="truncate text-[0.92rem] font-bold text-[var(--text-primary)]">
-          {name}
-        </span>
-        <span className="truncate text-[0.78rem] text-[var(--text-secondary)]">
-          {email}
-        </span>
+        <span className="truncate text-[0.92rem] font-bold text-(--text-primary)">{name}</span>
+        <span className="truncate text-[0.78rem] text-(--text-secondary)">{email}</span>
       </div>
     </div>
   );

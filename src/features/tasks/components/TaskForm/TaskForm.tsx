@@ -90,6 +90,8 @@ export const TaskForm = ({
   const [localError, setLocalError] = useState<string | null>(null);
 
   const hasDueDate = Boolean(dueAt);
+  const globalOpenSelfClaim =
+    scope === "GLOBAL" && recurrenceFrequency === "NONE" && !responsibleMember;
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -153,7 +155,7 @@ export const TaskForm = ({
         scope: "GLOBAL",
         completionMode: "DIRECT",
         ...(responsibleMember ? { responsibleUserId: responsibleMember.id } : {}),
-        ...(allowSelfClaim && recurrenceFrequency === "NONE" ? { allowSelfClaim: true } : {}),
+        allowSelfClaim: globalOpenSelfClaim,
         ...(recurrence ? { recurrence } : {}),
         ...(distribution ? { distribution } : {}),
       });
@@ -624,21 +626,33 @@ export const TaskForm = ({
                 <label className={styles.label}>
                   {TASK_CREATE_STRINGS.selfClaim.sectionLabel}
                 </label>
-                <label className={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    checked={allowSelfClaim}
-                    disabled={recurrenceFrequency !== "NONE"}
-                    onChange={(event) => setAllowSelfClaim(event.target.checked)}
-                    className={styles.checkbox}
-                  />
-                  <span>{TASK_CREATE_STRINGS.selfClaim.enableLabel}</span>
-                </label>
-                <p className={styles.helperText}>
-                  {recurrenceFrequency !== "NONE"
-                    ? TASK_CREATE_STRINGS.selfClaim.disabledForRecurring
-                    : TASK_CREATE_STRINGS.selfClaim.enableHelper}
-                </p>
+                {scope === "GLOBAL" ? (
+                  <p className={styles.infoCallout}>
+                    {globalOpenSelfClaim
+                      ? TASK_CREATE_STRINGS.selfClaim.globalOpen
+                      : recurrenceFrequency !== "NONE"
+                        ? TASK_CREATE_STRINGS.selfClaim.globalRecurring
+                        : TASK_CREATE_STRINGS.selfClaim.globalAssigned}
+                  </p>
+                ) : (
+                  <>
+                    <label className={styles.checkboxLabel}>
+                      <input
+                        type="checkbox"
+                        checked={allowSelfClaim}
+                        disabled={recurrenceFrequency !== "NONE"}
+                        onChange={(event) => setAllowSelfClaim(event.target.checked)}
+                        className={styles.checkbox}
+                      />
+                      <span>{TASK_CREATE_STRINGS.selfClaim.enableLabel}</span>
+                    </label>
+                    <p className={styles.helperText}>
+                      {recurrenceFrequency !== "NONE"
+                        ? TASK_CREATE_STRINGS.selfClaim.disabledForRecurring
+                        : TASK_CREATE_STRINGS.selfClaim.enableHelper}
+                    </p>
+                  </>
+                )}
               </div>
 
               {/* Clock-Wise Recurrence Schedule Section */}
@@ -666,7 +680,7 @@ export const TaskForm = ({
                         setRecurrenceFrequency(opt.value);
                         if (opt.value !== "NONE") {
                           setAllowSelfClaim(false);
-                        } else {
+                        } else if (scope !== "GLOBAL") {
                           setResponsibleMember(null);
                         }
                       }}
@@ -722,6 +736,38 @@ export const TaskForm = ({
                     </div>
                   </>
                   
+                )}
+                {scope === "GLOBAL" && recurrenceFrequency === "NONE" && (
+                  <div className={styles.responsiblePickerField}>
+                    <label className={styles.label}>
+                      {TASK_CREATE_STRINGS.recurrence.responsibleMemberLabel}
+                    </label>
+                    {responsibleMember ? (
+                      <div className={styles.selectedMemberRow}>
+                        <span className={styles.selectedMemberName}>{responsibleMember.name}</span>
+                        <button
+                          type="button"
+                          className={styles.clearMemberButton}
+                          onClick={() => setResponsibleMember(null)}
+                        >
+                          {TASK_CREATE_STRINGS.recurrence.responsibleMemberClear}
+                        </button>
+                      </div>
+                    ) : (
+                      <TaskAssigneePicker
+                        selectedMemberId=""
+                        selectedMember={null}
+                        requireActive
+                        onSelect={(member) => {
+                          setResponsibleMember(member);
+                          if (localError) setLocalError(null);
+                        }}
+                      />
+                    )}
+                    <p className={styles.helperText}>
+                      {TASK_CREATE_STRINGS.selfClaim.globalResponsibleHelper}
+                    </p>
+                  </div>
                 )}
               </div>
             </div>

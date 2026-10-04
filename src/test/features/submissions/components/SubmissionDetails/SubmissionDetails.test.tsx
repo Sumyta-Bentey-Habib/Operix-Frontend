@@ -71,7 +71,7 @@ describe("SubmissionDetails", () => {
     expect(screen.queryByText(/Review History/)).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Remove|Delete|Upload/ })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Download" }));
+    fireEvent.click(screen.getByRole("button", { name: /Download/i }));
 
     await waitFor(() => expect(mocks.download).toHaveBeenCalledWith("file-1"));
     expect(mocks.download).not.toHaveBeenCalledWith("/api/v1/files/file-1/download");

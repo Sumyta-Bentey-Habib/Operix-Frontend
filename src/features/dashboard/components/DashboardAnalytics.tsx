@@ -29,6 +29,7 @@ export const DashboardAnalytics = () => {
     overviewState,
     workloadState,
     trendState,
+    tasksState,
   } = useDashboardAnalytics();
 
   if (hydrationStatus === "IDLE" || hydrationStatus === "LOADING") {
@@ -57,11 +58,14 @@ export const DashboardAnalytics = () => {
         onRetry={() => {
           void overviewState.refresh();
           void trendState.refresh();
+          void tasksState.refresh();
         }}
       >
         {normalizedOverview ? (
           <DashboardOverviewContent
             overview={normalizedOverview}
+            workload={workloadState.workload}
+            tasks={tasksState.tasks}
             trends={trendState.trends}
             days={trendState.days}
             setDays={trendState.setDays}
@@ -84,6 +88,8 @@ export const DashboardAnalytics = () => {
         {workloadState.workload ? (
           <DashboardWorkloadContent
             workload={workloadState.workload}
+            tasks={tasksState.tasks}
+            displayName={displayName}
             setPage={workloadState.setPage}
           />
         ) : (

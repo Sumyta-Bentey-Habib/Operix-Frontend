@@ -10,13 +10,16 @@
   border-radius: 20px;
   background: var(--bg-card);
   box-shadow: var(--card-shadow);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .hero {
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  padding: 24px;
+  padding: 24px 28px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(15, 23, 42, 0.6) 100%), var(--bg-card);
 }
 
 .hero h1,
@@ -25,6 +28,7 @@
   margin: 0;
   color: var(--text-primary);
   font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 .hero p,
@@ -32,22 +36,70 @@
 .muted {
   margin: 6px 0 0;
   color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
 }
 
 .card {
-  padding: 24px;
+  padding: 24px 28px;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
+.sectionHeaderWithIcon {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.headerIconWrapper {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.05) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-emerald);
+  flex-shrink: 0;
+}
+
 .contextCard {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
-  gap: 12px;
-  padding: 14px 18px;
+  gap: 16px;
+  padding: 12px 20px;
   color: var(--text-secondary);
-  background: var(--bg-card-subtle);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+}
+
+.contextBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+}
+
+.contextBadge svg {
+  color: var(--primary-emerald);
+  flex-shrink: 0;
+}
+
+.contextBadge strong {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.contextDivider {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  user-select: none;
 }
 
 .sectionHeader {
@@ -56,10 +108,9 @@
 
 .metricGrid,
 .summaryGrid,
-.breakdownGrid,
-.pickerRows {
+.breakdownGrid {
   display: grid;
-  gap: 12px;
+  gap: 14px;
 }
 
 .metricGrid {
@@ -72,12 +123,11 @@
 
 .metric,
 .summaryTile,
-.breakdownRow,
-.pickerRow {
+.breakdownRow {
   border: 1px solid var(--border-default);
   border-radius: 16px;
   background: var(--bg-card-subtle);
-  padding: 14px;
+  padding: 16px;
 }
 
 .metric,
@@ -124,32 +174,165 @@
 }
 
 .filter {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 8px;
-  min-width: min(100%, 280px);
+  max-width: 380px;
+  width: 100%;
 }
 
 .filter label {
   color: var(--text-primary);
   font-size: 0.84rem;
   font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.selectWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
 .select {
+  width: 100%;
   border: 1px solid var(--border-default);
   border-radius: 12px;
-  padding: 10px 14px;
+  padding: 10px 40px 10px 14px;
   min-height: 44px;
   background: var(--bg-input);
   color: var(--text-primary);
   font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
   outline: none;
+  appearance: none;
+  cursor: pointer;
   transition: all 0.2s ease;
+}
+
+.select:hover {
+  border-color: var(--border-hover);
 }
 
 .select:focus {
   border-color: var(--primary-emerald);
   box-shadow: 0 0 0 3px var(--primary-emerald-glow);
+}
+
+.selectChevron {
+  position: absolute;
+  right: 14px;
+  pointer-events: none;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.select:focus + .selectChevron,
+.select:hover + .selectChevron {
+  color: var(--primary-emerald);
+}
+
+/* Team Grid and Cards */
+.teamGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+.teamCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-default);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.teamCard:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--primary-emerald);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18), 0 0 0 1px var(--primary-emerald-glow);
+}
+
+.teamCardLeft {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.teamAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.teamDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.teamTitle {
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.teamUpdated {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}
+
+.teamCardRight {
+  flex-shrink: 0;
+}
+
+.viewBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 10px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: var(--primary-emerald);
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.teamCard:hover .viewBadge {
+  background: var(--primary-emerald);
+  color: var(--text-inverse);
+  box-shadow: 0 2px 8px var(--primary-emerald-glow);
 }
 
 .tableWrap {
@@ -194,17 +377,9 @@
   background-color: var(--table-row-hover);
 }
 
-.link,
 .button,
-.secondaryButton,
-.pickerRow {
+.secondaryButton {
   cursor: pointer;
-}
-
-.link {
-  color: var(--primary-emerald);
-  font-weight: 700;
-  text-decoration: none;
 }
 
 .button,
@@ -249,44 +424,15 @@
   outline-offset: 2px;
 }
 
-.pickerRow {
-  display: grid;
-  gap: 4px;
-  width: 100%;
-  text-align: left;
-  transition: all 0.2s ease;
-}
-
-.pickerRow:hover,
-.selected {
-  border-color: var(--primary-emerald);
-  box-shadow: 0 0 0 2px var(--primary-emerald-glow);
-}
-
-.identityGrid {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-}
-
-.identityItem {
-  display: grid;
-  gap: 4px;
-}
-
-.identityItem span {
-  color: var(--text-secondary);
-  font-size: 0.85rem;
-}
-
-.identityItem strong {
-  color: var(--text-primary);
-}
-
 @media (max-width: 720px) {
   .hero,
   .toolbar {
     flex-direction: column;
     align-items: stretch;
   }
+
+  .teamGrid {
+    grid-template-columns: 1fr;
+  }
 }
+

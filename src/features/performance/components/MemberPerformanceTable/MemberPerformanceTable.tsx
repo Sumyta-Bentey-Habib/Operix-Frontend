@@ -130,14 +130,23 @@ export const MemberPerformanceTable: React.FC<MemberPerformanceTableProps> = ({ 
               </td>
 
               {/* Completion Rate (Desktop) */}
-              <td className={`${styles.td} ${styles.numCell} ${styles.desktopCell}`}>
+              <td
+                className={`${styles.td} ${styles.numCell} ${styles.desktopCell} ${
+                  performance.completionRate === 100 ? styles.ratePerfect : ""
+                }`}
+              >
                 {completionRateText}
               </td>
 
               {/* On Time Rate (Desktop) */}
-              <td className={`${styles.td} ${styles.numCell} ${styles.desktopCell}`}>
+              <td
+                className={`${styles.td} ${styles.numCell} ${styles.desktopCell} ${
+                  performance.onTimeRate === 100 ? styles.ratePerfect : ""
+                }`}
+              >
                 {onTimeRateText}
               </td>
+
 
               {/* Avg Completion (Desktop) */}
               <td className={`${styles.td} ${styles.numCell} ${styles.desktopCell}`}>

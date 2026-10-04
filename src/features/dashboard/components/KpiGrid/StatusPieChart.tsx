@@ -6,6 +6,23 @@ import { StatusPieLegendItem } from "./StatusPieLegendItem";
 import { DASHBOARD_STRINGS } from "@/utils/dashboard-strings";
 import styles from "./KpiGrid.module.css";
 
+const DonutHeaderIcon = () => (
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+    <path d="M22 12A10 10 0 0 0 12 2v10z" />
+  </svg>
+);
+
 export const StatusPieChart = ({
   items,
   title,
@@ -25,12 +42,19 @@ export const StatusPieChart = ({
     <div className={styles.donutCard}>
       <div className={styles.donutHeader}>
         <div className={styles.donutTitleRow}>
-          <h3>{title ?? DASHBOARD_STRINGS.charts.taskStatusDistribution}</h3>
+          <div className={styles.headerTitleGroup}>
+            <span className={styles.headerIconWrap}>
+              <DonutHeaderIcon />
+            </span>
+            <div>
+              <h3>{title ?? DASHBOARD_STRINGS.charts.taskStatusDistribution}</h3>
+              {subtitle ? <p className={styles.cardSubtitle}>{subtitle}</p> : null}
+            </div>
+          </div>
           {total === 0 ? (
             <span className={styles.donutZeroBadge}>{DASHBOARD_STRINGS.badges.awaitingData}</span>
           ) : null}
         </div>
-        {subtitle ? <p className={styles.cardSubtitle}>{subtitle}</p> : null}
       </div>
 
       <StatusPieSvg

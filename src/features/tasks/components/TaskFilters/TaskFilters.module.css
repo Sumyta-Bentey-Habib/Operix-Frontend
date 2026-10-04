@@ -3,18 +3,69 @@
   border: 1px solid var(--border-default);
   border-radius: 20px;
   box-shadow: var(--card-shadow);
-  padding: 20px 24px;
+  padding: 22px 26px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
   width: 100%;
   box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+.filtersCard:hover {
+  border-color: var(--border-hover);
+}
+
+/* Header bar */
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 2px;
+}
+
+.headerTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.headerIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--primary-emerald-light);
+  color: var(--primary-emerald);
+}
+
+.headerTitle {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.headerBadge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-subtle);
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+
+/* Primary Form Controls Grid */
 .primaryRow {
   display: grid;
-  grid-template-columns: minmax(220px, 2fr) repeat(4, minmax(130px, 1fr)) auto;
-  gap: 12px;
+  grid-template-columns: minmax(240px, 2.2fr) repeat(4, minmax(135px, 1fr)) auto;
+  gap: 14px;
   align-items: flex-end;
   width: 100%;
 }
@@ -22,16 +73,25 @@
 .field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 7px;
   min-width: 0;
 }
 
 .fieldLabel {
-  font-size: 0.76rem;
-  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.73rem;
+  font-weight: 800;
   color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
+}
+
+.fieldLabelIcon {
+  color: var(--text-muted);
+  width: 13px;
+  height: 13px;
 }
 
 .searchWrapper {
@@ -43,58 +103,80 @@
 
 .searchIcon {
   position: absolute;
-  left: 12px;
+  left: 14px;
   color: var(--text-muted);
   pointer-events: none;
   width: 16px;
   height: 16px;
+  transition: color 0.2s ease;
+}
+
+.searchWrapper:focus-within .searchIcon {
+  color: var(--primary-emerald);
 }
 
 .input,
 .select {
   width: 100%;
-  height: 40px;
+  height: 42px;
   border: 1px solid var(--border-default);
-  border-radius: 10px;
+  border-radius: 12px;
   background: var(--bg-input);
   color: var(--text-primary);
   font: inherit;
   font-size: 0.85rem;
-  padding: 0 12px;
+  font-weight: 600;
+  padding: 0 14px;
   outline: none;
   transition: all 0.2s ease;
   box-sizing: border-box;
 }
 
 .searchInput {
-  padding-left: 36px;
+  padding-left: 40px;
+}
+
+.select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238a99ad' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+.select option {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
 }
 
 .input:focus,
 .select:focus {
   border-color: var(--primary-emerald);
+  background-color: var(--bg-card-subtle);
   box-shadow: 0 0 0 3px var(--primary-emerald-glow);
 }
 
 .actions {
   display: flex;
   align-items: center;
-  gap: 8px;
-  height: 40px;
+  gap: 10px;
+  height: 42px;
 }
 
 .primaryButton,
 .secondaryButton {
   border: 1px solid transparent;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
   font-weight: 700;
-  font-size: 0.82rem;
-  height: 40px;
-  padding: 0 16px;
+  font-size: 0.84rem;
+  height: 42px;
+  padding: 0 18px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   white-space: nowrap;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;
@@ -103,14 +185,14 @@
 .primaryButton {
   background: var(--primary-emerald);
   color: var(--text-on-primary);
-  box-shadow: 0 2px 8px var(--primary-emerald-glow);
+  box-shadow: 0 4px 14px var(--primary-emerald-glow);
 }
 
 .primaryButton:hover:not(:disabled) {
   background: var(--primary-emerald-hover);
   color: var(--text-on-primary);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px var(--primary-emerald-glow);
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 18px var(--primary-emerald-glow);
 }
 
 .secondaryButton {
@@ -136,37 +218,70 @@
    ========================================================================== */
 .scopedFilters {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 14px;
-  padding-top: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 18px;
+  padding-top: 18px;
   border-top: 1px solid var(--border-subtle);
 }
 
 .scopedField {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   background: var(--bg-card-subtle);
   border: 1px solid var(--border-default);
-  border-radius: 14px;
-  padding: 12px 14px;
+  border-radius: 16px;
+  padding: 16px 18px;
   box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.scopedField:hover {
+  border-color: var(--border-hover);
+}
+
+.scopedHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.scopedTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.scopedDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--primary-emerald);
+  box-shadow: 0 0 8px var(--primary-emerald-glow);
 }
 
 .scopedLabel {
-  font-size: 0.76rem;
-  font-weight: 700;
-  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--text-primary);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
 }
 
-/* ==========================================================================
-   Responsive Breakpoints
-   ========================================================================== */
+.activeIndicator {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--primary-emerald);
+  background: var(--primary-emerald-light);
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid var(--primary-emerald-glow);
+}
+
+/* Responsive Breakpoints */
 @media (max-width: 1200px) {
   .primaryRow {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: 12px;
   }
 

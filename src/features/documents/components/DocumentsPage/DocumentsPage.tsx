@@ -92,11 +92,11 @@ export const DocumentsPage = () => {
   return (
     <section className="grid gap-5">
       <header className="grid gap-1.5">
-        <h1 className="text-[1.45rem] font-black text-[var(--text-primary)]">Documents</h1>
-        <p className="max-w-[760px] text-[0.9rem] leading-normal text-[var(--text-secondary)]">
+        <h1 className="text-[1.45rem] font-black text-(--text-primary)">Documents</h1>
+        <p className="max-w-190 text-[0.9rem] leading-normal text-(--text-secondary)">
           {ROLE_DESCRIPTIONS[viewer.role] ?? ROLE_DESCRIPTIONS.MEMBER}
         </p>
-        <p className="text-[0.82rem] font-extrabold text-[var(--text-muted)]">
+        <p className="text-[0.82rem] font-extrabold text-(--text-muted)">
           Current query total: {meta.total}
         </p>
       </header>
@@ -113,7 +113,7 @@ export const DocumentsPage = () => {
       </DocumentFilters>
 
       {downloadError && (
-        <p className="font-extrabold text-[var(--destructive)]" role="alert">
+        <p className="font-extrabold text-(--destructive)" role="alert">
           {downloadError}
         </p>
       )}

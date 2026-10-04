@@ -40,15 +40,15 @@ export const SubmissionAttachments = ({ attachments }: SubmissionAttachmentsProp
   return (
     <section className="grid gap-3.5">
       <div>
-        <h2 className="text-[1.2rem] font-bold text-[var(--text-primary)]">
+        <h2 className="text-[1.2rem] font-bold text-(--text-primary)">
           Submission Attachments
         </h2>
-        <p className="text-sm text-[var(--text-secondary)]">
+        <p className="text-sm text-(--text-secondary)">
           Immutable evidence uploaded with this Submission.
         </p>
       </div>
       {downloadError && (
-        <p className="font-semibold text-[var(--destructive)]" role="alert">
+        <p className="font-semibold text-(--destructive)" role="alert">
           {downloadError}
         </p>
       )}

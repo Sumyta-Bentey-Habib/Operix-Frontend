@@ -51,6 +51,7 @@ const task = (
   teamId: "team-1",
   categoryId: null,
   createdById: "admin-1",
+  responsible: { id: "member-1", name: "Member One", role: "MEMBER" },
   createdAt: "2026-08-23T00:00:00.000Z",
   updatedAt: "2026-08-23T00:00:00.000Z",
   isOverdue: false,

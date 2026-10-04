@@ -66,19 +66,34 @@ const ReportAdminFilter = ({
           </button>
         </div>
       </div>
-      <select
-        id="admin-filter"
-        className={styles.select}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-      >
-        <option value="">All Admins</option>
-        {admins.admins.map((admin) => (
-          <option key={admin.id} value={admin.id}>
-            {admin.name} ({admin.id})
-          </option>
-        ))}
-      </select>
+      <div className={styles.selectWrapper}>
+        <select
+          id="admin-filter"
+          className={styles.select}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+        >
+          <option value="">All Admins</option>
+          {admins.admins.map((admin) => (
+            <option key={admin.id} value={admin.id}>
+              {admin.name} ({admin.id})
+            </option>
+          ))}
+        </select>
+        <svg
+          className={styles.selectChevron}
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </div>
       {admins.error && <span className={styles.error}>Unable to load Admin options.</span>}
     </div>
   );
@@ -106,38 +121,69 @@ const ReportFilters = ({
           <div className={styles.fieldHeader}>
             <label htmlFor="report-search">Search Report Title</label>
           </div>
-          <input
-            id="report-search"
-            className={styles.input}
-            value={filters.q}
-            maxLength={100}
-            onChange={(event) => setFilters({ ...filters, q: event.target.value })}
-            placeholder="Filter by report title..."
-          />
+          <div className={styles.inputWrapper}>
+            <svg
+              className={styles.inputIcon}
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              id="report-search"
+              className={styles.inputWithIcon}
+              value={filters.q}
+              maxLength={100}
+              onChange={(event) => setFilters({ ...filters, q: event.target.value })}
+              placeholder="Filter by report title..."
+            />
+          </div>
         </div>
 
         <div className={styles.field}>
           <div className={styles.fieldHeader}>
             <label htmlFor="status-filter">Status</label>
           </div>
-          <select
-            id="status-filter"
-            className={styles.select}
-            value={filters.status}
-            onChange={(event) =>
-              setFilters({
-                ...filters,
-                status: event.target.value as ManagementReportFilterState["status"],
-              })
-            }
-          >
-            <option value="ALL">All Statuses</option>
-            {REPORT_STATUSES.map((status) => (
-              <option key={status} value={status}>
-                {status.replaceAll("_", " ")}
-              </option>
-            ))}
-          </select>
+          <div className={styles.selectWrapper}>
+            <select
+              id="status-filter"
+              className={styles.select}
+              value={filters.status}
+              onChange={(event) =>
+                setFilters({
+                  ...filters,
+                  status: event.target.value as ManagementReportFilterState["status"],
+                })
+              }
+            >
+              <option value="ALL">All Statuses</option>
+              {REPORT_STATUSES.map((status) => (
+                <option key={status} value={status}>
+                  {status.replaceAll("_", " ")}
+                </option>
+              ))}
+            </select>
+            <svg
+              className={styles.selectChevron}
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </div>
         </div>
 
         <div className={styles.field}>
@@ -167,19 +213,34 @@ const ReportFilters = ({
               </button>
             </div>
           </div>
-          <select
-            id="team-filter"
-            className={styles.select}
-            value={filters.teamId}
-            onChange={(event) => setFilters({ ...filters, teamId: event.target.value })}
-          >
-            <option value="">All visible Teams</option>
-            {teams.teams.map((team) => (
-              <option key={team.id} value={team.id}>
-                {team.name} ({team.id})
-              </option>
-            ))}
-          </select>
+          <div className={styles.selectWrapper}>
+            <select
+              id="team-filter"
+              className={styles.select}
+              value={filters.teamId}
+              onChange={(event) => setFilters({ ...filters, teamId: event.target.value })}
+            >
+              <option value="">All visible Teams</option>
+              {teams.teams.map((team) => (
+                <option key={team.id} value={team.id}>
+                  {team.name} ({team.id})
+                </option>
+              ))}
+            </select>
+            <svg
+              className={styles.selectChevron}
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </div>
           {teams.error && <span className={styles.error}>Unable to load Team options.</span>}
         </div>
 
