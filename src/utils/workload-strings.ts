@@ -14,7 +14,7 @@ export const WORKLOAD_TABLE_STRINGS = {
     allClear: "All clear",
   },
   search: {
-    placeholder: "Search member by name, ID or team...",
+    placeholder: "Search member by name, ID",
     ariaLabel: "Filter member workload",
     clear: "Clear search",
   },

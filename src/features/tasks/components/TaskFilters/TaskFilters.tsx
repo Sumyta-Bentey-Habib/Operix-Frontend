@@ -50,6 +50,73 @@ export interface TaskFiltersProps {
   onClear: () => void;
 }
 
+const FilterHeaderIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+  </svg>
+);
+
+const SearchIcon = () => (
+  <svg
+    className={styles.searchIcon}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <circle cx="11" cy="11" r="8" />
+    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+  </svg>
+);
+
+const ApplyIcon = () => (
+  <svg
+    width="15"
+    height="15"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+);
+
+const RefreshIcon = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+    <path d="M21 3v5h-5" />
+    <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
+    <path d="M3 21v-5h5" />
+  </svg>
+);
+
 export const TaskFilters = ({ viewer, filters, onApply, onClear }: TaskFiltersProps) => {
   const [draft, setDraft] = useState(filters);
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
@@ -68,24 +135,39 @@ export const TaskFilters = ({ viewer, filters, onApply, onClear }: TaskFiltersPr
   const showMemberFilter = canFilterTasksByAssignedMember(viewer);
   const hasScopedFilters = showTeamFilter || showMemberFilter;
 
+  // Active filter counter
+  const activeCount = [
+    draft.q.trim() ? "q" : null,
+    draft.scope !== "ALL" ? "scope" : null,
+    draft.status !== "ALL" ? "status" : null,
+    draft.priority !== "ALL" ? "priority" : null,
+    draft.overdue !== "ALL" ? "overdue" : null,
+    draft.teamId ? "team" : null,
+    draft.assignedMemberId ? "member" : null,
+  ].filter(Boolean).length;
+
   return (
     <form className={styles.filtersCard} onSubmit={submit}>
+      {/* Top Section Header */}
+      <div className={styles.cardHeader}>
+        <div className={styles.headerTitleGroup}>
+          <span className={styles.headerIconWrap}>
+            <FilterHeaderIcon />
+          </span>
+          <h3 className={styles.headerTitle}>Task Controls</h3>
+        </div>
+        {activeCount > 0 && (
+          <span className={styles.headerBadge}>{activeCount} Active Filters</span>
+        )}
+      </div>
+
+      {/* Main Filter Controls Grid */}
       <div className={styles.primaryRow}>
+        {/* Search */}
         <label className={styles.field}>
           <span className={styles.fieldLabel}>Search</span>
           <div className={styles.searchWrapper}>
-            <svg
-              className={styles.searchIcon}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
+            <SearchIcon />
             <input
               className={`${styles.input} ${styles.searchInput}`}
               value={draft.q}
@@ -95,6 +177,7 @@ export const TaskFilters = ({ viewer, filters, onApply, onClear }: TaskFiltersPr
           </div>
         </label>
 
+        {/* Scope (SUPER_ADMIN only) */}
         {viewer.role === "SUPER_ADMIN" && (
           <label className={styles.field}>
             <span className={styles.fieldLabel}>Scope</span>
@@ -126,6 +209,7 @@ export const TaskFilters = ({ viewer, filters, onApply, onClear }: TaskFiltersPr
           </label>
         )}
 
+        {/* Status */}
         <label className={styles.field}>
           <span className={styles.fieldLabel}>Status</span>
           <select
@@ -146,6 +230,7 @@ export const TaskFilters = ({ viewer, filters, onApply, onClear }: TaskFiltersPr
           </select>
         </label>
 
+        {/* Priority */}
         <label className={styles.field}>
           <span className={styles.fieldLabel}>Priority</span>
           <select
@@ -166,6 +251,7 @@ export const TaskFilters = ({ viewer, filters, onApply, onClear }: TaskFiltersPr
           </select>
         </label>
 
+        {/* Overdue */}
         <label className={styles.field}>
           <span className={styles.fieldLabel}>Overdue</span>
           <select
@@ -186,6 +272,7 @@ export const TaskFilters = ({ viewer, filters, onApply, onClear }: TaskFiltersPr
           </select>
         </label>
 
+        {/* Sort */}
         <label className={styles.field}>
           <span className={styles.fieldLabel}>Sort</span>
           <select
@@ -203,8 +290,10 @@ export const TaskFilters = ({ viewer, filters, onApply, onClear }: TaskFiltersPr
           </select>
         </label>
 
+        {/* Action Buttons */}
         <div className={styles.actions}>
           <button type="submit" className={styles.primaryButton}>
+            <ApplyIcon />
             Apply Filters
           </button>
           <button
@@ -217,16 +306,24 @@ export const TaskFilters = ({ viewer, filters, onApply, onClear }: TaskFiltersPr
               onClear();
             }}
           >
+            <RefreshIcon />
             Clear
           </button>
         </div>
       </div>
 
+      {/* Scoped Pickers Section */}
       {hasScopedFilters ? (
         <div className={styles.scopedFilters}>
           {showTeamFilter ? (
             <div className={styles.scopedField}>
-              <span className={styles.scopedLabel}>Team filter</span>
+              <div className={styles.scopedHeader}>
+                <div className={styles.scopedTitleGroup}>
+                  <span className={styles.scopedDot} />
+                  <span className={styles.scopedLabel}>Team filter</span>
+                </div>
+                {draft.teamId && <span className={styles.activeIndicator}>Active</span>}
+              </div>
               <TaskTeamPicker
                 selectedTeamId={draft.teamId}
                 selectedTeam={selectedTeam}
@@ -244,7 +341,15 @@ export const TaskFilters = ({ viewer, filters, onApply, onClear }: TaskFiltersPr
 
           {showMemberFilter ? (
             <div className={styles.scopedField}>
-              <span className={styles.scopedLabel}>Assigned Member filter</span>
+              <div className={styles.scopedHeader}>
+                <div className={styles.scopedTitleGroup}>
+                  <span className={styles.scopedDot} />
+                  <span className={styles.scopedLabel}>Assigned Member filter</span>
+                </div>
+                {draft.assignedMemberId && (
+                  <span className={styles.activeIndicator}>Active</span>
+                )}
+              </div>
               <TaskAssigneePicker
                 selectedMemberId={draft.assignedMemberId}
                 selectedMember={selectedMember}

@@ -10,6 +10,24 @@ import {
 } from "./breakdown-cards.helpers";
 import styles from "./BreakdownCards.module.css";
 
+const PriorityHeaderIcon = () => (
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M12 20V10" />
+    <path d="M18 20V4" />
+    <path d="M6 20v-4" />
+  </svg>
+);
+
 export const ActivePriorityBreakdown = ({
   counts,
 }: {
@@ -20,8 +38,15 @@ export const ActivePriorityBreakdown = ({
   return (
     <div className={styles.priorityCard}>
       <div className={styles.priorityCardHeader}>
-        <h3>{DASHBOARD_STRINGS.charts.activeTasksByPriority}</h3>
-        <p className={styles.cardSubtitle}>{DASHBOARD_STRINGS.charts.activePrioritySubtitle}</p>
+        <div className={styles.headerTitleGroup}>
+          <span className={styles.headerIconWrap}>
+            <PriorityHeaderIcon />
+          </span>
+          <div>
+            <h3>{DASHBOARD_STRINGS.charts.activeTasksByPriority}</h3>
+            <p className={styles.cardSubtitle}>{DASHBOARD_STRINGS.charts.activePrioritySubtitle}</p>
+          </div>
+        </div>
       </div>
       <div className={styles.priorityList}>
         {TASK_PRIORITIES.map((priority) => {
@@ -42,3 +67,4 @@ export const ActivePriorityBreakdown = ({
     </div>
   );
 };
+

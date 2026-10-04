@@ -16,16 +16,28 @@ export const BreakdownProgressRow = ({
 }: BreakdownProgressRowProps) => (
   <div className={styles.priorityRow}>
     <div className={styles.priorityHeader}>
-      <span className={styles.priorityLabel}>{label}</span>
+      <div className={styles.labelGroup}>
+        <span
+          className={styles.priorityDot}
+          style={{ backgroundColor: color, boxShadow: `0 0 8px ${color}80` }}
+          aria-hidden="true"
+        />
+        <span className={styles.priorityLabel}>{label}</span>
+      </div>
       <span className={styles.priorityValue}>
-        {formatDashboardNumber(count)} ({pct}%)
+        {formatDashboardNumber(count)} <span className={styles.pctDim}>({pct}%)</span>
       </span>
     </div>
     <div className={styles.priorityProgressTrack}>
       <div
         className={styles.priorityProgressBar}
-        style={{ width: `${Math.max(4, pct)}%`, backgroundColor: color }}
+        style={{
+          width: `${Math.max(3, pct)}%`,
+          background: `linear-gradient(90deg, ${color} 0%, ${color}dd 100%)`,
+          boxShadow: pct > 0 ? `0 0 10px ${color}60` : "none",
+        }}
       />
     </div>
   </div>
 );
+

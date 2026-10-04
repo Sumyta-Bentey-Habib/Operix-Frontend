@@ -132,17 +132,29 @@ export const TaskTable = ({ tasks, viewer, onAssign, onClaim, onStart }: TaskTab
                     {TASK_TABLE_STRINGS.actions.view}
                   </Link>
                   {canAssignTask(viewer, task) && task.status === "PENDING" && (
-                    <button type="button" className={styles.button} onClick={() => onAssign(task)}>
+                    <button
+                      type="button"
+                      className={`${styles.button} ${styles.buttonPrimary}`}
+                      onClick={() => onAssign(task)}
+                    >
                       {TASK_TABLE_STRINGS.actions.assign}
                     </button>
                   )}
                   {canClaimTask(viewer, task) && onClaim && (
-                    <button type="button" className={styles.button} onClick={() => onClaim(task)}>
+                    <button
+                      type="button"
+                      className={`${styles.button} ${styles.buttonPrimary}`}
+                      onClick={() => onClaim(task)}
+                    >
                       {TASK_TABLE_STRINGS.actions.claim}
                     </button>
                   )}
                   {canStartTask(viewer, task) && onStart && (
-                    <button type="button" className={styles.button} onClick={() => onStart(task)}>
+                    <button
+                      type="button"
+                      className={`${styles.button} ${styles.buttonPrimary}`}
+                      onClick={() => onStart(task)}
+                    >
                       {TASK_TABLE_STRINGS.actions.start}
                     </button>
                   )}

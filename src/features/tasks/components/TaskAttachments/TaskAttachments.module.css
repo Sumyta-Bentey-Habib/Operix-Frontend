@@ -23,3 +23,13 @@
   color: var(--destructive);
   font-weight: 800;
 }
+
+.notice {
+  background: color-mix(in srgb, var(--muted) 28%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 12px 14px;
+}

@@ -34,9 +34,9 @@ export const SubmissionAttachmentItem = ({
   ];
 
   return (
-    <article className="grid gap-3.5 rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-card)] p-[18px] shadow-[var(--card-shadow)] transition-all duration-200 hover:border-[var(--border-hover)] hover:shadow-[var(--card-hover-shadow)]">
+    <article className="grid gap-3.5 rounded-[18px] border border-(--border-default) bg-(--bg-card) p-4.5 shadow-(--card-shadow) transition-all duration-200 hover:border-(--border-hover) hover:shadow-(--card-hover-shadow)">
       <div className="grid gap-3">
-        <h3 className="break-words text-[0.95rem] font-bold text-[var(--text-primary)]">
+        <h3 className="wrap-break-word text-[0.95rem] font-bold text-(--text-primary)">
           {displayName}
         </h3>
         <dl className="m-0 grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-3">

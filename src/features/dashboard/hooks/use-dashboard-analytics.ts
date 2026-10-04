@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { obfuscateId } from "@/utils/id-obfuscator";
+import { useTasks } from "@/features/tasks/hooks/use-tasks";
 import { normalizeDashboardOverview } from "../utils/overview-normalizer";
 import { useDashboardOverview } from "./use-dashboard-overview";
 import { useDashboardTrends } from "./use-dashboard-trends";
@@ -17,6 +18,7 @@ export const useDashboardAnalytics = () => {
   const overviewState = useDashboardOverview();
   const workloadState = useDashboardWorkload(viewer?.role ?? null);
   const trendState = useDashboardTrends();
+  const tasksState = useTasks(viewer, 1, 100);
   const [selectedSnapshotDate, setSelectedSnapshotDate] = useState<string | undefined>(undefined);
 
   const normalizedOverview = useMemo(
@@ -36,5 +38,6 @@ export const useDashboardAnalytics = () => {
     overviewState,
     workloadState,
     trendState,
+    tasksState,
   };
 };

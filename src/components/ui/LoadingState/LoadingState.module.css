@@ -1,33 +1,143 @@
 .state {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 16px;
   min-height: 220px;
+  padding: 32px 16px;
   color: var(--text-secondary);
   font-size: 0.9rem;
   font-weight: 500;
 }
 
-.spinner {
-  width: 24px;
-  height: 24px;
-  border: 3px solid var(--border-default);
-  border-top-color: var(--primary-emerald);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+.fullPage {
+  min-height: calc(100vh - 120px);
+  width: 100%;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+.spinnerContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+}
+
+.outerRing {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top-color: var(--primary-emerald);
+  border-right-color: var(--primary-emerald-glow);
+  animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+  filter: drop-shadow(0 0 8px var(--primary-emerald-glow));
+}
+
+.innerRing {
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-bottom-color: var(--primary-emerald);
+  border-left-color: rgba(239, 68, 68, 0.3);
+  animation: spinReverse 1.4s ease-in-out infinite;
+}
+
+.coreDot {
+  width: 12px;
+  height: 12px;
+  background-color: var(--primary-emerald);
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--primary-emerald);
+  animation: pulseGlow 1.6s ease-in-out infinite alternate;
+}
+
+.messageWrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .message {
   color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
+.dots {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  background-color: var(--primary-emerald);
+  border-radius: 50%;
+  animation: dotBounce 1.4s infinite ease-in-out both;
+}
+
+.dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinReverse {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes pulseGlow {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.6;
+    box-shadow: 0 0 6px var(--primary-emerald-glow);
+  }
+  100% {
+    transform: scale(1.15);
+    opacity: 1;
+    box-shadow: 0 0 16px var(--primary-emerald);
+  }
+}
+
+@keyframes dotBounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+    opacity: 0.3;
+  }
+  40% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* Skeleton loader styles */
 .skeletonContainer {
   display: flex;
   flex-direction: column;

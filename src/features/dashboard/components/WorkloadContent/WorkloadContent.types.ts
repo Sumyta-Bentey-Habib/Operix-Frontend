@@ -1,3 +1,4 @@
+import type { Task } from "@/features/tasks/types/task.types";
 import type {
   DashboardWorkloadResponse,
   MemberWorkloadRow,
@@ -10,6 +11,8 @@ export interface DashboardMetricCardProps {
   label: string;
   value: string | number;
   hint?: string;
+  variant?: "default" | "active" | "overdue";
+  icon?: React.ReactNode;
 }
 
 export interface WorkloadTilesProps {
@@ -22,9 +25,14 @@ export interface TeamWorkloadTableProps {
 
 export interface MemberSelfWorkloadProps {
   row: MemberWorkloadRow;
+  workload?: DashboardWorkloadResponse | null;
+  tasks?: Task[] | null;
+  displayName?: string;
 }
 
 export interface DashboardWorkloadContentProps {
   workload: DashboardWorkloadResponse;
+  tasks?: Task[] | null;
+  displayName?: string;
   setPage: (page: number) => void;
 }

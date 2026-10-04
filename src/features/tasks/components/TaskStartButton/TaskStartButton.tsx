@@ -6,14 +6,20 @@ import { useState } from "react";
 export interface TaskStartButtonProps {
   pending: boolean;
   onStart: () => void;
+  className?: string;
 }
 
-export const TaskStartButton = ({ pending, onStart }: TaskStartButtonProps) => {
+export const TaskStartButton = ({ pending, onStart, className }: TaskStartButtonProps) => {
   const [confirming, setConfirming] = useState(false);
 
   return (
     <>
-      <button type="button" onClick={() => setConfirming(true)} disabled={pending}>
+      <button
+        type="button"
+        className={className}
+        onClick={() => setConfirming(true)}
+        disabled={pending}
+      >
         {pending ? "Starting..." : "Start Task"}
       </button>
       <ConfirmDialog

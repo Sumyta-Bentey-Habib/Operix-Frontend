@@ -26,10 +26,10 @@
 .modernKpiCard {
   display: flex;
   flex-direction: column;
-  background: var(--bg-card);
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card-subtle) 100%);
   border: 1px solid var(--border-default);
-  border-radius: 18px;
-  padding: 18px 20px;
+  border-radius: 20px;
+  padding: 20px 22px;
   box-shadow: var(--card-shadow);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
@@ -38,9 +38,36 @@
   min-width: 0;
 }
 
+.modernKpiCard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: transparent;
+  transition: background 0.3s ease;
+}
+
+.kpiCard_blue::before {
+  background: linear-gradient(90deg, #3b82f6 0%, rgba(59, 130, 246, 0) 100%);
+}
+
+.kpiCard_amber::before {
+  background: linear-gradient(90deg, #f59e0b 0%, rgba(245, 158, 11, 0) 100%);
+}
+
+.kpiCard_emerald::before {
+  background: linear-gradient(90deg, #10b981 0%, rgba(16, 185, 129, 0) 100%);
+}
+
+.kpiCard_purple::before {
+  background: linear-gradient(90deg, #a855f7 0%, rgba(168, 85, 247, 0) 100%);
+}
+
 .modernKpiCard:hover {
-  border-color: var(--primary-emerald);
-  box-shadow: 0 8px 24px -4px rgba(239, 68, 68, 0.14);
+  border-color: var(--border-hover);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
   transform: translateY(-2px);
 }
 
@@ -48,16 +75,52 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.headerTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.cardIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  flex-shrink: 0;
+}
+
+.iconWrap_blue {
+  background: rgba(59, 130, 246, 0.12);
+  color: #60a5fa;
+}
+
+.iconWrap_amber {
+  background: rgba(245, 158, 11, 0.12);
+  color: #fbbf24;
+}
+
+.iconWrap_emerald {
+  background: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+}
+
+.iconWrap_purple {
+  background: rgba(168, 85, 247, 0.12);
+  color: #c084fc;
 }
 
 .modernKpiTitle {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--text-secondary);
-  text-transform: capitalize;
-  letter-spacing: 0.01em;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -68,51 +131,56 @@
   align-items: center;
   font-size: 0.7rem;
   font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 6px;
+  padding: 3px 9px;
+  border-radius: 8px;
   flex-shrink: 0;
+  letter-spacing: 0.02em;
 }
 
 .badge_emerald {
-  background: var(--primary-emerald-light);
-  color: var(--primary-emerald);
+  background: rgba(16, 185, 129, 0.14);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
 .badge_blue {
-  background: rgba(59, 130, 246, 0.12);
-  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.14);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.25);
 }
 
 .badge_purple {
-  background: rgba(139, 92, 246, 0.12);
-  color: #8b5cf6;
+  background: rgba(168, 85, 247, 0.14);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.25);
 }
 
 .badge_amber {
-  background: rgba(245, 158, 11, 0.12);
-  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.14);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.25);
 }
 
 .modernKpiMain {
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .modernKpiValue {
-  font-size: clamp(1.35rem, 1.6vw, 1.75rem);
+  font-size: clamp(1.5rem, 1.8vw, 1.95rem);
   font-weight: 800;
   color: var(--text-primary);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   display: block;
-  line-height: 1.25;
+  line-height: 1.15;
   word-break: break-word;
 }
 
 .modernKpiList {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border-subtle);
+  gap: 6px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   margin-top: auto;
 }
 
@@ -121,6 +189,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  padding: 5px 8px;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.modernKpiItem:hover {
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .modernKpiItemLeft {
@@ -132,8 +207,8 @@
 }
 
 .modernKpiDot {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -141,7 +216,7 @@
 .modernKpiItemLabel {
   font-size: 0.78rem;
   color: var(--text-secondary);
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -149,7 +224,7 @@
 
 .modernKpiItemValue {
   font-size: 0.82rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary);
   flex-shrink: 0;
 }
@@ -158,59 +233,84 @@
    Donut Status Distribution Card
    ========================================================================== */
 .donutCard {
-  background: var(--bg-card);
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card-subtle) 100%);
   border: 1px solid var(--border-default);
-  border-radius: 18px;
-  padding: 20px 22px;
+  border-radius: 20px;
+  padding: 22px 24px;
   box-shadow: var(--card-shadow);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   min-width: 0;
   overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.donutCard:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
 }
 
 .donutHeader {
-  margin-bottom: 14px;
+  margin-bottom: 18px;
 }
 
 .donutTitleRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 12px;
+}
+
+.headerTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.headerIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.15);
 }
 
 .donutZeroBadge {
   font-size: 0.68rem;
   font-weight: 700;
   color: var(--text-muted);
-  background: var(--bg-card-subtle);
-  border: 1px solid var(--border-subtle);
-  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 3px 10px;
   border-radius: 999px;
 }
 
 .donutHeader h3 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 800;
   color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 
 .cardSubtitle {
-  margin: 4px 0 0;
+  margin: 2px 0 0;
   color: var(--text-secondary);
-  font-size: 0.84rem;
+  font-size: 0.8rem;
   line-height: 1.4;
 }
 
 .pieWrapperModern {
   position: relative;
-  width: 160px;
-  height: 160px;
+  width: 170px;
+  height: 170px;
   max-width: 100%;
-  margin: 0 auto 14px;
+  margin: 0 auto 16px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -229,7 +329,7 @@
 
 .pieCenterNumber {
   fill: var(--text-primary);
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   font-weight: 800;
   font-family: inherit;
 }
@@ -245,7 +345,7 @@
 .pieVerticalList {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -254,11 +354,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  padding: 6px 10px;
-  border-radius: 10px;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 12px;
   background: var(--bg-card-subtle);
-  border: 1px solid transparent;
+  border: 1px solid rgba(255, 255, 255, 0.03);
   cursor: pointer;
   transition: all 0.2s ease;
   min-width: 0;
@@ -267,22 +367,26 @@
 .pieVerticalItem:hover,
 .pieVerticalItemActive {
   background: var(--bg-card);
-  border-color: var(--primary-emerald);
-  box-shadow: 0 2px 8px var(--primary-emerald-glow);
+  border-color: rgba(255, 255, 255, 0.12);
   transform: translateX(2px);
+}
+
+.pieVerticalItemHasCount {
+  border-color: rgba(16, 185, 129, 0.25);
+  background: rgba(16, 185, 129, 0.04);
 }
 
 .pieVerticalLeft {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   overflow: hidden;
   min-width: 0;
 }
 
 .pieVerticalDot {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -299,13 +403,15 @@
   font-size: 0.78rem;
   font-weight: 700;
   color: var(--text-primary);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .pieVerticalCount {
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   color: var(--text-muted);
   font-weight: 500;
 }
@@ -320,6 +426,14 @@
   font-size: 0.78rem;
   font-weight: 800;
   color: var(--text-secondary);
+}
+
+.pieVerticalPctHighlight {
+  padding: 2px 8px;
+  border-radius: 8px;
+  border: 1px solid currentColor;
+  font-weight: 800;
+  font-size: 0.75rem;
 }
 
 @media (max-width: 768px) {

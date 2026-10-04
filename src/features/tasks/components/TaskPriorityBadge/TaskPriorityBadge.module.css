@@ -1,28 +1,36 @@
 .badge {
-  border-radius: 999px;
+  border-radius: 9999px;
   display: inline-flex;
-  font-size: 0.75rem;
+  align-items: center;
+  font-size: 0.74rem;
   font-weight: 800;
-  padding: 5px 10px;
+  padding: 4px 11px;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  transition: all 0.2s ease;
 }
 
 .LOW,
 .fallback {
-  background: var(--bg-muted);
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-default);
   color: var(--text-secondary);
 }
 
 .MEDIUM {
-  background: rgba(59, 130, 246, 0.14);
-  color: var(--info);
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  color: #60a5fa;
 }
 
 .HIGH {
-  background: rgba(245, 158, 11, 0.16);
-  color: var(--warning);
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  color: #f59e0b;
 }
 
 .URGENT {
-  background: rgba(239, 68, 68, 0.14);
-  color: var(--destructive);
+  background: rgba(244, 63, 94, 0.15);
+  border: 1px solid rgba(244, 63, 94, 0.35);
+  color: #f43f5e;
 }

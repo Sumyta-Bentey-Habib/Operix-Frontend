@@ -5,6 +5,7 @@ export interface LoadingStateProps {
   message?: string;
   variant?: "spinner" | "skeleton";
   rows?: number;
+  fullPage?: boolean;
   className?: string;
 }
 
@@ -12,9 +13,16 @@ export const LoadingState = ({
   message = "Loading...",
   variant = "spinner",
   rows = 4,
+  fullPage = false,
   className,
 }: LoadingStateProps) => {
-  const containerClassName = className ? `${styles.state} ${className}` : styles.state;
+  const containerClassName = [
+    styles.state,
+    fullPage ? styles.fullPage : "",
+    className ?? "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   if (variant === "skeleton") {
     return (
@@ -29,8 +37,19 @@ export const LoadingState = ({
 
   return (
     <div className={containerClassName} role="status" aria-label={message}>
-      <span className={styles.spinner} aria-hidden="true" />
-      <span className={styles.message}>{message}</span>
+      <div className={styles.spinnerContainer} aria-hidden="true">
+        <div className={styles.outerRing} />
+        <div className={styles.innerRing} />
+        <div className={styles.coreDot} />
+      </div>
+      <div className={styles.messageWrapper}>
+        <span className={styles.message}>{message}</span>
+        <span className={styles.dots} aria-hidden="true">
+          <span className={styles.dot} />
+          <span className={styles.dot} />
+          <span className={styles.dot} />
+        </span>
+      </div>
     </div>
   );
 };

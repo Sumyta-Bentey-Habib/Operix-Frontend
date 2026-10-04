@@ -1,6 +1,7 @@
 import type { OperixViewer, UserRole } from "@/types/auth";
 import type { Task } from "@/features/tasks/types/task.types";
 import type { AttachmentResponse } from "@/features/tasks/types/task-attachment.types";
+import { MAX_TASK_ATTACHMENTS } from "@/features/tasks/utils/task-attachment-validation";
 
 const NAV_ROLES: Record<string, UserRole[]> = {
   dashboard: ["SUPER_ADMIN", "ADMIN", "MEMBER"],
@@ -141,7 +142,9 @@ export const canToggleSelfClaim = (viewer: OperixViewer | null, task?: Task): bo
 };
 
 export const isTaskAttachmentLifecycleEditable = (task: Task): boolean =>
-  task.status === "PENDING" || (task.status === "ASSIGNED" && task.startedAt === null);
+  task.status === "PENDING" ||
+  (task.status === "ASSIGNED" && task.startedAt === null) ||
+  task.status === "IN_PROGRESS";
 
 export const canUploadTaskAttachment = (viewer: OperixViewer | null, task: Task): boolean => {
   if (!viewer) return false;
@@ -194,13 +197,64 @@ export const canDeleteTaskAttachment = (
   return (isSuperAdmin || isOwnerAdmin) && distributionUnlocked;
 };
 
+export type TaskAttachmentUploadUnavailableReason =
+  | "NOT_AUTHORIZED"
+  | "NOT_RESPONSIBLE"
+  | "LIFECYCLE_LOCKED"
+  | "DISTRIBUTION_LOCKED"
+  | "LIMIT_REACHED";
+
+export type TaskAttachmentUploadState =
+  | { canUpload: true; reason: "ALLOWED" }
+  | { canUpload: false; reason: TaskAttachmentUploadUnavailableReason };
+
+export const getTaskAttachmentUploadState = (
+  viewer: OperixViewer | null,
+  task: Task,
+  attachmentCount: number,
+): TaskAttachmentUploadState => {
+  if (!viewer) {
+    return { canUpload: false, reason: "NOT_AUTHORIZED" };
+  }
+
+  const ownerId = task.owner?.id ?? task.createdById;
+  const isSuperAdmin = viewer.role === "SUPER_ADMIN";
+  const isOwnerAdmin = viewer.role === "ADMIN" && Boolean(ownerId && ownerId === viewer.userId);
+  const isResponsibleMember =
+    viewer.role === "MEMBER" &&
+    Boolean(task.responsible?.id && task.responsible.id === viewer.userId);
+
+  if (!isSuperAdmin && !isOwnerAdmin && !isResponsibleMember) {
+    return {
+      canUpload: false,
+      reason: viewer.role === "MEMBER" ? "NOT_RESPONSIBLE" : "NOT_AUTHORIZED",
+    };
+  }
+
+  if (!isTaskAttachmentLifecycleEditable(task)) {
+    return { canUpload: false, reason: "LIFECYCLE_LOCKED" };
+  }
+
+  if (!isResponsibleMember && task.distribution?.status === "SENT") {
+    return { canUpload: false, reason: "DISTRIBUTION_LOCKED" };
+  }
+
+  if (attachmentCount >= MAX_TASK_ATTACHMENTS) {
+    return { canUpload: false, reason: "LIMIT_REACHED" };
+  }
+
+  return { canUpload: true, reason: "ALLOWED" };
+};
+
 export const canSubmitTask = (viewer: OperixViewer | null, task: Task): boolean =>
   viewer?.role === "MEMBER" &&
+  task.responsible?.id === viewer.userId &&
   task.status === "IN_PROGRESS" &&
   task.completionMode === "REVIEW_REQUIRED";
 
 export const canResubmitTask = (viewer: OperixViewer | null, task: Task): boolean =>
   viewer?.role === "MEMBER" &&
+  task.responsible?.id === viewer.userId &&
   task.status === "REVISION_REQUIRED" &&
   task.completionMode === "REVIEW_REQUIRED";
 

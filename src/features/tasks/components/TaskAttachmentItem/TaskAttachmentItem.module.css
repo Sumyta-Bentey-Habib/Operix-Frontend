@@ -11,7 +11,9 @@
 
 .main {
   display: grid;
+  flex: 1;
   gap: 10px;
+  min-width: 0;
 }
 
 .name {
@@ -23,8 +25,9 @@
 
 .meta {
   display: grid;
-  gap: 10px;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px 24px;
+  grid-template-columns: repeat(4, minmax(0, auto));
+  justify-content: start;
 }
 
 .meta dt {

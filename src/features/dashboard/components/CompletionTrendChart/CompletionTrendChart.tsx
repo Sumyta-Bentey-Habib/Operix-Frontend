@@ -25,6 +25,23 @@ export { CompletionTrendEmptyOverlay as TrendEmptyOverlay } from "./CompletionTr
 export { CompletionTrendGridLines as TrendGridLines } from "./CompletionTrendGridLines";
 export { CompletionTrendBarColumn as TrendBarColumn } from "./CompletionTrendBarColumn";
 
+const TrendHeaderIcon = () => (
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+    <polyline points="17 6 23 6 23 12" />
+  </svg>
+);
+
 export interface CompletionTrendChartProps {
   points: CompletionTrendPoint[];
   days?: DashboardTrendDays;
@@ -41,9 +58,14 @@ export const CompletionTrendChart = ({
   return (
     <div className={styles.trendCard}>
       <div className={styles.trendCardHeader}>
-        <div className={styles.trendTitleGroup}>
-          <h3 className={styles.cardTitle}>{DASHBOARD_STRINGS.charts.completionTrends}</h3>
-          <p className={styles.cardSubtitle}>{getTrendSubtitle(totalCompleted)}</p>
+        <div className={styles.headerTitleGroup}>
+          <span className={styles.headerIconWrap}>
+            <TrendHeaderIcon />
+          </span>
+          <div className={styles.trendTitleGroup}>
+            <h3 className={styles.cardTitle}>{DASHBOARD_STRINGS.charts.completionTrends}</h3>
+            <p className={styles.cardSubtitle}>{getTrendSubtitle(totalCompleted)}</p>
+          </div>
         </div>
         {days && onDaysChange ? (
           <CompletionTrendDaysSelector days={days} onChange={onDaysChange} />

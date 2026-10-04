@@ -27,7 +27,7 @@ export const DocumentFilters = ({
   children,
 }: DocumentFiltersProps) => (
   <form
-    className="grid grid-cols-1 gap-3.5 rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-card)] p-4 shadow-[var(--card-shadow)] min-[900px]:grid-cols-3 min-[900px]:p-5"
+    className="grid grid-cols-1 gap-3.5 rounded-[18px] border border-(--border-default) bg-(--bg-card) p-4 shadow-(--card-shadow) min-[900px]:grid-cols-3 min-[900px]:p-5"
     onSubmit={(event) => {
       event.preventDefault();
       onApply();
@@ -82,13 +82,13 @@ export const DocumentFilters = ({
 
     <div className="flex items-end gap-2">
       <button
-        className={`${BUTTON_BASE_CLASS} bg-[var(--primary-emerald)] text-[var(--text-inverse)] shadow-[0_2px_8px_var(--primary-emerald-glow)] hover:-translate-y-px hover:bg-[var(--primary-emerald-hover)]`}
+        className={`${BUTTON_BASE_CLASS} bg-(--primary-emerald) text-(--text-inverse) shadow-[0_2px_8px_var(--primary-emerald-glow)] hover:-translate-y-px hover:bg-(--primary-emerald-hover)`}
         type="submit"
       >
         Apply
       </button>
       <button
-        className={`${BUTTON_BASE_CLASS} border-[var(--border-default)] bg-[var(--bg-card-subtle)] text-[var(--text-primary)] hover:border-[var(--border-hover)] hover:bg-[var(--bg-card-hover)]`}
+        className={`${BUTTON_BASE_CLASS} border-(--border-default) bg-(--bg-card-subtle) text-(--text-primary) hover:border-(--border-hover) hover:bg-(--bg-card-hover)`}
         type="button"
         onClick={onReset}
       >

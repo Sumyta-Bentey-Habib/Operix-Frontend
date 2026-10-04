@@ -296,6 +296,7 @@ describe("TaskCreatePage", () => {
         priority: "HIGH",
         scope: "GLOBAL",
         completionMode: "DIRECT",
+        allowSelfClaim: true,
         distribution: { notifyAll: true },
       });
       expect(mockReplace).toHaveBeenCalledWith("/tasks/task-global-1");

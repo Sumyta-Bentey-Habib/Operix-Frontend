@@ -23,8 +23,10 @@ export const TASK_DETAILS_STRINGS = {
     assignTask: "Assign Task",
     startTask: "Start Task",
     claimTask: "Claim Task",
+    enableSelfClaim: "Enable Self-Claim",
     completeTask: "Complete Task",
     claiming: "Claiming...",
+    enablingSelfClaim: "Enabling...",
     completing: "Completing...",
   },
   stepper: {
@@ -64,7 +66,7 @@ export const TASK_DETAILS_STRINGS = {
     status: "Status",
     priority: "Priority",
     scope: "Task Scope",
-    scopeGlobal: "Global (Organization-wide)",
+    scopeGlobal: "Global",
     scopeTeam: "Team",
     distribution: "Distribution",
     distributionSent: "Sent to organization",
@@ -94,7 +96,12 @@ export const TASK_DETAILS_STRINGS = {
     nextOccurrence: "Next Occurrence",
     selfClaim: "Self-Claim Policy",
     selfClaimEnabled: "Allowed for Members",
-    selfClaimDisabled: "Disabled (Admin assignment only)",
+    selfClaimDisabled: "Admin assignment only",
+    selfClaimGlobalOpen: "All active Members can claim this task",
+    selfClaimGlobalAssigned: "Already Assigned",
+    selfClaimGlobalRecurring: "Unavailable for recurring Tasks",
+    selfClaimTeamEnabled: "Enabled for eligible Members",
+    selfClaimTeamDisabled: "Disabled",
     completionMode: "Completion Mode",
     completionModeDirect: "Direct Completion",
     completionModeReview: "Review Required",
@@ -103,7 +110,7 @@ export const TASK_DETAILS_STRINGS = {
   directCompletionDialog: {
     title: "Complete Task",
     description: "Mark this task as completed directly without requiring submission review.",
-    noteLabel: "Completion remarks (optional)",
+    noteLabel: "Completion Note",
     notePlaceholder: "Add any closing remarks or summary of completed work...",
     submitButton: "Mark Completed",
     cancelButton: "Cancel",
@@ -254,6 +261,11 @@ export const TASK_CREATE_STRINGS = {
     enableHelper:
       "When enabled, active members can directly pick up and assign this task to themselves from the task list.",
     disabledForRecurring: "Self-claim cannot be combined with recurring task schedules.",
+    globalOpen: "Open to all active Members. The first eligible Member to claim becomes Responsible.",
+    globalAssigned: "Disabled because this Global Task already has a Responsible user.",
+    globalRecurring: "Unavailable for recurring Global Tasks. A Responsible user is required.",
+    globalResponsibleHelper:
+      "Leave unassigned to open this Global Task for self-claim, or select a Responsible user for direct assignment.",
   },
   recurrence: {
     sectionLabel: "Recurrence Schedule",
@@ -330,7 +342,7 @@ export const TASK_CREATE_STRINGS = {
     {
       title: "Team or Global Scoped",
       description:
-        "Team tasks are restricted to team members; Global tasks apply organization-wide.",
+        "Team tasks are restricted to team members. Global tasks apply organization-wide.",
     },
     {
       title: "Workflow Tracking",

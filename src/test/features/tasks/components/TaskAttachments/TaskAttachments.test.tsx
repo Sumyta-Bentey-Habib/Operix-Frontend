@@ -135,7 +135,7 @@ describe("TaskAttachments", () => {
     await waitFor(() => expect(mocks.remove).toHaveBeenCalledWith("task-1", "attachment-1"));
   });
 
-  it("renders read only controls for non-creator ADMIN, MEMBER, and IN_PROGRESS tasks", () => {
+  it("renders read only controls for non-creator ADMIN and unrelated MEMBER", () => {
     // ADMIN who did NOT create the task — createdById is "admin-1" but this viewer is "admin-2"
     const nonCreatorAdmin = { ...viewer("ADMIN"), userId: "admin-2" };
     mocks.useAuth.mockReturnValue({ viewer: nonCreatorAdmin });
@@ -145,19 +145,63 @@ describe("TaskAttachments", () => {
     expect(screen.queryByRole("button", { name: "Remove" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Download" })).toBeInTheDocument();
 
-    // MEMBER also cannot manage
+    // MEMBER who is not responsible also cannot manage
     mocks.useAuth.mockReturnValue({ viewer: viewer("MEMBER") });
     rerender(<TaskAttachments task={task("PENDING")} onTaskRefresh={vi.fn()} />);
     expect(screen.queryByLabelText("Add attachments")).not.toBeInTheDocument();
-
-    // Creator ADMIN on an IN_PROGRESS task (no longer editable)
-    mocks.useAuth.mockReturnValue({ viewer: viewer("ADMIN") });
-    rerender(<TaskAttachments task={task("IN_PROGRESS")} onTaskRefresh={vi.fn()} />);
-    expect(screen.queryByLabelText("Add attachments")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Remove" })).not.toBeInTheDocument();
+    expect(
+      screen.getByText("Only the current Responsible Member can add attachments to this Task."),
+    ).toBeInTheDocument();
   });
 
-  it("removes mutation controls when Task prop changes from PENDING to ASSIGNED", () => {
+  it("explains locked and capacity upload states", () => {
+    mocks.useAuth.mockReturnValue({ viewer: viewer("ADMIN") });
+    const { rerender } = render(<TaskAttachments task={task("SUBMITTED")} onTaskRefresh={vi.fn()} />);
+
+    expect(screen.queryByLabelText("Add attachments")).not.toBeInTheDocument();
+    expect(screen.getByText("Task attachments are locked for the current Task state."))
+      .toBeInTheDocument();
+
+    const globalSentTask: Task = {
+      ...task("IN_PROGRESS"),
+      startedAt: "2026-08-24T00:00:00.000Z",
+      scope: "GLOBAL",
+      owner: { id: "admin-1", name: "Admin", role: "ADMIN" },
+      distribution: {
+        status: "SENT",
+        scheduledAt: "2026-08-23T00:00:00.000Z",
+        sentAt: "2026-08-23T00:00:00.000Z",
+      },
+    };
+    rerender(<TaskAttachments task={globalSentTask} onTaskRefresh={vi.fn()} />);
+    expect(screen.getByText("Attachments are locked after this Global Task was distributed."))
+      .toBeInTheDocument();
+
+    mocks.useTaskAttachments.mockReturnValue({
+      ...hookValue,
+      attachments: Array.from({ length: 5 }, (_, index) => ({
+        ...attachment,
+        id: `attachment-${index}`,
+        file: {
+          ...attachment.file,
+          id: `file-${index}`,
+        },
+      })),
+    });
+    rerender(<TaskAttachments task={task("PENDING")} onTaskRefresh={vi.fn()} />);
+    expect(screen.getByText("Maximum of 5 Task attachments reached.")).toBeInTheDocument();
+  });
+
+  it("keeps upload and delete controls for creator ADMIN on IN_PROGRESS tasks", () => {
+    // viewer("ADMIN").userId === "admin-1" === task.createdById, so they are the creator
+    mocks.useAuth.mockReturnValue({ viewer: viewer("ADMIN") });
+    render(<TaskAttachments task={task("IN_PROGRESS")} onTaskRefresh={vi.fn()} />);
+
+    expect(screen.getByLabelText("Add attachments")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Remove" })).toBeInTheDocument();
+  });
+
+  it("keeps mutation controls when Task prop changes from PENDING to IN_PROGRESS, then hides them on SUBMITTED", () => {
     // viewer("ADMIN").userId === "admin-1" === task.createdById, so they are the creator
     mocks.useAuth.mockReturnValue({ viewer: viewer("ADMIN") });
     const { rerender } = render(<TaskAttachments task={task("PENDING")} onTaskRefresh={vi.fn()} />);
@@ -166,11 +210,70 @@ describe("TaskAttachments", () => {
 
     // Once the task is ASSIGNED (and startedAt is null by default), uploader is still shown
     // since ASSIGNED + not-started is still editable per backend policy.
-    // Move to IN_PROGRESS to see controls disappear.
+    // Moving to IN_PROGRESS now keeps controls visible (shared working files).
     rerender(<TaskAttachments task={task("IN_PROGRESS")} onTaskRefresh={vi.fn()} />);
+
+    expect(screen.getByLabelText("Add attachments")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Remove" })).toBeInTheDocument();
+
+    // After submission, mutation locks and controls disappear.
+    rerender(<TaskAttachments task={task("SUBMITTED")} onTaskRefresh={vi.fn()} />);
 
     expect(screen.queryByLabelText("Add attachments")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Remove" })).not.toBeInTheDocument();
+  });
+
+  it("hides mutation controls on COMPLETED and CANCELLED tasks", () => {
+    mocks.useAuth.mockReturnValue({ viewer: viewer("ADMIN") });
+    const { rerender } = render(
+      <TaskAttachments task={task("COMPLETED")} onTaskRefresh={vi.fn()} />,
+    );
+
+    expect(screen.queryByLabelText("Add attachments")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Remove" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Download" })).toBeInTheDocument();
+
+    rerender(<TaskAttachments task={task("CANCELLED")} onTaskRefresh={vi.fn()} />);
+    expect(screen.queryByLabelText("Add attachments")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Remove" })).not.toBeInTheDocument();
+  });
+
+  it("shows uploader and own-delete for Responsible MEMBER on IN_PROGRESS task, hiding other uploads", () => {
+    const memberViewer = viewer("MEMBER"); // userId: "member-1"
+    mocks.useAuth.mockReturnValue({ viewer: memberViewer });
+
+    const memberAttachment: AttachmentResponse = {
+      id: "attachment-member",
+      downloadUrl: "/api/v1/files/file-2/download",
+      file: {
+        id: "file-2",
+        originalName: "member-spec.pdf",
+        mimeType: "application/pdf",
+        sizeBytes: 456,
+        uploadedBy: { id: "member-1", name: "Member Tupur" },
+        uploadedById: "member-1",
+        createdAt: "2026-08-24T00:00:00.000Z",
+      },
+    };
+
+    mocks.useTaskAttachments.mockReturnValue({
+      ...hookValue,
+      attachments: [attachment, memberAttachment],
+    });
+
+    const inProgressTask: Task = {
+      ...task("IN_PROGRESS"),
+      startedAt: "2026-08-24T00:00:00.000Z",
+      responsible: { id: "member-1", name: "Member Tupur", role: "MEMBER" },
+    };
+
+    render(<TaskAttachments task={inProgressTask} onTaskRefresh={vi.fn()} />);
+
+    expect(screen.getByLabelText("Add attachments")).toBeInTheDocument();
+
+    // Only the member's own upload is removable; the admin upload stays read-only.
+    const removeButtons = screen.getAllByRole("button", { name: "Remove" });
+    expect(removeButtons).toHaveLength(1);
   });
 
   it("refreshes Task and attachments on editability conflict without retrying", async () => {
@@ -380,6 +483,54 @@ describe("TaskAttachments", () => {
     expect(screen.queryByLabelText("Add attachments")).not.toBeInTheDocument();
   });
 
+  it("shows uploader for Responsible MEMBER on GLOBAL SENT IN_PROGRESS task", () => {
+    mocks.useAuth.mockReturnValue({ viewer: viewer("MEMBER") });
+    const globalSentInProgress: Task = {
+      ...task("IN_PROGRESS"),
+      startedAt: "2026-08-24T00:00:00.000Z",
+      scope: "GLOBAL",
+      responsible: { id: "member-1", name: "Member", role: "MEMBER" },
+      distribution: {
+        status: "SENT",
+        scheduledAt: "2026-08-23T00:00:00.000Z",
+        sentAt: "2026-08-23T00:00:00.000Z",
+      },
+    };
+
+    render(<TaskAttachments task={globalSentInProgress} onTaskRefresh={vi.fn()} />);
+
+    expect(screen.getByLabelText("Add attachments")).toBeInTheDocument();
+  });
+
+  it("hides uploader for Owner ADMIN, SUPER_ADMIN, and unrelated MEMBER on GLOBAL SENT IN_PROGRESS task", () => {
+    const globalSentInProgress: Task = {
+      ...task("IN_PROGRESS"),
+      startedAt: "2026-08-24T00:00:00.000Z",
+      scope: "GLOBAL",
+      owner: { id: "admin-1", name: "Admin", role: "ADMIN" },
+      createdById: "admin-1",
+      responsible: { id: "member-1", name: "Member", role: "MEMBER" },
+      distribution: {
+        status: "SENT",
+        scheduledAt: "2026-08-23T00:00:00.000Z",
+        sentAt: "2026-08-23T00:00:00.000Z",
+      },
+    };
+
+    mocks.useAuth.mockReturnValue({ viewer: viewer("ADMIN") });
+    const { rerender } = render(
+      <TaskAttachments task={globalSentInProgress} onTaskRefresh={vi.fn()} />,
+    );
+    expect(screen.queryByLabelText("Add attachments")).not.toBeInTheDocument();
+
+    mocks.useAuth.mockReturnValue({ viewer: viewer("SUPER_ADMIN") });
+    rerender(<TaskAttachments task={globalSentInProgress} onTaskRefresh={vi.fn()} />);
+    expect(screen.queryByLabelText("Add attachments")).not.toBeInTheDocument();
+
+    mocks.useAuth.mockReturnValue({ viewer: { ...viewer("MEMBER"), userId: "other-member" } });
+    rerender(<TaskAttachments task={globalSentInProgress} onTaskRefresh={vi.fn()} />);
+    expect(screen.queryByLabelText("Add attachments")).not.toBeInTheDocument();
+  });
   it("hides uploader for unrelated MEMBER on GLOBAL SENT Task", () => {
     const unrelatedMember = { ...viewer("MEMBER"), userId: "other-member" };
     mocks.useAuth.mockReturnValue({ viewer: unrelatedMember });
@@ -425,6 +576,29 @@ describe("TaskAttachments", () => {
     await waitFor(() => expect(mocks.upload).toHaveBeenCalledWith("task-1", [expect.any(File)]));
     await waitFor(() => expect(mocks.start).toHaveBeenCalledWith("task-1"));
     expect(refreshTask).toHaveBeenCalled();
+  });
+
+  it("keeps the uploader visible once the refreshed task is IN_PROGRESS after auto-start", () => {
+    mocks.useAuth.mockReturnValue({ viewer: viewer("MEMBER") });
+
+    const assignedTask: Task = {
+      ...task("ASSIGNED"),
+      responsible: { id: "member-1", name: "Member", role: "MEMBER" },
+    };
+    const { rerender } = render(<TaskAttachments task={assignedTask} onTaskRefresh={vi.fn()} />);
+    expect(screen.getByLabelText("Add attachments")).toBeInTheDocument();
+
+    rerender(
+      <TaskAttachments
+        task={{
+          ...assignedTask,
+          status: "IN_PROGRESS",
+          startedAt: "2026-08-24T00:00:00.000Z",
+        }}
+        onTaskRefresh={vi.fn()}
+      />,
+    );
+    expect(screen.getByLabelText("Add attachments")).toBeInTheDocument();
   });
 
   it("allows Responsible MEMBER to upload and delete only their own attachments on editable ASSIGNED task", () => {

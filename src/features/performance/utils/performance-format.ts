@@ -23,3 +23,5 @@ export const formatAverageMinutes = (minutes: number | null): string => {
 
   return remainingMinutes === 0 ? `${hours}h` : `${hours}h ${remainingMinutes}m`;
 };
+
+

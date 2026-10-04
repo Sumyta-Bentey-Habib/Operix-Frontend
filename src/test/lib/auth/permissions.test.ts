@@ -12,11 +12,13 @@ import {
   canSubmitTask,
   canUploadTaskAttachment,
   canViewTaskCore,
+  getTaskAttachmentUploadState,
   isTaskAttachmentLifecycleEditable,
 } from "@/lib/auth/permissions";
 import type { OperixViewer } from "@/types/auth";
 import type { Task } from "@/features/tasks/types/task.types";
 import type { AttachmentResponse } from "@/features/tasks/types/task-attachment.types";
+import { MAX_TASK_ATTACHMENTS } from "@/features/tasks/utils/task-attachment-validation";
 
 const makeViewer = (role: "SUPER_ADMIN" | "ADMIN" | "MEMBER"): OperixViewer => ({
   userId: "user-test",
@@ -233,7 +235,7 @@ describe("Task permissions", () => {
         startedAt: "2026-09-28T00:00:00.000Z",
       };
       expect(isTaskAttachmentLifecycleEditable(startedAssigned)).toBe(false);
-      expect(isTaskAttachmentLifecycleEditable(makeTask("IN_PROGRESS"))).toBe(false);
+      expect(isTaskAttachmentLifecycleEditable(makeTask("IN_PROGRESS"))).toBe(true);
       expect(isTaskAttachmentLifecycleEditable(makeTask("SUBMITTED"))).toBe(false);
       expect(isTaskAttachmentLifecycleEditable(makeTask("UNDER_REVIEW"))).toBe(false);
       expect(isTaskAttachmentLifecycleEditable(makeTask("REVISION_REQUIRED"))).toBe(false);
@@ -303,13 +305,35 @@ describe("Task permissions", () => {
         expect(canUploadTaskAttachment(sa, pendingDistributionTask)).toBe(true);
       });
 
-      it("blocks Responsible MEMBER when task is IN_PROGRESS", () => {
+      it("allows Responsible MEMBER when task is IN_PROGRESS", () => {
         const inProgressTask: Task = {
           ...sentGlobalTask,
           status: "IN_PROGRESS",
           startedAt: "2026-09-28T10:00:00.000Z",
         };
-        expect(canUploadTaskAttachment(responsibleMember, inProgressTask)).toBe(false);
+        expect(canUploadTaskAttachment(responsibleMember, inProgressTask)).toBe(true);
+      });
+
+      it("allows Owner ADMIN and SUPER_ADMIN on TEAM IN_PROGRESS task", () => {
+        const teamInProgressTask: Task = {
+          ...pendingDistributionTask,
+          scope: "TEAM",
+          status: "IN_PROGRESS",
+          startedAt: "2026-09-28T10:00:00.000Z",
+          distribution: null,
+        };
+        expect(canUploadTaskAttachment(ownerAdmin, teamInProgressTask)).toBe(true);
+        expect(canUploadTaskAttachment(sa, teamInProgressTask)).toBe(true);
+      });
+
+      it("blocks Owner ADMIN and SUPER_ADMIN on GLOBAL SENT IN_PROGRESS task", () => {
+        const sentGlobalInProgress: Task = {
+          ...sentGlobalTask,
+          status: "IN_PROGRESS",
+          startedAt: "2026-09-28T10:00:00.000Z",
+        };
+        expect(canUploadTaskAttachment(ownerAdmin, sentGlobalInProgress)).toBe(false);
+        expect(canUploadTaskAttachment(sa, sentGlobalInProgress)).toBe(false);
       });
 
       it("blocks non-owner ADMIN on editable task with PENDING distribution", () => {
@@ -318,6 +342,56 @@ describe("Task permissions", () => {
 
       it("blocks null viewer", () => {
         expect(canUploadTaskAttachment(null, sentGlobalTask)).toBe(false);
+      });
+
+      it("explains upload availability and stays consistent with upload permission plus capacity", () => {
+        const submittedTask: Task = {
+          ...pendingDistributionTask,
+          status: "SUBMITTED",
+        };
+        const sentGlobalInProgress: Task = {
+          ...sentGlobalTask,
+          status: "IN_PROGRESS",
+          startedAt: "2026-09-28T10:00:00.000Z",
+        };
+
+        expect(getTaskAttachmentUploadState(unrelatedMember, sentGlobalTask, 0)).toEqual({
+          canUpload: false,
+          reason: "NOT_RESPONSIBLE",
+        });
+        expect(getTaskAttachmentUploadState(ownerAdmin, submittedTask, 0)).toEqual({
+          canUpload: false,
+          reason: "LIFECYCLE_LOCKED",
+        });
+        expect(getTaskAttachmentUploadState(ownerAdmin, sentGlobalTask, 0)).toEqual({
+          canUpload: false,
+          reason: "DISTRIBUTION_LOCKED",
+        });
+        expect(
+          getTaskAttachmentUploadState(responsibleMember, sentGlobalTask, MAX_TASK_ATTACHMENTS),
+        ).toEqual({
+          canUpload: false,
+          reason: "LIMIT_REACHED",
+        });
+        expect(getTaskAttachmentUploadState(responsibleMember, sentGlobalInProgress, 0)).toEqual({
+          canUpload: true,
+          reason: "ALLOWED",
+        });
+
+        const cases: Array<[OperixViewer | null, Task, number]> = [
+          [responsibleMember, sentGlobalInProgress, 0],
+          [ownerAdmin, sentGlobalTask, 0],
+          [ownerAdmin, submittedTask, 0],
+          [unrelatedMember, sentGlobalTask, 0],
+          [responsibleMember, sentGlobalTask, MAX_TASK_ATTACHMENTS],
+          [null, sentGlobalTask, 0],
+        ];
+
+        cases.forEach(([viewer, task, attachmentCount]) => {
+          expect(getTaskAttachmentUploadState(viewer, task, attachmentCount).canUpload).toBe(
+            canUploadTaskAttachment(viewer, task) && attachmentCount < MAX_TASK_ATTACHMENTS,
+          );
+        });
       });
     });
 
@@ -458,17 +532,53 @@ describe("Task permissions", () => {
         );
       });
 
-      it("blocks delete when task is IN_PROGRESS", () => {
-        const inProgressTask: Task = {
+      it("allows delete when task is TEAM IN_PROGRESS according to authority", () => {
+        const teamInProgressTask: Task = {
           ...pendingDistributionTask,
+          scope: "TEAM",
+          status: "IN_PROGRESS",
+          startedAt: "2026-09-28T10:00:00.000Z",
+          distribution: null,
+        };
+        expect(
+          canDeleteTaskAttachment(responsibleMember, teamInProgressTask, memberAttachment),
+        ).toBe(true);
+        expect(
+          canDeleteTaskAttachment(responsibleMember, teamInProgressTask, adminAttachment),
+        ).toBe(false);
+        expect(canDeleteTaskAttachment(ownerAdmin, teamInProgressTask, adminAttachment)).toBe(true);
+        expect(canDeleteTaskAttachment(sa, teamInProgressTask, adminAttachment)).toBe(true);
+      });
+
+      it("allows Responsible Member own-delete on GLOBAL SENT IN_PROGRESS task", () => {
+        const sentGlobalInProgress: Task = {
+          ...sentGlobalTask,
           status: "IN_PROGRESS",
           startedAt: "2026-09-28T10:00:00.000Z",
         };
-        expect(canDeleteTaskAttachment(responsibleMember, inProgressTask, memberAttachment)).toBe(
+        expect(
+          canDeleteTaskAttachment(responsibleMember, sentGlobalInProgress, memberAttachment),
+        ).toBe(true);
+        expect(
+          canDeleteTaskAttachment(responsibleMember, sentGlobalInProgress, adminAttachment),
+        ).toBe(false);
+        expect(canDeleteTaskAttachment(ownerAdmin, sentGlobalInProgress, adminAttachment)).toBe(
           false,
         );
-        expect(canDeleteTaskAttachment(ownerAdmin, inProgressTask, adminAttachment)).toBe(false);
-        expect(canDeleteTaskAttachment(sa, inProgressTask, adminAttachment)).toBe(false);
+        expect(canDeleteTaskAttachment(sa, sentGlobalInProgress, adminAttachment)).toBe(false);
+      });
+
+      it("locks delete once the task is SUBMITTED", () => {
+        const submittedTask: Task = {
+          ...pendingDistributionTask,
+          status: "SUBMITTED",
+          startedAt: "2026-09-28T10:00:00.000Z",
+        };
+        expect(canDeleteTaskAttachment(responsibleMember, submittedTask, memberAttachment)).toBe(
+          false,
+        );
+        expect(canDeleteTaskAttachment(ownerAdmin, submittedTask, adminAttachment)).toBe(false);
+        expect(canDeleteTaskAttachment(sa, submittedTask, adminAttachment)).toBe(false);
       });
     });
   });
@@ -511,14 +621,28 @@ describe("Task permissions", () => {
     });
 
     it("evaluates canSubmitTask correctly for roles and completion modes", () => {
-      const reviewTask = makeTask("IN_PROGRESS", "REVIEW_REQUIRED");
-      const directTask = makeTask("IN_PROGRESS", "DIRECT");
+      const memberViewer = makeViewer("MEMBER");
+      const reviewTask: Task = {
+        ...makeTask("IN_PROGRESS", "REVIEW_REQUIRED"),
+        responsible: { id: memberViewer.userId, name: "Tupur", role: "MEMBER" },
+      };
+      const directTask: Task = {
+        ...makeTask("IN_PROGRESS", "DIRECT"),
+        responsible: { id: memberViewer.userId, name: "Tupur", role: "MEMBER" },
+      };
+      const unrelatedReviewTask: Task = {
+        ...reviewTask,
+        responsible: { id: "other-user", name: "Other", role: "MEMBER" },
+      };
 
       // MEMBER + IN_PROGRESS + REVIEW_REQUIRED can submit
-      expect(canSubmitTask(makeViewer("MEMBER"), reviewTask)).toBe(true);
+      expect(canSubmitTask(memberViewer, reviewTask)).toBe(true);
+
+      // Unrelated MEMBER cannot submit
+      expect(canSubmitTask(memberViewer, unrelatedReviewTask)).toBe(false);
 
       // MEMBER + IN_PROGRESS + DIRECT cannot submit
-      expect(canSubmitTask(makeViewer("MEMBER"), directTask)).toBe(false);
+      expect(canSubmitTask(memberViewer, directTask)).toBe(false);
 
       // Non-member roles cannot submit
       expect(canSubmitTask(makeViewer("ADMIN"), reviewTask)).toBe(false);
@@ -526,20 +650,34 @@ describe("Task permissions", () => {
       expect(canSubmitTask(null, reviewTask)).toBe(false);
 
       // Non-IN_PROGRESS status cannot submit
-      expect(canSubmitTask(makeViewer("MEMBER"), makeTask("ASSIGNED", "REVIEW_REQUIRED"))).toBe(
+      expect(canSubmitTask(memberViewer, makeTask("ASSIGNED", "REVIEW_REQUIRED"))).toBe(
         false,
       );
     });
 
     it("evaluates canResubmitTask correctly for roles and completion modes", () => {
-      const reviewTask = makeTask("REVISION_REQUIRED", "REVIEW_REQUIRED");
-      const directTask = makeTask("REVISION_REQUIRED", "DIRECT");
+      const memberViewer = makeViewer("MEMBER");
+      const reviewTask: Task = {
+        ...makeTask("REVISION_REQUIRED", "REVIEW_REQUIRED"),
+        responsible: { id: memberViewer.userId, name: "Tupur", role: "MEMBER" },
+      };
+      const directTask: Task = {
+        ...makeTask("REVISION_REQUIRED", "DIRECT"),
+        responsible: { id: memberViewer.userId, name: "Tupur", role: "MEMBER" },
+      };
+      const unrelatedReviewTask: Task = {
+        ...reviewTask,
+        responsible: { id: "other-user", name: "Other", role: "MEMBER" },
+      };
 
       // MEMBER + REVISION_REQUIRED + REVIEW_REQUIRED can resubmit
-      expect(canResubmitTask(makeViewer("MEMBER"), reviewTask)).toBe(true);
+      expect(canResubmitTask(memberViewer, reviewTask)).toBe(true);
+
+      // Unrelated MEMBER cannot resubmit
+      expect(canResubmitTask(memberViewer, unrelatedReviewTask)).toBe(false);
 
       // MEMBER + REVISION_REQUIRED + DIRECT cannot resubmit
-      expect(canResubmitTask(makeViewer("MEMBER"), directTask)).toBe(false);
+      expect(canResubmitTask(memberViewer, directTask)).toBe(false);
 
       // Non-member roles cannot resubmit
       expect(canResubmitTask(makeViewer("ADMIN"), reviewTask)).toBe(false);
@@ -548,7 +686,7 @@ describe("Task permissions", () => {
 
       // Non-REVISION_REQUIRED status cannot resubmit
       expect(
-        canResubmitTask(makeViewer("MEMBER"), makeTask("IN_PROGRESS", "REVIEW_REQUIRED")),
+        canResubmitTask(memberViewer, makeTask("IN_PROGRESS", "REVIEW_REQUIRED")),
       ).toBe(false);
     });
   });

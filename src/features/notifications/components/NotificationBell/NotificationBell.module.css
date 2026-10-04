@@ -4,24 +4,25 @@
 
 .button {
   align-items: center;
-  background-color: var(--bg-canvas);
+  background-color: var(--bg-card-subtle);
   border: 1px solid var(--border-default);
-  border-radius: 9999px;
+  border-radius: 12px;
   color: var(--text-secondary);
   cursor: pointer;
   display: flex;
-  height: 40px;
-  width: 40px;
+  height: 38px;
+  width: 38px;
   justify-content: center;
   position: relative;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .button:hover {
   background-color: var(--bg-card-hover);
-  border-color: var(--border-hover);
-  color: var(--text-primary);
-  transform: translateY(-1px);
+  border-color: var(--primary-emerald);
+  color: var(--primary-emerald);
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 14px var(--primary-emerald-glow);
 }
 
 .button:focus-visible {
@@ -31,16 +32,18 @@
 
 .badge {
   align-items: center;
-  background: var(--destructive);
+  background: var(--primary-emerald);
   border-radius: 999px;
-  color: var(--destructive-foreground);
+  color: var(--text-on-primary);
   display: flex;
-  font-size: 0.64rem;
+  font-size: 0.65rem;
   font-weight: 800;
   justify-content: center;
   min-width: 18px;
-  padding: 2px 5px;
+  padding: 1px 5px;
   position: absolute;
-  right: -4px;
-  top: -4px;
+  right: -5px;
+  top: -5px;
+  border: 2px solid var(--bg-card);
+  box-shadow: 0 0 10px var(--primary-emerald-glow);
 }

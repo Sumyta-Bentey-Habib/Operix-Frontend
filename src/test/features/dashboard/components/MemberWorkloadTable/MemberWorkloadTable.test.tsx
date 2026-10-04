@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { MemberWorkloadTable } from "@/features/dashboard/components/MemberWorkloadTable";
 import type { MemberWorkloadRow } from "@/features/dashboard/types/dashboard.types";
+import { WORKLOAD_TABLE_STRINGS } from "@/utils/workload-strings";
 
 const mockMembers: MemberWorkloadRow[] = [
   {
@@ -117,7 +118,7 @@ describe("MemberWorkloadTable", () => {
   it("filters members when user types in the search input", () => {
     render(<MemberWorkloadTable members={mockMembers} />);
 
-    const searchInput = screen.getByPlaceholderText("Search member by name, ID or team...");
+    const searchInput = screen.getByPlaceholderText(WORKLOAD_TABLE_STRINGS.search.placeholder);
     fireEvent.change(searchInput, { target: { value: "Sarah" } });
 
     expect(screen.getByText("Sarah Chen")).toBeInTheDocument();

@@ -16,6 +16,24 @@ export interface MemberWorkloadTableProps {
   pagination?: React.ReactNode;
 }
 
+const MemberWorkloadHeaderIcon = () => (
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <polyline points="16 11 18 13 22 9" />
+  </svg>
+);
+
 export const MemberWorkloadTable: React.FC<MemberWorkloadTableProps> = ({
   members,
   title = WORKLOAD_TABLE_STRINGS.heading,
@@ -37,7 +55,12 @@ export const MemberWorkloadTable: React.FC<MemberWorkloadTableProps> = ({
       <div className={styles.card}>
         <div className={styles.header}>
           <div className={styles.titleArea}>
-            <h3 className={styles.title}>{title}</h3>
+            <div className={styles.titleRow}>
+              <span className={styles.headerIconWrap}>
+                <MemberWorkloadHeaderIcon />
+              </span>
+              <h3 className={styles.title}>{title}</h3>
+            </div>
             <p className={styles.subtitle}>{subtitle}</p>
           </div>
         </div>
@@ -56,6 +79,9 @@ export const MemberWorkloadTable: React.FC<MemberWorkloadTableProps> = ({
       <div className={styles.header}>
         <div className={styles.titleArea}>
           <div className={styles.titleRow}>
+            <span className={styles.headerIconWrap}>
+              <MemberWorkloadHeaderIcon />
+            </span>
             <h3 className={styles.title}>{title}</h3>
           </div>
           <p className={styles.subtitle}>{subtitle}</p>
