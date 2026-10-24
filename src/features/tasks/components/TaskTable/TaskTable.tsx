@@ -105,9 +105,7 @@ export const TaskTable = ({ tasks, viewer, onAssign, onClaim, onStart }: TaskTab
                     {TASK_TABLE_STRINGS.badges.globalScope}
                   </span>
                 ) : (
-                  <span className={styles.teamName}>
-                    {task.team?.name ?? "—"}
-                  </span>
+                  <span className={styles.teamName}>{task.team?.name ?? "—"}</span>
                 )}
               </td>
               <td className={styles.dueCell} data-label={TASK_TABLE_STRINGS.labels.duePrefix}>
@@ -131,15 +129,16 @@ export const TaskTable = ({ tasks, viewer, onAssign, onClaim, onStart }: TaskTab
                   <Link className={styles.button} href={`/tasks/${task.id}`}>
                     {TASK_TABLE_STRINGS.actions.view}
                   </Link>
-                  {canAssignTask(viewer, task) && task.status === "PENDING" && (
-                    <button
-                      type="button"
-                      className={`${styles.button} ${styles.buttonPrimary}`}
-                      onClick={() => onAssign(task)}
-                    >
-                      {TASK_TABLE_STRINGS.actions.assign}
-                    </button>
-                  )}
+                  {canAssignTask(viewer, task) &&
+                    (task.status === "PENDING" || task.status === "ASSIGNED") && (
+                      <button
+                        type="button"
+                        className={`${styles.button} ${styles.buttonPrimary}`}
+                        onClick={() => onAssign(task)}
+                      >
+                        {TASK_TABLE_STRINGS.actions.assign}
+                      </button>
+                    )}
                   {canClaimTask(viewer, task) && onClaim && (
                     <button
                       type="button"

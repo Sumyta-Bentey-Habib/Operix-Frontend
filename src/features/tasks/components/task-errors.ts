@@ -29,7 +29,20 @@ const TASK_ERROR_MESSAGES: Record<string, string> = {
   TASK_ALREADY_COMPLETED: "This task has already been completed.",
   TASK_DIRECT_COMPLETION_NOT_ALLOWED: "Direct completion is not permitted for this task.",
   TASK_DIRECT_COMPLETION_REQUIRED: "This task requires direct completion.",
+  AI_DISABLED:
+    "AI drafting is turned off for this workspace. You can still create the Task manually.",
+  AI_PROVIDER_UNAVAILABLE:
+    "The AI service is unavailable right now. You can still create the Task manually.",
+  AI_GENERATION_FAILED:
+    "The AI could not produce a usable draft. Try rephrasing your prompt or create the Task manually.",
+  AI_RESPONSE_INVALID:
+    "The AI returned an unusable draft. Try rephrasing your prompt or create the Task manually.",
+  AI_RATE_LIMITED:
+    "You have reached the AI draft limit. Wait a minute and try again, or create the Task manually.",
 };
+
+export const getTaskAiDraftErrorMessage = (error: unknown): string =>
+  getTaskErrorView(error).message;
 
 export const getTaskErrorView = (error: unknown): TaskErrorView => {
   if (error instanceof OperixApiError) {

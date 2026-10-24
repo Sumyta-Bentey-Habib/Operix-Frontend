@@ -1,0 +1,28 @@
+export const ASSISTANT_STRINGS = {
+  title: "Ask Operix",
+  description: "Ask a read only question about the Operix work you are allowed to see.",
+  label: "Operational question",
+  placeholder: "What overdue Tasks do I have?",
+  ask: "Ask",
+  asking: "Checking Operix",
+  examples: "Try asking",
+  answer: "Answer",
+  highlights: "Highlights",
+  matchingTasks: "Matching Tasks",
+  limitations: "Limitations",
+  snapshot: "Snapshot",
+  viewTask: "View Task",
+  confidence: "Confidence",
+  empty: "Ask one question to get a current, scope aware answer.",
+  unavailable: "Ask Operix is temporarily unavailable. You can continue using Operix normally.",
+  memberExamples: [
+    "What overdue Tasks do I have?",
+    "Show my urgent Tasks.",
+    "How many assigned Tasks are in progress?",
+  ],
+  adminExamples: [
+    "How many Tasks are overdue?",
+    "Show high priority overdue Tasks.",
+    "Give me a 7 day operational summary.",
+  ],
+} as const;

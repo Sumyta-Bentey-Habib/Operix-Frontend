@@ -4,12 +4,18 @@ import { useState } from "react";
 import { Modal } from "@/components/ui/Modal";
 import type { CreateReviewInput, TaskReviewAction } from "../../types/review.types";
 import type { Submission } from "../../types/submission.types";
+import { SubmissionAiReview } from "../SubmissionAiReview";
 import styles from "./ReviewDialog.module.css";
 
 export interface ReviewDialogProps {
   submission: Submission | null;
   pending: boolean;
   error: string | null;
+  /**
+   * Step 30 advisory gate. Computed by the host from the viewer and Task, so
+   * this dialog stays presentational. False hides the panel entirely.
+   */
+  canAnalyzeAi?: boolean;
   onSubmit: (input: CreateReviewInput) => Promise<boolean>;
   onClose: () => void;
 }
@@ -18,6 +24,7 @@ export const ReviewDialog = ({
   submission,
   pending,
   error,
+  canAnalyzeAi = false,
   onSubmit,
   onClose,
 }: ReviewDialogProps) => {
@@ -58,6 +65,16 @@ export const ReviewDialog = ({
           <p className={styles.error} role="alert">
             {error}
           </p>
+        )}
+        {submission && canAnalyzeAi && (
+          <SubmissionAiReview
+            key={`${submission.id}:${submission.version}`}
+            submissionId={submission.id}
+            onUseSuggestedFeedback={(suggestedFeedback) => {
+              setFeedback(suggestedFeedback);
+              setFeedbackError(null);
+            }}
+          />
         )}
         <fieldset className={styles.fieldset}>
           <legend>Decision</legend>

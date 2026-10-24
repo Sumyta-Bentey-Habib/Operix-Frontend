@@ -2,7 +2,12 @@
 
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { canResubmitTask, canReviewTaskSubmission, canSubmitTask } from "@/lib/auth/permissions";
+import {
+  canRequestSubmissionAiReview,
+  canResubmitTask,
+  canReviewTaskSubmission,
+  canSubmitTask,
+} from "@/lib/auth/permissions";
 import { reviewApi } from "../../api/review.api";
 import { submissionApi } from "../../api/submission.api";
 import { useTaskSubmissions } from "../../hooks/use-task-submissions";
@@ -164,6 +169,7 @@ export const TaskSubmissions = ({ task, onWorkflowRefresh }: TaskSubmissionsProp
         submission={reviewSubmission}
         pending={reviewPending}
         error={reviewError}
+        canAnalyzeAi={canRequestSubmissionAiReview(viewer, task)}
         onSubmit={handleReview}
         onClose={() => !reviewPending && setReviewSubmission(null)}
       />

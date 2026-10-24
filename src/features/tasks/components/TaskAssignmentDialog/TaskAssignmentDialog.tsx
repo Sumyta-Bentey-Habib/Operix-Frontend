@@ -1,11 +1,20 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { Modal } from "@/components/ui/Modal";
-import type { Member } from "@/features/members";
+import { taskApi } from "../../api/task.api";
 import type { AssignTaskInput, Task } from "../../types/task.types";
 import { TaskAssigneePicker } from "../TaskAssigneePicker";
+import { TaskAssignmentRecommendations } from "../TaskAssignmentRecommendations";
 import styles from "./TaskAssignmentDialog.module.css";
+
+const ASSIGNMENT_AI_ERROR =
+  "AI recommendations are temporarily unavailable. You can continue assigning this Task manually.";
+
+type SelectedMember = {
+  id: string;
+  name: string;
+};
 
 export interface TaskAssignmentDialogProps {
   task: Task | null;
@@ -21,9 +30,80 @@ export const TaskAssignmentDialog = ({
   error,
   onSubmit,
   onClose,
-}: TaskAssignmentDialogProps) => {
-  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+}: TaskAssignmentDialogProps) => (
+  <Modal
+    open={Boolean(task)}
+    title="Assign Task"
+    description="Choose an active Member. Assignment eligibility is revalidated when you submit."
+    onClose={onClose}
+  >
+    {task && (
+      <TaskAssignmentForm
+        key={task.id}
+        task={task}
+        pending={pending}
+        error={error}
+        onSubmit={onSubmit}
+        onClose={onClose}
+      />
+    )}
+  </Modal>
+);
+
+interface TaskAssignmentFormProps extends Omit<TaskAssignmentDialogProps, "task"> {
+  task: Task;
+}
+
+const TaskAssignmentForm = ({
+  task,
+  pending,
+  error,
+  onSubmit,
+  onClose,
+}: TaskAssignmentFormProps) => {
+  const [selectedMember, setSelectedMember] = useState<SelectedMember | null>(null);
   const [note, setNote] = useState("");
+  const [recommendations, setRecommendations] = useState<Awaited<
+    ReturnType<typeof taskApi.generateAssignmentRecommendations>
+  > | null>(null);
+  const [recommendationsLoading, setRecommendationsLoading] = useState(false);
+  const [recommendationsError, setRecommendationsError] = useState<string | null>(null);
+  const requestRef = useRef<{ taskId: string; controller: AbortController } | null>(null);
+
+  useEffect(() => () => requestRef.current?.controller.abort(), []);
+
+  const generateRecommendations = async () => {
+    if (recommendationsLoading) return;
+
+    requestRef.current?.controller.abort();
+    const controller = new AbortController();
+    const taskId = task.id;
+    requestRef.current = { taskId, controller };
+    setRecommendationsLoading(true);
+    setRecommendationsError(null);
+
+    try {
+      const result = await taskApi.generateAssignmentRecommendations(taskId, {
+        signal: controller.signal,
+      });
+      if (requestRef.current?.controller === controller && requestRef.current.taskId === taskId) {
+        setRecommendations(result);
+      }
+    } catch {
+      if (
+        !controller.signal.aborted &&
+        requestRef.current?.controller === controller &&
+        requestRef.current.taskId === taskId
+      ) {
+        setRecommendationsError(ASSIGNMENT_AI_ERROR);
+      }
+    } finally {
+      if (requestRef.current?.controller === controller) {
+        requestRef.current = null;
+        setRecommendationsLoading(false);
+      }
+    }
+  };
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -37,53 +117,55 @@ export const TaskAssignmentDialog = ({
   };
 
   return (
-    <Modal
-      open={Boolean(task)}
-      title="Assign Task"
-      description="Choose an active Member. The backend confirms Team eligibility for this Task."
-      onClose={onClose}
-    >
-      {task && (
-        <form className={styles.form} onSubmit={submit}>
-          <div className={styles.summary}>
-            <strong>{task.referenceCode}</strong>
-            <span>{task.title}</span>
-          </div>
-          <TaskAssigneePicker
-            selectedMemberId={selectedMember?.id ?? ""}
-            selectedMember={selectedMember}
-            onSelect={setSelectedMember}
-            onClear={() => setSelectedMember(null)}
-          />
-          <label className={styles.field}>
-            <span>Assignment note</span>
-            <textarea
-              value={note}
-              maxLength={1000}
-              onChange={(event) => setNote(event.target.value)}
-              placeholder="Optional instructions for the assignment"
-            />
-          </label>
-          {error && <p className={styles.error}>{error}</p>}
-          <div className={styles.actions}>
-            <button
-              type="button"
-              className={styles.secondaryButton}
-              onClick={onClose}
-              disabled={pending}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className={styles.primaryButton}
-              disabled={!selectedMember || pending}
-            >
-              {pending ? "Assigning..." : "Assign Task"}
-            </button>
-          </div>
-        </form>
-      )}
-    </Modal>
+    <form className={styles.form} onSubmit={submit}>
+      <div className={styles.summary}>
+        <strong>{task.referenceCode}</strong>
+        <span>{task.title}</span>
+      </div>
+      <TaskAssignmentRecommendations
+        result={recommendations}
+        loading={recommendationsLoading}
+        error={recommendationsError}
+        selectedMemberId={selectedMember?.id ?? ""}
+        onGenerate={() => void generateRecommendations()}
+        onSelect={setSelectedMember}
+      />
+      <div className={styles.manualPicker}>
+        <strong>All Members</strong>
+        <p>Use the complete active Member list for manual selection.</p>
+      </div>
+      <TaskAssigneePicker
+        selectedMemberId={selectedMember?.id ?? ""}
+        onSelect={(member) => setSelectedMember({ id: member.id, name: member.name })}
+        onClear={() => setSelectedMember(null)}
+      />
+      <label className={styles.field}>
+        <span>Assignment note</span>
+        <textarea
+          value={note}
+          maxLength={1000}
+          onChange={(event) => setNote(event.target.value)}
+          placeholder="Optional instructions for the assignment"
+        />
+      </label>
+      {error && <p className={styles.error}>{error}</p>}
+      <div className={styles.actions}>
+        <button
+          type="button"
+          className={styles.secondaryButton}
+          onClick={onClose}
+          disabled={pending}
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className={styles.primaryButton}
+          disabled={!selectedMember || pending}
+        >
+          {pending ? "Assigning..." : "Assign Task"}
+        </button>
+      </div>
+    </form>
   );
 };

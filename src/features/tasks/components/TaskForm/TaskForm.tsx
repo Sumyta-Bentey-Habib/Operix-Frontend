@@ -9,17 +9,29 @@ import {
   FileDocIcon,
   PlusIcon,
   ShieldCheckIcon,
+  SparklesIcon,
 } from "@/components/icons";
 import type { Team } from "@/features/teams";
 import { canCreateGlobalTask } from "@/lib/auth/permissions";
+import { formatDateTimeDisplay } from "@/utils/calendar";
 import { TASK_CREATE_STRINGS } from "@/utils/task-strings";
+import { taskApi } from "../../api/task.api";
 import type {
   CreateTaskDistributionInput,
   CreateTaskInput,
+  TaskAiDraft,
+  TaskCompletionMode,
   TaskPriority,
   TaskRecurrenceFrequency,
   TaskScope,
 } from "../../types/task.types";
+import {
+  AI_DRAFT_PROMPT_MAX_LENGTH,
+  isAiDraftPromptReady,
+  toAiDraftFieldValues,
+  toDueAtInputValue,
+} from "../../utils/task-ai-draft";
+import { getTaskAiDraftErrorMessage } from "../task-errors";
 import { TaskTeamPicker } from "../TaskTeamPicker";
 import { TaskAssigneePicker } from "../TaskAssigneePicker";
 import type { Member } from "@/features/members/types/member.types";
@@ -87,11 +99,66 @@ export const TaskForm = ({
   const [allowSelfClaim, setAllowSelfClaim] = useState(false);
   const [recurrenceFrequency, setRecurrenceFrequency] = useState<RecurrenceSelection>("NONE");
   const [responsibleMember, setResponsibleMember] = useState<Member | null>(null);
+  const [completionMode, setCompletionMode] = useState<TaskCompletionMode>("REVIEW_REQUIRED");
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [aiDraft, setAiDraft] = useState<TaskAiDraft | null>(null);
+  const [aiPending, setAiPending] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [aiApplied, setAiApplied] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
 
   const hasDueDate = Boolean(dueAt);
   const globalOpenSelfClaim =
     scope === "GLOBAL" && recurrenceFrequency === "NONE" && !responsibleMember;
+  const isCompletionModeSelectable = scope === "TEAM" && recurrenceFrequency === "NONE";
+  const aiPromptReady = isAiDraftPromptReady(aiPrompt);
+  const aiSuggestedDueAtLabel = aiDraft
+    ? formatDateTimeDisplay(toDueAtInputValue(aiDraft.suggestedDueAt))
+    : "";
+
+  const generateDraft = async () => {
+    if (aiPending) return;
+
+    if (!aiPromptReady) {
+      setAiError(TASK_CREATE_STRINGS.ai.promptTooShort);
+      return;
+    }
+
+    setAiPending(true);
+    setAiError(null);
+    setAiApplied(false);
+
+    try {
+      const draft = await taskApi.generateAiDraft({ prompt: aiPrompt.trim() });
+      setAiDraft(draft);
+    } catch (draftError) {
+      // A failed draft must never block manual task creation.
+      setAiDraft(null);
+      setAiError(getTaskAiDraftErrorMessage(draftError));
+    } finally {
+      setAiPending(false);
+    }
+  };
+
+  const applyDraft = () => {
+    if (!aiDraft) return;
+
+    const values = toAiDraftFieldValues(aiDraft);
+
+    setTitle(values.title);
+    setDescription(values.description);
+    setPriority(values.priority);
+    setDueAt(values.dueAt);
+    setCompletionMode(values.completionMode);
+    setAiApplied(true);
+    setLocalError(null);
+  };
+
+  const discardDraft = () => {
+    setAiDraft(null);
+    setAiError(null);
+    setAiApplied(false);
+  };
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -128,6 +195,12 @@ export const TaskForm = ({
           }
         : undefined;
 
+    // Global and recurring tasks always complete directly; the backend rejects
+    // REVIEW_REQUIRED for both, so the selector only governs one-time Team tasks.
+    const resolvedCompletionMode: TaskCompletionMode = isCompletionModeSelectable
+      ? completionMode
+      : "DIRECT";
+
     if (scope === "GLOBAL") {
       // Build distribution input with scheduling.
       // For recurring tasks the backend ONLY accepts leadMinutes (no scheduledAt, no bare notifyAll).
@@ -153,7 +226,7 @@ export const TaskForm = ({
         priority,
         ...(toIsoOrUndefined(dueAt) ? { dueAt: toIsoOrUndefined(dueAt) } : {}),
         scope: "GLOBAL",
-        completionMode: "DIRECT",
+        completionMode: resolvedCompletionMode,
         ...(responsibleMember ? { responsibleUserId: responsibleMember.id } : {}),
         allowSelfClaim: globalOpenSelfClaim,
         ...(recurrence ? { recurrence } : {}),
@@ -168,6 +241,7 @@ export const TaskForm = ({
         ...(toIsoOrUndefined(dueAt) ? { dueAt: toIsoOrUndefined(dueAt) } : {}),
         scope: "TEAM",
         teamId: selectedTeam!.id,
+        completionMode: resolvedCompletionMode,
         ...(responsibleMember ? { responsibleUserId: responsibleMember.id } : {}),
         ...(allowSelfClaim && recurrenceFrequency === "NONE" ? { allowSelfClaim: true } : {}),
         ...(recurrence ? { recurrence } : {}),
@@ -182,6 +256,162 @@ export const TaskForm = ({
       <div className={styles.layoutGrid}>
         {/* Left Column: Core Task Details */}
         <div className={styles.primaryColumn}>
+          {/* AI Draft Panel — advisory only, never creates a task */}
+          <div className={styles.aiCard}>
+            <div className={styles.cardHeader}>
+              <div className={styles.cardIconWrapper}>
+                <SparklesIcon size={18} />
+              </div>
+              <div>
+                <h2 className={styles.cardTitle}>{TASK_CREATE_STRINGS.ai.sectionTitle}</h2>
+                <p className={styles.cardSubtitle}>{TASK_CREATE_STRINGS.ai.sectionSubtitle}</p>
+              </div>
+            </div>
+
+            <div className={styles.cardBody}>
+              <div className={styles.fieldGroup}>
+                <div className={styles.labelRow}>
+                  <label htmlFor="task-ai-prompt" className={styles.label}>
+                    {TASK_CREATE_STRINGS.ai.promptLabel}
+                  </label>
+                  <span className={styles.charCounter}>
+                    {aiPrompt.length} / {AI_DRAFT_PROMPT_MAX_LENGTH}
+                  </span>
+                </div>
+                <textarea
+                  id="task-ai-prompt"
+                  className={`${styles.textarea} ${styles.aiPromptArea}`}
+                  value={aiPrompt}
+                  maxLength={AI_DRAFT_PROMPT_MAX_LENGTH}
+                  onChange={(event) => {
+                    setAiPrompt(event.target.value);
+                    if (aiError) setAiError(null);
+                  }}
+                  placeholder={TASK_CREATE_STRINGS.ai.promptPlaceholder}
+                  rows={3}
+                />
+                <p className={styles.helperText}>{TASK_CREATE_STRINGS.ai.promptHelper}</p>
+              </div>
+
+              <div className={styles.aiActions}>
+                <button
+                  type="button"
+                  className={styles.aiGenerateButton}
+                  onClick={() => {
+                    void generateDraft();
+                  }}
+                  disabled={aiPending || !aiPromptReady}
+                >
+                  {aiPending ? (
+                    <>
+                      <span className={styles.spinner} />
+                      <span>{TASK_CREATE_STRINGS.ai.generating}</span>
+                    </>
+                  ) : (
+                    <>
+                      <SparklesIcon size={16} />
+                      <span>{TASK_CREATE_STRINGS.ai.generate}</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {aiError && (
+                <div className={styles.aiError} role="alert">
+                  <span className={styles.errorIcon}>!</span>
+                  <p className={styles.errorText}>{aiError}</p>
+                </div>
+              )}
+
+              {aiDraft && (
+                <div
+                  className={styles.aiPreview}
+                  role="region"
+                  aria-label={TASK_CREATE_STRINGS.ai.previewTitle}
+                >
+                  <div className={styles.aiPreviewHeader}>
+                    <h3 className={styles.cardTitle}>{TASK_CREATE_STRINGS.ai.previewTitle}</h3>
+                    <span className={styles.aiBadge}>{TASK_CREATE_STRINGS.ai.badge}</span>
+                  </div>
+
+                  <dl className={styles.aiPreviewGrid}>
+                    <div className={styles.aiPreviewField}>
+                      <dt className={styles.aiPreviewLabel}>
+                        {TASK_CREATE_STRINGS.ai.titleLabel}
+                      </dt>
+                      <dd className={styles.aiPreviewValue}>{aiDraft.title}</dd>
+                    </div>
+                    <div className={styles.aiPreviewField}>
+                      <dt className={styles.aiPreviewLabel}>
+                        {TASK_CREATE_STRINGS.ai.priorityLabel}
+                      </dt>
+                      <dd className={styles.aiPreviewValue}>
+                        {TASK_CREATE_STRINGS.priorities[aiDraft.suggestedPriority].label}
+                      </dd>
+                    </div>
+                    <div className={styles.aiPreviewField}>
+                      <dt className={styles.aiPreviewLabel}>
+                        {TASK_CREATE_STRINGS.ai.completionModeLabel}
+                      </dt>
+                      <dd className={styles.aiPreviewValue}>
+                        {aiDraft.suggestedCompletionMode === "REVIEW_REQUIRED"
+                          ? TASK_CREATE_STRINGS.completionMode.reviewRequired
+                          : TASK_CREATE_STRINGS.completionMode.direct}
+                      </dd>
+                    </div>
+                    <div className={styles.aiPreviewField}>
+                      <dt className={styles.aiPreviewLabel}>
+                        {TASK_CREATE_STRINGS.ai.dueAtLabel}
+                      </dt>
+                      <dd className={styles.aiPreviewValue}>
+                        {aiSuggestedDueAtLabel || TASK_CREATE_STRINGS.ai.dueAtNone}
+                      </dd>
+                    </div>
+                  </dl>
+
+                  <div className={styles.aiPreviewField}>
+                    <p className={styles.aiPreviewLabel}>
+                      {TASK_CREATE_STRINGS.ai.descriptionLabel}
+                    </p>
+                    <p className={styles.aiPreviewDescription}>{aiDraft.description}</p>
+                  </div>
+
+                  <div className={styles.aiReasoning}>
+                    <p className={styles.aiPreviewLabel}>
+                      {TASK_CREATE_STRINGS.ai.reasoningLabel}
+                    </p>
+                    <p className={styles.aiReasoningText}>{aiDraft.reasoning}</p>
+                  </div>
+
+                  <div className={styles.aiActions}>
+                    <button
+                      type="button"
+                      className={styles.aiApplyButton}
+                      onClick={applyDraft}
+                    >
+                      {TASK_CREATE_STRINGS.ai.apply}
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.cancelButton}
+                      onClick={discardDraft}
+                    >
+                      {TASK_CREATE_STRINGS.ai.discard}
+                    </button>
+                  </div>
+
+                  {aiApplied && (
+                    <p className={styles.aiAppliedNote} role="status">
+                      {TASK_CREATE_STRINGS.ai.applied}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              <p className={styles.aiDisclaimer}>{TASK_CREATE_STRINGS.ai.disclaimer}</p>
+            </div>
+          </div>
+
           <div className={styles.card}>
             <div className={styles.cardHeader}>
               <div className={styles.cardIconWrapper}>
@@ -507,6 +737,48 @@ export const TaskForm = ({
                       )}
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* Completion Mode — one-time Team tasks only */}
+              {isCompletionModeSelectable && (
+                <div className={styles.fieldGroup}>
+                  <label className={styles.label}>
+                    {TASK_CREATE_STRINGS.completionMode.sectionLabel}
+                  </label>
+                  <div
+                    className={`${styles.distributionModeSelector} ${styles.completionModeSelector}`}
+                    role="radiogroup"
+                    aria-label={TASK_CREATE_STRINGS.completionMode.sectionLabel}
+                  >
+                    <button
+                      type="button"
+                      role="radio"
+                      aria-checked={completionMode === "REVIEW_REQUIRED"}
+                      className={`${styles.distributionModeButton} ${
+                        completionMode === "REVIEW_REQUIRED" ? styles.distributionModeSelected : ""
+                      }`}
+                      onClick={() => setCompletionMode("REVIEW_REQUIRED")}
+                    >
+                      {TASK_CREATE_STRINGS.completionMode.reviewRequired}
+                    </button>
+                    <button
+                      type="button"
+                      role="radio"
+                      aria-checked={completionMode === "DIRECT"}
+                      className={`${styles.distributionModeButton} ${
+                        completionMode === "DIRECT" ? styles.distributionModeSelected : ""
+                      }`}
+                      onClick={() => setCompletionMode("DIRECT")}
+                    >
+                      {TASK_CREATE_STRINGS.completionMode.direct}
+                    </button>
+                  </div>
+                  <p className={styles.helperText}>
+                    {completionMode === "REVIEW_REQUIRED"
+                      ? TASK_CREATE_STRINGS.completionMode.reviewRequiredDescription
+                      : TASK_CREATE_STRINGS.completionMode.directDescription}
+                  </p>
                 </div>
               )}
 

@@ -70,13 +70,7 @@ export const canAssignTask = (viewer: OperixViewer | null, task?: Task): boolean
   if (viewer.role !== "ADMIN") return false;
 
   if (task) {
-    if (task.scope === "GLOBAL" || !task.teamId) {
-      return false;
-    }
-    const teamId = task.teamId ?? task.team?.id;
-    if (viewer.scope?.type === "ADMIN" && teamId) {
-      return viewer.scope.teamIds?.includes(teamId) ?? false;
-    }
+    return (task.owner?.id ?? task.createdById) === viewer.userId;
   }
 
   return true;
@@ -261,6 +255,24 @@ export const canResubmitTask = (viewer: OperixViewer | null, task: Task): boolea
 export const canReviewTaskSubmission = (viewer: OperixViewer | null, task: Task): boolean =>
   (viewer?.role === "SUPER_ADMIN" || viewer?.role === "ADMIN") &&
   (task.status === "SUBMITTED" || task.status === "RESUBMITTED");
+
+/**
+ * Step 30 advisory AI review mirrors real review authority:
+ * an Admin of the Task's Team, on a review-required Task that is awaiting a
+ * review decision. Super Admin is excluded because the backend review endpoint
+ * denies Super Admin, and the AI endpoint denies it for the same reason.
+ */
+export const canRequestSubmissionAiReview = (viewer: OperixViewer | null, task: Task): boolean => {
+  if (viewer?.role !== "ADMIN") return false;
+  if (viewer.scope.type !== "ADMIN") return false;
+  if (task.completionMode !== "REVIEW_REQUIRED") return false;
+  if (task.status !== "SUBMITTED" && task.status !== "RESUBMITTED") return false;
+
+  const teamId = task.teamId ?? task.team?.id;
+  if (!teamId) return false;
+
+  return viewer.scope.teamIds.includes(teamId);
+};
 
 export const canFilterTasksByTeam = (viewer: OperixViewer | null): boolean =>
   viewer?.role === "SUPER_ADMIN";

@@ -6,6 +6,7 @@ import {
   canCreateTask,
   canDeleteTaskAttachment,
   canDirectCompleteTask,
+  canRequestSubmissionAiReview,
   canResubmitTask,
   canReviewTaskSubmission,
   canStartTask,
@@ -46,6 +47,7 @@ const makeTask = (
   teamId: "team-1",
   categoryId: null,
   createdById: "user-test",
+  owner: { id: "user-test", name: "Task owner", role: "ADMIN" },
   createdAt: "2026-01-01T00:00:00.000Z",
   updatedAt: "2026-01-01T00:00:00.000Z",
   isOverdue: false,
@@ -89,21 +91,19 @@ describe("Task permissions", () => {
   });
 
   describe("canAssignTask", () => {
-    it("allows ADMIN to assign tasks within their team", () => {
+    it("allows an owner ADMIN to assign their Task", () => {
       const teamTask = { ...makeTask("PENDING"), scope: "TEAM" as const, teamId: "team-1" };
       expect(canAssignTask(makeViewer("ADMIN"), teamTask)).toBe(true);
     });
 
-    it("blocks ADMIN from assigning GLOBAL tasks or tasks from other teams", () => {
-      const globalTask = { ...makeTask("PENDING"), scope: "GLOBAL" as const, teamId: null };
-      expect(canAssignTask(makeViewer("ADMIN"), globalTask)).toBe(false);
-
-      const otherTeamTask = {
+    it("blocks a non-owner ADMIN even when the Task is in their Team", () => {
+      const otherOwnerTask = {
         ...makeTask("PENDING"),
         scope: "TEAM" as const,
-        teamId: "team-other",
+        teamId: "team-1",
+        owner: { id: "other-admin", name: "Other Admin", role: "ADMIN" as const },
       };
-      expect(canAssignTask(makeViewer("ADMIN"), otherTeamTask)).toBe(false);
+      expect(canAssignTask(makeViewer("ADMIN"), otherOwnerTask)).toBe(false);
     });
 
     it("allows SUPER_ADMIN to assign both TEAM and GLOBAL tasks", () => {
@@ -650,9 +650,7 @@ describe("Task permissions", () => {
       expect(canSubmitTask(null, reviewTask)).toBe(false);
 
       // Non-IN_PROGRESS status cannot submit
-      expect(canSubmitTask(memberViewer, makeTask("ASSIGNED", "REVIEW_REQUIRED"))).toBe(
-        false,
-      );
+      expect(canSubmitTask(memberViewer, makeTask("ASSIGNED", "REVIEW_REQUIRED"))).toBe(false);
     });
 
     it("evaluates canResubmitTask correctly for roles and completion modes", () => {
@@ -685,9 +683,7 @@ describe("Task permissions", () => {
       expect(canResubmitTask(null, reviewTask)).toBe(false);
 
       // Non-REVISION_REQUIRED status cannot resubmit
-      expect(
-        canResubmitTask(memberViewer, makeTask("IN_PROGRESS", "REVIEW_REQUIRED")),
-      ).toBe(false);
+      expect(canResubmitTask(memberViewer, makeTask("IN_PROGRESS", "REVIEW_REQUIRED"))).toBe(false);
     });
   });
 
@@ -709,6 +705,69 @@ describe("Task permissions", () => {
         false,
       );
       expect(canReviewTaskSubmission(makeViewer("ADMIN"), makeTask("IN_PROGRESS"))).toBe(false);
+    });
+  });
+
+  describe("canRequestSubmissionAiReview", () => {
+    it("allows the ADMIN of the Task's Team while the Task awaits review", () => {
+      expect(canRequestSubmissionAiReview(makeViewer("ADMIN"), makeTask("SUBMITTED"))).toBe(true);
+      expect(canRequestSubmissionAiReview(makeViewer("ADMIN"), makeTask("RESUBMITTED"))).toBe(true);
+    });
+
+    it("denies SUPER_ADMIN exactly like the review endpoint does", () => {
+      const submitted = makeTask("SUBMITTED");
+
+      // Pre-existing review permission is broader than the review API.
+      expect(canReviewTaskSubmission(makeViewer("SUPER_ADMIN"), submitted)).toBe(true);
+      expect(canRequestSubmissionAiReview(makeViewer("SUPER_ADMIN"), submitted)).toBe(false);
+    });
+
+    it("denies MEMBER and unauthenticated viewers", () => {
+      expect(canRequestSubmissionAiReview(makeViewer("MEMBER"), makeTask("SUBMITTED"))).toBe(false);
+      expect(canRequestSubmissionAiReview(null, makeTask("SUBMITTED"))).toBe(false);
+    });
+
+    it("denies Admins outside the Task's Team", () => {
+      expect(
+        canRequestSubmissionAiReview(makeViewer("ADMIN"), {
+          ...makeTask("SUBMITTED"),
+          teamId: "team-other",
+        }),
+      ).toBe(false);
+    });
+
+    it("denies an ADMIN viewer without an ADMIN scope", () => {
+      const globalAdmin: OperixViewer = { ...makeViewer("ADMIN"), scope: { type: "GLOBAL" } };
+      expect(canRequestSubmissionAiReview(globalAdmin, makeTask("SUBMITTED"))).toBe(false);
+    });
+
+    it("denies DIRECT completion Tasks, which never accept submissions", () => {
+      expect(
+        canRequestSubmissionAiReview(makeViewer("ADMIN"), makeTask("SUBMITTED", "DIRECT")),
+      ).toBe(false);
+    });
+
+    it("denies Task statuses that are not awaiting a review decision", () => {
+      const blockedStatuses: Task["status"][] = [
+        "PENDING",
+        "ASSIGNED",
+        "IN_PROGRESS",
+        "UNDER_REVIEW",
+        "COMPLETED",
+        "REVISION_REQUIRED",
+        "CANCELLED",
+      ];
+
+      for (const status of blockedStatuses) {
+        expect(canRequestSubmissionAiReview(makeViewer("ADMIN"), makeTask(status))).toBe(false);
+      }
+    });
+
+    it("never grants AI review where real review is denied", () => {
+      for (const status of ["SUBMITTED", "RESUBMITTED"] as Task["status"][]) {
+        const aiAllowed = canRequestSubmissionAiReview(makeViewer("ADMIN"), makeTask(status));
+        expect(aiAllowed).toBe(canReviewTaskSubmission(makeViewer("ADMIN"), makeTask(status)));
+      }
     });
   });
 

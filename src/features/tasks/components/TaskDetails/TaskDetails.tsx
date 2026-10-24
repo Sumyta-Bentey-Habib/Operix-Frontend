@@ -59,10 +59,7 @@ const SUBMISSION_PRIMARY_STATUSES: TaskStatus[] = [
   "RESUBMITTED",
 ];
 
-export const getDefaultTaskDetailsTab = (
-  viewer: OperixViewer | null,
-  task: Task,
-): TabKey => {
+export const getDefaultTaskDetailsTab = (viewer: OperixViewer | null, task: Task): TabKey => {
   if (SUBMISSION_PRIMARY_STATUSES.includes(task.status)) {
     return "submissions";
   }
@@ -410,15 +407,16 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
         </div>
 
         <div className={styles.headerActions}>
-          {canAssignTask(viewer, task) && task.status === "PENDING" && (
-            <button
-              type="button"
-              className={styles.primaryActionButton}
-              onClick={() => setAssignmentOpen(true)}
-            >
-              {TASK_DETAILS_STRINGS.actions.assignTask}
-            </button>
-          )}
+          {canAssignTask(viewer, task) &&
+            (task.status === "PENDING" || task.status === "ASSIGNED") && (
+              <button
+                type="button"
+                className={styles.primaryActionButton}
+                onClick={() => setAssignmentOpen(true)}
+              >
+                {TASK_DETAILS_STRINGS.actions.assignTask}
+              </button>
+            )}
           {canClaimTask(viewer, task) && (
             <button
               type="button"
@@ -881,7 +879,11 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
       {/* Task Assignment Dialog */}
       <TaskAssignmentDialog
         task={
-          assignmentOpen && canAssignTask(viewer, task) && task.status === "PENDING" ? task : null
+          assignmentOpen &&
+          canAssignTask(viewer, task) &&
+          (task.status === "PENDING" || task.status === "ASSIGNED")
+            ? task
+            : null
         }
         pending={assignmentPending}
         error={assignmentError}

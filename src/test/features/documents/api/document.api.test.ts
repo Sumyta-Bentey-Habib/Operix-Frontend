@@ -58,4 +58,16 @@ describe("documentApi", () => {
       }),
     ).toEqual({ page: 1, limit: 20, sort: "CREATED_AT_DESC" });
   });
+
+  it("posts an empty analysis request and forwards its abort signal", async () => {
+    const signal = new AbortController().signal;
+    mocks.apiRequest.mockResolvedValueOnce({ documentId: "file-public-1" });
+
+    await documentApi.analyze("file-public-1", signal);
+
+    expect(mocks.apiRequest).toHaveBeenCalledWith("/documents/file-public-1/ai-analysis", {
+      method: "POST",
+      signal,
+    });
+  });
 });

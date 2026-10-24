@@ -354,6 +354,40 @@ export const TASK_CREATE_STRINGS = {
     submitting: "Creating Task...",
     cancel: "Cancel",
   },
+  ai: {
+    sectionTitle: "AI Task Copilot",
+    sectionSubtitle:
+      "Describe the work in plain language and generate an advisory draft you can review.",
+    badge: "Advisory draft",
+    promptLabel: "What needs to be done?",
+    promptPlaceholder:
+      "e.g., Verify last week's cold chain temperature logs and flag every excursion above the allowed range.",
+    promptHelper: "At least 10 characters. Only this prompt is sent to the AI.",
+    generate: "Generate with AI",
+    generating: "Generating draft...",
+    previewTitle: "Draft Preview",
+    titleLabel: "Suggested title",
+    descriptionLabel: "Suggested description",
+    priorityLabel: "Suggested priority",
+    completionModeLabel: "Suggested completion mode",
+    dueAtLabel: "Suggested deadline",
+    dueAtNone: "No deadline suggested",
+    reasoningLabel: "Why this draft",
+    apply: "Apply Draft",
+    discard: "Discard Draft",
+    applied: "Draft applied. Review the fields below before creating the Task.",
+    disclaimer:
+      "This draft is a suggestion only. Nothing is saved, assigned, or started until you create the Task.",
+    promptTooShort: "Write at least 10 characters before generating a draft.",
+  },
+  completionMode: {
+    sectionLabel: "Completion Mode",
+    reviewRequired: "Review Required",
+    direct: "Direct Complete",
+    reviewRequiredDescription:
+      "A reviewer must approve the submission before the Task is completed.",
+    directDescription: "The Task completes as soon as the assignee submits it.",
+  },
   validation: {
     titleRequired: "Task title is required.",
     teamRequired: "Choose a Team before creating the Task.",

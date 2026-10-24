@@ -152,6 +152,75 @@ export interface CreateTaskRecurrenceInput {
   reminderLeadMinutes?: number;
 }
 
+export type TaskCompletionMode = "DIRECT" | "REVIEW_REQUIRED";
+
+export interface GenerateTaskAiDraftInput {
+  prompt: string;
+}
+
+/**
+ * Advisory output of `POST /tasks/ai/draft`. It never carries identifiers,
+ * assignment, scope, or workflow state: the human still creates the task.
+ */
+export interface TaskAiDraft {
+  title: string;
+  description: string;
+  suggestedPriority: TaskPriority;
+  suggestedCompletionMode: TaskCompletionMode;
+  suggestedDueAt: string | null;
+  reasoning: string;
+  meta: {
+    model: string;
+    attempts: number;
+    latencyMs: number;
+  };
+}
+
+export type TaskAssignmentAiDecision = "RECOMMEND" | "MANUAL_SELECTION";
+export type TaskAssignmentAiConfidence = "LOW" | "MEDIUM" | "HIGH";
+
+export interface TaskAssignmentRecommendationMetrics {
+  activeTasks: number;
+  overdueTasks: number;
+  activeUrgentTasks: number;
+  activeHighTasks: number;
+  completionRate: number | null;
+  onTimeRate: number | null;
+  averageCompletionMinutes: number | null;
+  relevantCategoryCompletedTasks: number | null;
+  relevantCategoryOnTimeTasks: number | null;
+}
+
+export interface TaskAssignmentRecommendationResponse {
+  taskId: string;
+  asOf: string;
+  decision: TaskAssignmentAiDecision;
+  summary: string;
+  recommendations: Array<{
+    rank: number;
+    member: {
+      id: string;
+      name: string;
+      designation: string | null;
+      teamName: string | null;
+    };
+    metrics: TaskAssignmentRecommendationMetrics;
+    rationale: string;
+    strengths: string[];
+    cautions: string[];
+  }>;
+  confidence: TaskAssignmentAiConfidence;
+  limitations: string[];
+  meta: {
+    provider: string;
+    model: string;
+    attempts: number;
+    latencyMs: number;
+    eligibleCandidates: number;
+    consideredCandidates: number;
+  };
+}
+
 export interface CreateTaskInput {
   title: string;
   description?: string;
@@ -244,4 +313,3 @@ export const buildTaskListQuery = (
 
   return query;
 };
-

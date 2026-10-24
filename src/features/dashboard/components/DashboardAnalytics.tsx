@@ -3,6 +3,8 @@ import { LoadingState } from "@/components/ui/LoadingState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { DASHBOARD_STRINGS } from "@/utils/dashboard-strings";
 import { useDashboardAnalytics } from "../hooks/use-dashboard-analytics";
+import { useDashboardAiBrief } from "../hooks/use-dashboard-ai-brief";
+import { DashboardAiBrief } from "./DashboardAiBrief/DashboardAiBrief";
 import { DashboardAnalyticsHeader } from "./DashboardAnalyticsHeader/DashboardAnalyticsHeader";
 import { SectionShell } from "./SectionShell/SectionShell";
 import { DashboardOverviewContent } from "./RoleDashboards/DashboardOverviewContent";
@@ -31,6 +33,8 @@ export const DashboardAnalytics = () => {
     trendState,
     tasksState,
   } = useDashboardAnalytics();
+  const canUseAiBrief = viewer?.role === "SUPER_ADMIN" || viewer?.role === "ADMIN";
+  const aiBriefState = useDashboardAiBrief(trendState.days, canUseAiBrief);
 
   if (hydrationStatus === "IDLE" || hydrationStatus === "LOADING") {
     return <LoadingState message="Loading Dashboard..." />;
@@ -49,6 +53,16 @@ export const DashboardAnalytics = () => {
         selectedDate={selectedSnapshotDate}
         onDateChange={setSelectedSnapshotDate}
       />
+
+      {canUseAiBrief && (
+        <DashboardAiBrief
+          brief={aiBriefState.brief}
+          days={trendState.days}
+          pending={aiBriefState.pending}
+          error={aiBriefState.error}
+          onGenerate={() => void aiBriefState.generate()}
+        />
+      )}
 
       <SectionShell
         title={DASHBOARD_STRINGS.sections.overviewTitle}

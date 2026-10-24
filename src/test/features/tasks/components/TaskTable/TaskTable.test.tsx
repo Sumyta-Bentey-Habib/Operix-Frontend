@@ -69,7 +69,7 @@ describe("TaskTable", () => {
     expect(claimFn).toHaveBeenCalled();
   });
 
-  it("shows ADMIN assign only for PENDING Tasks", () => {
+  it("shows an owner ADMIN assignment action for PENDING and ASSIGNED Tasks", () => {
     render(
       <TaskTable
         tasks={[task("PENDING"), { ...task("ASSIGNED"), id: "task-2", referenceCode: "TSK-0002" }]}
@@ -79,7 +79,7 @@ describe("TaskTable", () => {
       />,
     );
 
-    expect(screen.getAllByRole("button", { name: "Assign" })).toHaveLength(1);
+    expect(screen.getAllByRole("button", { name: "Assign" })).toHaveLength(2);
     expect(screen.queryByRole("button", { name: "Start" })).not.toBeInTheDocument();
   });
 

@@ -1,0 +1,235 @@
+.panel {
+  background: var(--bg-card-subtle);
+  border: 1px dashed var(--border-default);
+  border-radius: 14px;
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+}
+
+.header {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.headerText {
+  display: grid;
+  gap: 4px;
+}
+
+.titleRow {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.title {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.advisoryBadge {
+  background: var(--badge-pending-bg);
+  border-radius: 999px;
+  color: var(--badge-pending-text);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  text-transform: uppercase;
+}
+
+.subtitle,
+.hint {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.hint {
+  color: var(--text-muted);
+}
+
+.analyzeButton,
+.useFeedbackButton {
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 700;
+  min-height: 38px;
+  padding: 8px 14px;
+  transition: all 0.2s ease;
+}
+
+.analyzeButton {
+  background: var(--primary-emerald);
+  color: var(--text-inverse);
+}
+
+.analyzeButton:hover:not(:disabled) {
+  background: var(--primary-emerald-hover);
+}
+
+.useFeedbackButton {
+  background: var(--bg-card);
+  border-color: var(--border-default);
+  color: var(--text-primary);
+}
+
+.useFeedbackButton:hover:not(:disabled) {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+}
+
+.analyzeButton:focus-visible,
+.useFeedbackButton:focus-visible {
+  outline: 2px solid var(--primary-emerald);
+  outline-offset: 2px;
+}
+
+.analyzeButton:disabled,
+.useFeedbackButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.error {
+  background: var(--danger-bg);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  color: var(--badge-negative-text);
+  display: grid;
+  font-size: 0.82rem;
+  font-weight: 600;
+  gap: 4px;
+  padding: 10px;
+}
+
+.result {
+  border-top: 1px solid var(--border-subtle);
+  display: grid;
+  gap: 12px;
+  padding-top: 12px;
+}
+
+.sectionTitle {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  margin: 0 0 6px;
+  text-transform: uppercase;
+}
+
+.summary,
+.note,
+.itemBody,
+.feedback,
+.meta {
+  color: var(--text-primary);
+  font-size: 0.86rem;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.note,
+.meta {
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  margin-top: 6px;
+}
+
+.meta {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+.list {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+}
+
+.itemHead {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.itemTitle {
+  color: var(--text-primary);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.chip {
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  text-transform: uppercase;
+}
+
+.chip[data-tone="positive"] {
+  background: var(--badge-positive-bg);
+  color: var(--success);
+}
+
+.chip[data-tone="warning"] {
+  background: var(--badge-pending-bg);
+  color: var(--warning-text);
+}
+
+.chip[data-tone="negative"] {
+  background: var(--badge-negative-bg);
+  color: var(--badge-negative-text);
+}
+
+.chip[data-tone="neutral"] {
+  background: var(--bg-muted);
+  color: var(--text-secondary);
+}
+
+.feedback {
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  padding: 10px;
+  white-space: pre-wrap;
+}
+
+.applied {
+  color: var(--warning-text);
+  font-size: 0.76rem;
+  font-weight: 600;
+  margin: 8px 0 0;
+}
+
+@media (max-width: 480px) {
+  .analyzeButton,
+  .useFeedbackButton {
+    width: 100%;
+  }
+}
