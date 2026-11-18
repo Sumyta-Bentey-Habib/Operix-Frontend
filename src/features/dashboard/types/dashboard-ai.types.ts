@@ -1,4 +1,4 @@
-import type { DashboardTrendDays } from "./dashboard.types";
+export type DashboardAiPeriod = "TODAY" | "LAST_7_DAYS" | "LAST_14_DAYS" | "LAST_30_DAYS";
 
 export type DashboardAiSeverity = "HIGH" | "MEDIUM" | "LOW";
 
@@ -28,7 +28,7 @@ export interface DashboardAiWorkloadObservation {
   evidence: string;
 }
 
-export interface DashboardAiBriefResponse {
+export interface DashboardAiBriefContent {
   headline: string;
   executiveSummary: string;
   priorities: DashboardAiPriority[];
@@ -38,12 +38,27 @@ export interface DashboardAiBriefResponse {
   nextActions: string[];
   confidence: DashboardAiConfidence;
   limitations: string[];
+}
+
+export interface DashboardAiBriefResponse {
+  snapshot: {
+    period: DashboardAiPeriod;
+    periodStart: string;
+    asOf: string;
+    activeTasks: number;
+    overdueTasks: number;
+    reviewQueueTasks: number;
+    revisionRequiredTasks: number;
+    completedInPeriod: number;
+  };
+  brief: DashboardAiBriefContent;
   meta: {
     provider: string;
     model: string;
     attempts: number;
     latencyMs: number;
-    days: DashboardTrendDays;
+    period: DashboardAiPeriod;
+    days: number;
     asOf: string;
   };
 }

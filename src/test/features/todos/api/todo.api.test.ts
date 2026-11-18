@@ -13,14 +13,12 @@ describe("todoApi", () => {
   });
 
   it("lists todos with query parameters", async () => {
-    const fetchMock = vi
-      .spyOn(globalThis, "fetch")
-      .mockResolvedValueOnce(
-        jsonResponse({
-          data: [],
-          meta: { page: 1, limit: 20, total: 0, totalPages: 0 },
-        }),
-      );
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      jsonResponse({
+        data: [],
+        meta: { page: 1, limit: 20, total: 0, totalPages: 0 },
+      }),
+    );
 
     await todoApi.list({
       status: "ACTIVE",
@@ -50,9 +48,7 @@ describe("todoApi", () => {
 
     const result = await todoApi.summary();
 
-    expect(String(fetchMock.mock.calls[0]?.[0])).toBe(
-      "http://localhost:5000/api/v1/todos/summary",
-    );
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe("http://localhost:5000/api/v1/todos/summary");
     expect(result).toEqual(summaryData);
   });
 

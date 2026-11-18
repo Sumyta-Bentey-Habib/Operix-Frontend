@@ -142,4 +142,25 @@ describe("MemberWorkloadTable", () => {
 
     expect(screen.getByTestId("custom-pagination")).toBeInTheDocument();
   });
+
+  it("shows current-month throughput without disturbing live workload columns", () => {
+    render(
+      <MemberWorkloadTable
+        members={[
+          {
+            ...mockMembers[0],
+            monthly: { assigned: 12, completed: 9, onTime: 7, overdueCreated: 2 },
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.getByText(WORKLOAD_TABLE_STRINGS.columns.monthly)).toBeInTheDocument();
+    expect(screen.getByText("9")).toBeInTheDocument();
+    expect(screen.getByText(/12 assigned/)).toBeInTheDocument();
+    expect(screen.getByText(/7 on time/)).toBeInTheDocument();
+    expect(screen.getByText(/2 overdue/)).toBeInTheDocument();
+    // Current workload stays live and independent of the monthly window.
+    expect(screen.getAllByText("4").length).toBeGreaterThanOrEqual(1);
+  });
 });

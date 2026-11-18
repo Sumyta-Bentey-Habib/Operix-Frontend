@@ -1,5 +1,8 @@
 import type { Task, TaskPriority, TaskStatus } from "@/features/tasks/types/task.types";
-import type { DashboardOverviewResponse, DashboardWorkloadResponse } from "../types/dashboard.types";
+import type {
+  DashboardOverviewResponse,
+  DashboardWorkloadResponse,
+} from "../types/dashboard.types";
 
 export const computeBreakdownFromTasksList = (tasks: Task[]) => {
   const statusCounts: Record<TaskStatus, number> = {

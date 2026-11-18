@@ -11,7 +11,8 @@
 .header,
 .titleRow,
 .itemHeader,
-.badges {
+.badges,
+.controls {
   align-items: flex-start;
   display: flex;
   flex-wrap: wrap;
@@ -24,6 +25,50 @@
 
 .header {
   gap: 16px;
+}
+
+.controls {
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.periodControl {
+  color: var(--text-muted);
+  display: grid;
+  font-size: 0.7rem;
+  font-weight: 700;
+  gap: 4px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.periodSelector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.periodSelector button {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 700;
+  min-height: 40px;
+  padding: 7px 10px;
+}
+
+.periodSelector button:hover:not(:disabled),
+.periodSelector button:focus-visible {
+  border-color: var(--primary-emerald);
+}
+
+.periodSelector .periodSelected {
+  background: var(--primary-emerald);
+  border-color: var(--primary-emerald);
+  color: var(--text-inverse);
 }
 
 .headingGroup {
@@ -174,6 +219,31 @@
   padding-top: 18px;
 }
 
+.snapshot {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.snapshotMetric {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  display: grid;
+  gap: 2px;
+  padding: 10px;
+}
+
+.snapshotMetric strong {
+  color: var(--text-primary);
+  font-size: 1.05rem;
+}
+
+.snapshotMetric span {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+}
+
 .summary,
 .section,
 .mutedSection {
@@ -192,12 +262,18 @@
   font-size: 0.86rem;
 }
 
-.section h3,
-.mutedSection h3 {
+.section summary,
+.mutedSection summary {
   color: var(--text-muted);
+  cursor: pointer;
   font-size: 0.73rem;
+  font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+.sectionBody {
+  margin-top: 9px;
 }
 
 .mutedSection {
@@ -236,6 +312,18 @@
   font-size: 0.88rem;
 }
 
+.priority[data-severity="HIGH"] {
+  border-left: 3px solid var(--danger);
+}
+
+.priority[data-severity="MEDIUM"] {
+  border-left: 3px solid var(--warning-text);
+}
+
+.priority[data-severity="LOW"] {
+  border-left: 3px solid var(--text-muted);
+}
+
 .action,
 .evidence {
   color: var(--text-primary) !important;
@@ -258,7 +346,8 @@
 
 @media (max-width: 720px) {
   .gridList,
-  .twoColumn {
+  .twoColumn,
+  .snapshot {
     grid-template-columns: 1fr;
   }
 }
@@ -269,6 +358,11 @@
   }
 
   .generateButton {
+    width: 100%;
+  }
+
+  .controls,
+  .periodControl {
     width: 100%;
   }
 }

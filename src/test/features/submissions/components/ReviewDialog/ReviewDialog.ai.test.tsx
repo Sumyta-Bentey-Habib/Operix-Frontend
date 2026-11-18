@@ -26,6 +26,7 @@ const submission = (id: string, version: number): Submission => ({
   submissionText: `Submission ${version}`,
   submittedAt: "2026-08-23T00:00:00.000Z",
   createdAt: "2026-08-23T00:00:00.000Z",
+  updatedAt: "2026-08-23T00:00:00.000Z",
   attachments: [],
 });
 

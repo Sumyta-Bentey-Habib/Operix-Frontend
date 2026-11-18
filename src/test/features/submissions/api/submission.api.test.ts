@@ -101,4 +101,43 @@ describe("submissionApi", () => {
     );
     expect("resubmit" in submissionApi).toBe(false);
   });
+
+  it("updates Submission text through PATCH without changing submitter fields", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse({ id: "submission-1", submissionText: "Updated" }));
+
+    await submissionApi.update("submission-1", { submissionText: "Updated" });
+
+    const request = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe(
+      "http://localhost:5000/api/v1/submissions/submission-1",
+    );
+    expect(request.method).toBe("PATCH");
+    expect(JSON.parse(String(request.body))).toEqual({ submissionText: "Updated" });
+  });
+
+  it("adds and removes Submission attachments through scoped endpoints", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse([]))
+      .mockResolvedValueOnce(new Response(null, { status: 204 }));
+    const file = new File(["proof"], "proof.pdf", { type: "application/pdf" });
+
+    await submissionApi.uploadAttachments("submission-1", [file]);
+    await submissionApi.deleteAttachment("submission-1", "file-1");
+
+    const uploadRequest = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe(
+      "http://localhost:5000/api/v1/submissions/submission-1/attachments",
+    );
+    expect(uploadRequest.method).toBe("POST");
+    expect((uploadRequest.body as FormData).getAll("files")).toEqual([file]);
+
+    const deleteRequest = fetchMock.mock.calls[1]?.[1] as RequestInit;
+    expect(String(fetchMock.mock.calls[1]?.[0])).toBe(
+      "http://localhost:5000/api/v1/submissions/submission-1/attachments/file-1",
+    );
+    expect(deleteRequest.method).toBe("DELETE");
+  });
 });

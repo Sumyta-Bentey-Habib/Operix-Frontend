@@ -28,8 +28,8 @@ const RegistrationApprovalForm: React.FC<RegistrationApprovalFormProps> = ({
   onClose,
 }) => {
   const [role, setRole] = useState<"ADMIN" | "MEMBER">("MEMBER");
-  const [employeeId, setEmployeeId] = useState(request.employeeId || "");
-  const [designation, setDesignation] = useState(request.designation || "");
+  const [employeeId, setEmployeeId] = useState(request.selectedEmployeeId || "");
+  const [designation, setDesignation] = useState(request.selectedDesignation || "");
   const [teamId, setTeamId] = useState("");
   const [teams, setTeams] = useState<Team[]>([]);
 

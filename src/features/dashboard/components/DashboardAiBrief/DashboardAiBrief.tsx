@@ -2,17 +2,24 @@
 
 import type { ReactNode } from "react";
 import { DASHBOARD_STRINGS } from "@/utils/dashboard-strings";
-import type { DashboardAiBriefResponse } from "../../types/dashboard-ai.types";
-import type { DashboardTrendDays } from "../../types/dashboard.types";
+import type { DashboardAiBriefResponse, DashboardAiPeriod } from "../../types/dashboard-ai.types";
 import styles from "./DashboardAiBrief.module.css";
 
 export interface DashboardAiBriefProps {
   brief: DashboardAiBriefResponse | null;
-  days: DashboardTrendDays;
+  period: DashboardAiPeriod;
   pending: boolean;
   error: string | null;
+  onPeriodChange: (period: DashboardAiPeriod) => void;
   onGenerate: () => void;
 }
+
+const PERIOD_OPTIONS: { value: DashboardAiPeriod; label: string }[] = [
+  { value: "TODAY", label: "Today" },
+  { value: "LAST_7_DAYS", label: "Last 7 days" },
+  { value: "LAST_14_DAYS", label: "Last 14 days" },
+  { value: "LAST_30_DAYS", label: "Last 30 days" },
+];
 
 const CATEGORY_LABELS = {
   OVERDUE: "Overdue",
@@ -25,13 +32,15 @@ const CATEGORY_LABELS = {
 } as const;
 
 export const DashboardAiBrief = ({
-  brief,
-  days,
+  brief: response,
+  period,
   pending,
   error,
+  onPeriodChange,
   onGenerate,
 }: DashboardAiBriefProps) => {
   const copy = DASHBOARD_STRINGS.aiBrief;
+  const brief = response?.brief ?? null;
 
   return (
     <section className={styles.card} aria-labelledby="dashboard-ai-brief-title">
@@ -44,16 +53,35 @@ export const DashboardAiBrief = ({
             <span className={styles.advisory}>{copy.advisory}</span>
           </div>
           <p className={styles.subtitle}>{copy.subtitle}</p>
-          <p className={styles.period}>{copy.period(days)}</p>
         </div>
-        <button
-          type="button"
-          className={styles.generateButton}
-          onClick={onGenerate}
-          disabled={pending}
-        >
-          {pending ? copy.generating : brief ? copy.refresh : copy.generate}
-        </button>
+        <div className={styles.controls}>
+          <div className={styles.periodControl}>
+            <span>Brief period</span>
+            <div className={styles.periodSelector} role="radiogroup" aria-label="Brief period">
+              {PERIOD_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  role="radio"
+                  aria-checked={period === option.value}
+                  className={period === option.value ? styles.periodSelected : undefined}
+                  onClick={() => onPeriodChange(option.value)}
+                  disabled={pending}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <button
+            type="button"
+            className={styles.generateButton}
+            onClick={onGenerate}
+            disabled={pending}
+          >
+            {pending ? copy.generating : response ? copy.refresh : copy.generate}
+          </button>
+        </div>
       </header>
 
       {error && (
@@ -62,25 +90,37 @@ export const DashboardAiBrief = ({
         </div>
       )}
 
-      {!brief && !error && (
+      {!response && !error && (
         <div className={styles.empty}>
           <strong>{copy.emptyTitle}</strong>
-          <span>{copy.emptyMessage}</span>
+          <span>Select a period, then generate a read-only operational summary.</span>
         </div>
       )}
 
-      {brief && (
+      {response && brief && (
         <div className={styles.result} aria-live="polite">
+          <div className={styles.snapshot} aria-label="Operations snapshot">
+            <SnapshotMetric label="Active" value={response.snapshot.activeTasks} />
+            <SnapshotMetric label="Overdue" value={response.snapshot.overdueTasks} />
+            <SnapshotMetric label="Review queue" value={response.snapshot.reviewQueueTasks} />
+            <SnapshotMetric label="Revision" value={response.snapshot.revisionRequiredTasks} />
+            <SnapshotMetric label="Completed" value={response.snapshot.completedInPeriod} />
+          </div>
+
           <div className={styles.summary}>
             <h3>{brief.headline}</h3>
             <p>{brief.executiveSummary}</p>
           </div>
 
           {brief.priorities.length > 0 && (
-            <BriefSection title={copy.priorities}>
+            <BriefSection title={copy.priorities} open>
               <ul className={styles.gridList}>
                 {brief.priorities.map((priority, index) => (
-                  <li className={styles.priority} key={`${priority.title}-${index}`}>
+                  <li
+                    className={styles.priority}
+                    data-severity={priority.severity}
+                    key={`${priority.title}-${index}`}
+                  >
                     <div className={styles.itemHeader}>
                       <strong>{priority.title}</strong>
                       <div className={styles.badges}>
@@ -115,16 +155,15 @@ export const DashboardAiBrief = ({
             </BriefSection>
           )}
 
-          <div className={styles.twoColumn}>
-            <BriefSection title={copy.trends}>
-              <p>{brief.trendSummary}</p>
+          <BriefSection title={copy.trends}>
+            <p>{brief.trendSummary}</p>
+          </BriefSection>
+
+          {brief.reportingSummary && (
+            <BriefSection title={copy.reporting}>
+              <p>{brief.reportingSummary}</p>
             </BriefSection>
-            {brief.reportingSummary && (
-              <BriefSection title={copy.reporting}>
-                <p>{brief.reportingSummary}</p>
-              </BriefSection>
-            )}
-          </div>
+          )}
 
           {brief.nextActions.length > 0 && (
             <BriefSection title={copy.nextActions}>
@@ -148,7 +187,7 @@ export const DashboardAiBrief = ({
 
           <p className={styles.meta}>
             {copy.confidence}: {brief.confidence} · {copy.generated}:{" "}
-            <time dateTime={brief.meta.asOf}>{formatAsOf(brief.meta.asOf)}</time>
+            <time dateTime={response.meta.asOf}>{formatAsOf(response.meta.asOf)}</time>
           </p>
         </div>
       )}
@@ -156,19 +195,28 @@ export const DashboardAiBrief = ({
   );
 };
 
+const SnapshotMetric = ({ label, value }: { label: string; value: number }) => (
+  <div className={styles.snapshotMetric}>
+    <strong>{value}</strong>
+    <span>{label}</span>
+  </div>
+);
+
 const BriefSection = ({
   title,
   muted = false,
+  open = false,
   children,
 }: {
   title: string;
   muted?: boolean;
+  open?: boolean;
   children: ReactNode;
 }) => (
-  <section className={muted ? styles.mutedSection : styles.section}>
-    <h3>{title}</h3>
-    {children}
-  </section>
+  <details className={muted ? styles.mutedSection : styles.section} open={open}>
+    <summary>{title}</summary>
+    <div className={styles.sectionBody}>{children}</div>
+  </details>
 );
 
 function formatAsOf(value: string): string {

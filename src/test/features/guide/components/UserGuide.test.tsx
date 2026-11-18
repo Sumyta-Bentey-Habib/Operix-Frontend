@@ -69,9 +69,7 @@ describe("UserGuide", () => {
     const banglaBtn = screen.getByRole("radio", { name: "বাংলা" });
     fireEvent.click(banglaBtn);
 
-    expect(
-      screen.getByText("অপারেক্স সুপার অ্যাডমিন ব্যবহারকারী নির্দেশিকা"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("অপারেক্স সুপার অ্যাডমিন ব্যবহারকারী নির্দেশিকা")).toBeInTheDocument();
 
     // Toggle back to English
     const englishBtn = screen.getByRole("radio", { name: "English" });

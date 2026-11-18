@@ -44,8 +44,7 @@ export const normalizeDashboardOverview = (
     case "ADMIN": {
       const kpis = (raw.kpis ?? {}) as RawAdminKpis;
       const derivedScopedTeams =
-        kpis.scopedTeams ??
-        (viewer?.scope?.type === "ADMIN" ? viewer.scope.teamIds.length : 0);
+        kpis.scopedTeams ?? (viewer?.scope?.type === "ADMIN" ? viewer.scope.teamIds.length : 0);
 
       const normalizedKpis: AdminOverviewKpis = {
         scopedTeams: Number(derivedScopedTeams) || 0,
@@ -57,8 +56,7 @@ export const normalizeDashboardOverview = (
         dueSoonTasks: Number(kpis.dueSoonTasks) || 0,
         taskReviewQueue: Number(kpis.taskReviewQueue ?? kpis.reviewQueueTasks) || 0,
         revisionRequiredTasks: Number(kpis.revisionRequiredTasks) || 0,
-        completionRate:
-          kpis.completionRate ?? kpis.scopedCompletionRate ?? 0,
+        completionRate: kpis.completionRate ?? kpis.scopedCompletionRate ?? 0,
         onTimeRate: kpis.onTimeRate ?? 0,
         averageCompletionMinutes: kpis.averageCompletionMinutes ?? 0,
         myDraftReports: Number(kpis.myDraftReports) || 0,
@@ -78,8 +76,7 @@ export const normalizeDashboardOverview = (
       const kpis = (raw.kpis ?? {}) as RawMemberKpis;
       const activeTasks = Number(kpis.myActiveTasks) || 0;
       const completedTasks = Number(kpis.myCompletedTasks ?? kpis.completedTasks) || 0;
-      const totalTasks =
-        Number(kpis.myTotalTasks) || activeTasks + completedTasks;
+      const totalTasks = Number(kpis.myTotalTasks) || activeTasks + completedTasks;
 
       const normalizedKpis: MemberOverviewKpis = {
         myTotalTasks: totalTasks,
@@ -122,8 +119,7 @@ export const normalizeDashboardOverview = (
         onTimeRate: kpis.onTimeRate ?? 0,
         averageCompletionMinutes: kpis.averageCompletionMinutes ?? 0,
         pendingManagementReports: Number(kpis.pendingManagementReports) || 0,
-        revisionRequiredManagementReports:
-          Number(kpis.revisionRequiredManagementReports) || 0,
+        revisionRequiredManagementReports: Number(kpis.revisionRequiredManagementReports) || 0,
       };
 
       return {

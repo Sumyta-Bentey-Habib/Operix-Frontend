@@ -119,7 +119,9 @@ export const MemberWorkloadRowItem: React.FC<MemberWorkloadRowItemProps> = ({ me
       <td className={styles.capacityCell}>
         <div className={styles.capacityGroup}>
           <div className={styles.capacityHeader}>
-            <span className={`${styles.capacityTierLabel} ${styles[`tier_${member.capacityTier}`]}`}>
+            <span
+              className={`${styles.capacityTierLabel} ${styles[`tier_${member.capacityTier}`]}`}
+            >
               {WORKLOAD_TABLE_STRINGS.capacityTiers[member.capacityTier]}
             </span>
             <span className={styles.capacityPercentage}>{member.capacityPercentage}%</span>
@@ -130,6 +132,29 @@ export const MemberWorkloadRowItem: React.FC<MemberWorkloadRowItemProps> = ({ me
               style={{ width: `${Math.max(member.capacityPercentage, 4)}%` }}
             />
           </div>
+        </div>
+      </td>
+
+      {/* This Month (query-windowed activity, never a data reset) */}
+      <td className={styles.monthlyCell}>
+        <div
+          className={styles.monthlyGroup}
+          title={WORKLOAD_TABLE_STRINGS.monthly.tooltip}
+          aria-label={WORKLOAD_TABLE_STRINGS.monthly.ariaLabel}
+        >
+          <span className={styles.monthlyPrimary}>
+            {member.monthly.completed}
+            <span className={styles.monthlyUnit}>{WORKLOAD_TABLE_STRINGS.monthly.completed}</span>
+          </span>
+          <span className={styles.monthlyDetail}>
+            {member.monthly.assigned} {WORKLOAD_TABLE_STRINGS.monthly.assigned} ·{" "}
+            {member.monthly.onTime} {WORKLOAD_TABLE_STRINGS.monthly.onTime}
+          </span>
+          {member.monthly.overdueCreated > 0 && (
+            <span className={styles.monthlyOverdue}>
+              {member.monthly.overdueCreated} {WORKLOAD_TABLE_STRINGS.monthly.overdue}
+            </span>
+          )}
         </div>
       </td>
     </tr>

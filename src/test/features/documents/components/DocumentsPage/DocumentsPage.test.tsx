@@ -90,6 +90,13 @@ const adminViewer: OperixViewer = {
   scope: { type: "ADMIN", teamIds: ["team-1"] },
 };
 
+const superAdminViewer: OperixViewer = {
+  userId: "chief-user-1",
+  role: "SUPER_ADMIN",
+  status: "ACTIVE",
+  scope: { type: "GLOBAL" },
+};
+
 const submissionDoc: DocumentListItem = {
   id: "file-public-1",
   name: "Assignment.pdf",
@@ -215,6 +222,31 @@ describe("DocumentsPage", () => {
     render(<DocumentsPage />);
 
     expect(screen.getByRole("heading", { name: "No documents yet" })).toBeInTheDocument();
+  });
+
+  it("shows the organization-wide empty state and scope filters for Super Admins", () => {
+    mocks.useAuth.mockReturnValue({ viewer: superAdminViewer });
+    mocks.useMembers.mockReturnValue({
+      members: [],
+      meta: {},
+      loading: false,
+      error: null,
+    });
+    mocks.useTeams.mockReturnValue({
+      teams: [],
+      meta: {},
+      loading: false,
+      error: null,
+    });
+    mocks.documents.mockReturnValue([]);
+
+    render(<DocumentsPage />);
+
+    expect(
+      screen.getByRole("heading", { name: "No documents have been uploaded yet" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Member")).toBeInTheDocument();
+    expect(screen.getByLabelText("Team")).toBeInTheDocument();
   });
 
   it("downloads through the existing file endpoint by public file id", async () => {

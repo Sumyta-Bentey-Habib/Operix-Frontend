@@ -221,7 +221,9 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
   };
 
   // Preset Handlers
-  const handlePresetSelect = (type: "todayEod" | "tomorrowMorning" | "tomorrowEod" | "nextWeek") => {
+  const handlePresetSelect = (
+    type: "todayEod" | "tomorrowMorning" | "tomorrowEod" | "nextWeek",
+  ) => {
     const today = new Date();
     let targetDate = new Date();
     let hour = 5;

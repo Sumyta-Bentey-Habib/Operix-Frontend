@@ -30,16 +30,23 @@ export const StatusPieLegendItem = ({
         <div className={styles.pieVerticalTextGroup}>
           <span className={styles.pieVerticalLabel}>{item.label}</span>
           <small className={styles.pieVerticalCount}>
-            {item.count} {item.count === 1 ? DASHBOARD_STRINGS.units.task : DASHBOARD_STRINGS.units.tasks}
+            {item.count}{" "}
+            {item.count === 1 ? DASHBOARD_STRINGS.units.task : DASHBOARD_STRINGS.units.tasks}
           </small>
         </div>
       </div>
       <div className={styles.pieVerticalRight}>
         <span
-          className={`${styles.pieVerticalPct} ${
-            hasCount ? styles.pieVerticalPctHighlight : ""
-          }`}
-          style={hasCount ? { color: item.color, borderColor: `${item.color}40`, backgroundColor: `${item.color}15` } : undefined}
+          className={`${styles.pieVerticalPct} ${hasCount ? styles.pieVerticalPctHighlight : ""}`}
+          style={
+            hasCount
+              ? {
+                  color: item.color,
+                  borderColor: `${item.color}40`,
+                  backgroundColor: `${item.color}15`,
+                }
+              : undefined
+          }
         >
           {percentage}%
         </span>
@@ -47,4 +54,3 @@ export const StatusPieLegendItem = ({
     </div>
   );
 };
-

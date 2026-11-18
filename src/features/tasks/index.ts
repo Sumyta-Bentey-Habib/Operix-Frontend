@@ -3,6 +3,8 @@ export { taskAttachmentApi } from "./api/task-attachment.api";
 export type {
   AssignTaskInput,
   CancelDistributionResponse,
+  CreateBulkTaskInput,
+  CreateBulkTaskResponse,
   CreateTaskDistributionInput,
   CreateTaskInput,
   RescheduleDistributionInput,

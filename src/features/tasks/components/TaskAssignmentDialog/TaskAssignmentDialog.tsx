@@ -6,10 +6,8 @@ import { taskApi } from "../../api/task.api";
 import type { AssignTaskInput, Task } from "../../types/task.types";
 import { TaskAssigneePicker } from "../TaskAssigneePicker";
 import { TaskAssignmentRecommendations } from "../TaskAssignmentRecommendations";
+import { getAssignmentAiErrorMessage } from "../assignment-ai-errors";
 import styles from "./TaskAssignmentDialog.module.css";
-
-const ASSIGNMENT_AI_ERROR =
-  "AI recommendations are temporarily unavailable. You can continue assigning this Task manually.";
 
 type SelectedMember = {
   id: string;
@@ -89,13 +87,13 @@ const TaskAssignmentForm = ({
       if (requestRef.current?.controller === controller && requestRef.current.taskId === taskId) {
         setRecommendations(result);
       }
-    } catch {
+    } catch (error) {
       if (
         !controller.signal.aborted &&
         requestRef.current?.controller === controller &&
         requestRef.current.taskId === taskId
       ) {
-        setRecommendationsError(ASSIGNMENT_AI_ERROR);
+        setRecommendationsError(getAssignmentAiErrorMessage(error));
       }
     } finally {
       if (requestRef.current?.controller === controller) {

@@ -67,13 +67,23 @@ describe("DashboardAnalytics AI brief visibility", () => {
     mocks.useDashboardAnalytics.mockReturnValue(analyticsState(role));
     render(<DashboardAnalytics />);
     expect(screen.getByRole("heading", { name: "AI Operations Brief" })).toBeInTheDocument();
-    expect(mocks.useDashboardAiBrief).toHaveBeenCalledWith(7, true);
+    expect(mocks.useDashboardAiBrief).toHaveBeenCalledWith("LAST_7_DAYS", true);
   });
 
   it("does not expose the AI brief to Members", () => {
     mocks.useDashboardAnalytics.mockReturnValue(analyticsState("MEMBER"));
     render(<DashboardAnalytics />);
     expect(screen.queryByRole("heading", { name: "AI Operations Brief" })).not.toBeInTheDocument();
-    expect(mocks.useDashboardAiBrief).toHaveBeenCalledWith(7, false);
+    expect(mocks.useDashboardAiBrief).toHaveBeenCalledWith("LAST_7_DAYS", false);
+  });
+
+  it("keeps the AI period independent from the completion chart period", () => {
+    const state = analyticsState("ADMIN");
+    mocks.useDashboardAnalytics.mockReturnValue({
+      ...state,
+      trendState: { ...state.trendState, days: 90 },
+    });
+    render(<DashboardAnalytics />);
+    expect(mocks.useDashboardAiBrief).toHaveBeenCalledWith("LAST_7_DAYS", true);
   });
 });

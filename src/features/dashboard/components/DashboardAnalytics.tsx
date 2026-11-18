@@ -5,6 +5,7 @@ import { DASHBOARD_STRINGS } from "@/utils/dashboard-strings";
 import { useDashboardAnalytics } from "../hooks/use-dashboard-analytics";
 import { useDashboardAiBrief } from "../hooks/use-dashboard-ai-brief";
 import { DashboardAiBrief } from "./DashboardAiBrief/DashboardAiBrief";
+import type { DashboardAiPeriod } from "../types/dashboard-ai.types";
 import { DashboardAnalyticsHeader } from "./DashboardAnalyticsHeader/DashboardAnalyticsHeader";
 import { SectionShell } from "./SectionShell/SectionShell";
 import { DashboardOverviewContent } from "./RoleDashboards/DashboardOverviewContent";
@@ -21,6 +22,7 @@ export { SuperAdminDashboard } from "./RoleDashboards/SuperAdminDashboard";
 import styles from "./DashboardAnalytics.module.css";
 
 export const DashboardAnalytics = () => {
+  const [aiPeriod, setAiPeriod] = useState<DashboardAiPeriod>("LAST_7_DAYS");
   const {
     viewer,
     hydrationStatus,
@@ -34,7 +36,7 @@ export const DashboardAnalytics = () => {
     tasksState,
   } = useDashboardAnalytics();
   const canUseAiBrief = viewer?.role === "SUPER_ADMIN" || viewer?.role === "ADMIN";
-  const aiBriefState = useDashboardAiBrief(trendState.days, canUseAiBrief);
+  const aiBriefState = useDashboardAiBrief(aiPeriod, canUseAiBrief);
 
   if (hydrationStatus === "IDLE" || hydrationStatus === "LOADING") {
     return <LoadingState message="Loading Dashboard..." />;
@@ -57,7 +59,8 @@ export const DashboardAnalytics = () => {
       {canUseAiBrief && (
         <DashboardAiBrief
           brief={aiBriefState.brief}
-          days={trendState.days}
+          period={aiPeriod}
+          onPeriodChange={setAiPeriod}
           pending={aiBriefState.pending}
           error={aiBriefState.error}
           onGenerate={() => void aiBriefState.generate()}
@@ -116,3 +119,4 @@ export const DashboardAnalytics = () => {
     </div>
   );
 };
+import { useState } from "react";

@@ -34,7 +34,7 @@ export interface TaskTeamSummary {
   name: string;
 }
 
-export type TaskScope = "TEAM" | "GLOBAL";
+export type TaskScope = "TEAM" | "GLOBAL" | "INDIVIDUAL";
 
 export type TaskDistributionStatus = "PENDING" | "SENT" | "CANCELLED";
 
@@ -89,6 +89,8 @@ export interface Task {
   categoryId: string | null;
   createdById?: string;
   owner?: TaskUserSummary;
+  reviewer?: TaskUserSummary | null;
+  batchId?: string | null;
   responsible?: TaskUserSummary | null;
   reminder?: TaskReminderSummary | null;
   reminderLeadMinutes?: number | null;
@@ -234,6 +236,39 @@ export interface CreateTaskInput {
   allowSelfClaim?: boolean;
   recurrence?: CreateTaskRecurrenceInput;
   distribution?: CreateTaskDistributionInput;
+}
+
+export interface UpdateTaskInput {
+  title?: string;
+  description?: string | null;
+  remarks?: string | null;
+  priority?: TaskPriority;
+  dueAt?: string | null;
+  categoryId?: string | null;
+}
+
+export interface CreateBulkTaskInput {
+  title: string;
+  description?: string;
+  remarks?: string;
+  priority?: TaskPriority;
+  dueAt: string;
+  scope: "TEAM" | "GLOBAL";
+  teamId?: string;
+  recurrence?: {
+    frequency: TaskRecurrenceFrequency;
+    reminderLeadMinutes?: number;
+  };
+}
+
+export interface CreateBulkTaskResponse {
+  batchId: string;
+  recipients: {
+    total: number;
+    admins: number;
+    members: number;
+  };
+  createdTasks: number;
 }
 
 export interface UpdateTaskRecurrenceInput {

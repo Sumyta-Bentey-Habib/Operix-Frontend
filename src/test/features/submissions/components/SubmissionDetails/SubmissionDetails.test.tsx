@@ -13,15 +13,51 @@ vi.mock("@/features/submissions/hooks/use-submission", () => ({
   useSubmission: mocks.useSubmission,
 }));
 
-vi.mock("@/features/files", () => ({
-  fileApi: {
-    download: mocks.download,
+vi.mock("@/features/files", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/features/files")>();
+  return {
+    ...actual,
+    fileApi: {
+      ...actual.fileApi,
+      download: mocks.download,
+    },
+    triggerBrowserDownload: mocks.triggerBrowserDownload,
+    formatFileSize: (value: number) => `${value} B`,
+    formatFileType: () => "PDF",
+    cleanFilename: (name: string) => name,
+    FilePreviewModal: () => null,
+  };
+});
+
+vi.mock("@/context/AuthContext", () => ({
+  useAuth: () => ({ viewer: null, profile: null }),
+}));
+
+vi.mock("@/features/members/hooks/use-members", () => ({
+  useMembers: () => ({
+    members: [],
+    loading: false,
+    error: null,
+    refresh: vi.fn(),
+  }),
+}));
+
+vi.mock("@/features/tasks/hooks/use-task", () => ({
+  useTask: () => ({
+    task: null,
+    loading: false,
+    error: null,
+    refresh: vi.fn(),
+  }),
+}));
+
+vi.mock("@/features/submissions/api/submission.api", () => ({
+  submissionApi: {
+    listForTask: vi.fn().mockResolvedValue({
+      data: [],
+      meta: { page: 1, limit: 1, total: 0, totalPages: 0 },
+    }),
   },
-  triggerBrowserDownload: mocks.triggerBrowserDownload,
-  formatFileSize: (value: number) => `${value} B`,
-  formatFileType: () => "PDF",
-  cleanFilename: (name: string) => name,
-  FilePreviewModal: () => null,
 }));
 
 const submission = {

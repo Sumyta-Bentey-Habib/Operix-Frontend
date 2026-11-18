@@ -8,12 +8,7 @@ export interface BreakdownProgressRowProps {
   color: string;
 }
 
-export const BreakdownProgressRow = ({
-  label,
-  count,
-  pct,
-  color,
-}: BreakdownProgressRowProps) => (
+export const BreakdownProgressRow = ({ label, count, pct, color }: BreakdownProgressRowProps) => (
   <div className={styles.priorityRow}>
     <div className={styles.priorityHeader}>
       <div className={styles.labelGroup}>
@@ -40,4 +35,3 @@ export const BreakdownProgressRow = ({
     </div>
   </div>
 );
-

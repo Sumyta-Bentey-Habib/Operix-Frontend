@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { isAbortError } from "@/lib/api";
 import { assistantApi } from "../api/assistant.api";
-import { ASSISTANT_STRINGS } from "../constants/assistant-strings";
+import { getAskOperixErrorMessage } from "../assistant-errors";
 import type { AskOperixResponse } from "../types/assistant.types";
 
 export const useAskOperix = () => {
@@ -37,7 +37,7 @@ export const useAskOperix = () => {
     } catch (requestError) {
       if (controller.signal.aborted || isAbortError(requestError) || requestRef.current?.id !== id)
         return;
-      setError(ASSISTANT_STRINGS.unavailable);
+      setError(getAskOperixErrorMessage(requestError));
     } finally {
       if (requestRef.current?.id === id) {
         requestRef.current = null;

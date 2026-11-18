@@ -30,14 +30,14 @@ export const DEFAULT_FALLBACK_COLOR = DASHBOARD_STATUS_COLORS.COMPLETED;
 
 export const calculateTotal = <T extends string>(
   keys: readonly T[],
-  counts: Partial<Record<T, number>> | Record<string, number>
+  counts: Partial<Record<T, number>> | Record<string, number>,
 ): number => {
   return keys.reduce((sum, key) => sum + (counts[key] ?? 0), 0);
 };
 
 export const calculateCountAndPercentage = (
   count: number | undefined,
-  total: number
+  total: number,
 ): { count: number; pct: number } => {
   const safeCount = count ?? 0;
   const pct = total > 0 ? Math.round((safeCount / total) * 100) : 0;

@@ -22,6 +22,8 @@ export const NOTIFICATION_STRINGS = {
     clearAll: "Clear all",
     clearingAll: "Clearing...",
     openTarget: "Open target",
+    completed: "Completed",
+    targetUnavailable: "Target unavailable",
   },
   aria: {
     deleteNotification: "Delete notification",

@@ -100,9 +100,13 @@ export const TaskTable = ({ tasks, viewer, onAssign, onClaim, onStart }: TaskTab
                 </div>
               </td>
               <td className={styles.teamCell} data-label={TASK_TABLE_STRINGS.labels.teamPrefix}>
-                {task.scope === "GLOBAL" || (!task.team && !task.teamId) ? (
+                {task.scope === "GLOBAL" ? (
                   <span className={styles.globalScopeBadge}>
                     {TASK_TABLE_STRINGS.badges.globalScope}
+                  </span>
+                ) : task.scope === "INDIVIDUAL" ? (
+                  <span className={styles.globalScopeBadge}>
+                    {TASK_TABLE_STRINGS.badges.individualScope}
                   </span>
                 ) : (
                   <span className={styles.teamName}>{task.team?.name ?? "—"}</span>

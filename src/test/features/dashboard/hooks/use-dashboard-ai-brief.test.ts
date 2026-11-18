@@ -4,7 +4,10 @@ import {
   DASHBOARD_AI_UNAVAILABLE_MESSAGE,
   useDashboardAiBrief,
 } from "@/features/dashboard/hooks/use-dashboard-ai-brief";
-import type { DashboardAiBriefResponse } from "@/features/dashboard/types/dashboard-ai.types";
+import type {
+  DashboardAiBriefResponse,
+  DashboardAiPeriod,
+} from "@/features/dashboard/types/dashboard-ai.types";
 
 const mocks = vi.hoisted(() => ({
   generateAiBrief: vi.fn(),
@@ -14,21 +17,34 @@ vi.mock("@/features/dashboard/api/dashboard.api", () => ({
   dashboardApi: { generateAiBrief: mocks.generateAiBrief },
 }));
 
-const brief = (days: 7 | 30 | 90): DashboardAiBriefResponse => ({
-  headline: "Operations need attention",
-  executiveSummary: "One overdue Task needs review.",
-  priorities: [],
-  workloadObservations: [],
-  trendSummary: "One Task was completed.",
-  reportingSummary: null,
-  nextActions: ["Review overdue work."],
-  confidence: "HIGH",
-  limitations: ["Advisory only."],
+const brief = (period: DashboardAiPeriod, days: number): DashboardAiBriefResponse => ({
+  snapshot: {
+    period,
+    periodStart: "2026-10-18T00:00:00.000Z",
+    asOf: "2026-10-24T08:00:00.000Z",
+    activeTasks: 2,
+    overdueTasks: 1,
+    reviewQueueTasks: 0,
+    revisionRequiredTasks: 0,
+    completedInPeriod: 1,
+  },
+  brief: {
+    headline: "Operations need attention",
+    executiveSummary: "One overdue Task needs review.",
+    priorities: [],
+    workloadObservations: [],
+    trendSummary: "One Task was completed.",
+    reportingSummary: null,
+    nextActions: ["Review overdue work."],
+    confidence: "HIGH",
+    limitations: ["Advisory only."],
+  },
   meta: {
     provider: "gemini",
     model: "test-model",
     attempts: 1,
     latencyMs: 12,
+    period,
     days,
     asOf: "2026-10-24T08:00:00.000Z",
   },
@@ -40,18 +56,18 @@ describe("useDashboardAiBrief", () => {
   });
 
   it("is strictly on demand and stores a matching response", async () => {
-    mocks.generateAiBrief.mockResolvedValueOnce(brief(7));
-    const { result } = renderHook(() => useDashboardAiBrief(7, true));
+    mocks.generateAiBrief.mockResolvedValueOnce(brief("LAST_7_DAYS", 7));
+    const { result } = renderHook(() => useDashboardAiBrief("LAST_7_DAYS", true));
 
     expect(mocks.generateAiBrief).not.toHaveBeenCalled();
     await act(async () => {
       await result.current.generate();
     });
 
-    expect(mocks.generateAiBrief).toHaveBeenCalledWith(7, {
+    expect(mocks.generateAiBrief).toHaveBeenCalledWith("LAST_7_DAYS", {
       signal: expect.any(AbortSignal),
     });
-    expect(result.current.brief?.headline).toBe("Operations need attention");
+    expect(result.current.brief?.brief.headline).toBe("Operations need attention");
   });
 
   it("aborts and clears a stale brief when the trend period changes", async () => {
@@ -61,8 +77,8 @@ describe("useDashboardAiBrief", () => {
         resolveRequest = resolve;
       }),
     );
-    const { result, rerender } = renderHook(({ days }) => useDashboardAiBrief(days, true), {
-      initialProps: { days: 7 as 7 | 30 | 90 },
+    const { result, rerender } = renderHook(({ period }) => useDashboardAiBrief(period, true), {
+      initialProps: { period: "LAST_7_DAYS" as DashboardAiPeriod },
     });
 
     act(() => {
@@ -71,13 +87,13 @@ describe("useDashboardAiBrief", () => {
     await waitFor(() => expect(result.current.pending).toBe(true));
     const signal = mocks.generateAiBrief.mock.calls[0]?.[1]?.signal as AbortSignal;
 
-    rerender({ days: 30 });
+    rerender({ period: "LAST_30_DAYS" });
     expect(signal.aborted).toBe(true);
     expect(result.current.brief).toBeNull();
     expect(result.current.pending).toBe(false);
 
     await act(async () => {
-      resolveRequest?.(brief(7));
+      resolveRequest?.(brief("LAST_7_DAYS", 7));
       await Promise.resolve();
     });
     expect(result.current.brief).toBeNull();
@@ -85,7 +101,7 @@ describe("useDashboardAiBrief", () => {
 
   it("keeps Dashboard failure isolated behind a stable message", async () => {
     mocks.generateAiBrief.mockRejectedValueOnce(new Error("provider detail"));
-    const { result } = renderHook(() => useDashboardAiBrief(7, true));
+    const { result } = renderHook(() => useDashboardAiBrief("LAST_7_DAYS", true));
 
     await act(async () => {
       await result.current.generate();
@@ -96,7 +112,7 @@ describe("useDashboardAiBrief", () => {
   });
 
   it("does not call the API when the role is not enabled", async () => {
-    const { result } = renderHook(() => useDashboardAiBrief(7, false));
+    const { result } = renderHook(() => useDashboardAiBrief("LAST_7_DAYS", false));
     await act(async () => {
       await result.current.generate();
     });

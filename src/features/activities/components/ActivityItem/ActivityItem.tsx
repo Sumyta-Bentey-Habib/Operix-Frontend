@@ -16,16 +16,31 @@ import styles from "./ActivityItem.module.css";
 
 const getActionMeta = (action: string) => {
   const upper = action.toUpperCase();
-  if (upper.includes("PASSWORD") || upper.includes("AUTH") || upper.includes("SECURITY") || upper.includes("LOCK")) {
+  if (
+    upper.includes("PASSWORD") ||
+    upper.includes("AUTH") ||
+    upper.includes("SECURITY") ||
+    upper.includes("LOCK")
+  ) {
     return { Icon: LockIcon, toneClass: styles.securityTone };
   }
   if (upper.includes("APPROV") || upper.includes("SUCCESS") || upper.includes("COMPLET")) {
     return { Icon: CheckCircleIcon, toneClass: styles.successTone };
   }
-  if (upper.includes("REGISTER") || upper.includes("REQUEST") || upper.includes("CREATE") || upper.includes("SUBMIT")) {
+  if (
+    upper.includes("REGISTER") ||
+    upper.includes("REQUEST") ||
+    upper.includes("CREATE") ||
+    upper.includes("SUBMIT")
+  ) {
     return { Icon: FileDocIcon, toneClass: styles.infoTone };
   }
-  if (upper.includes("REJECT") || upper.includes("CANCEL") || upper.includes("DELETE") || upper.includes("DENY")) {
+  if (
+    upper.includes("REJECT") ||
+    upper.includes("CANCEL") ||
+    upper.includes("DELETE") ||
+    upper.includes("DENY")
+  ) {
     return { Icon: ShieldCheckIcon, toneClass: styles.dangerTone };
   }
   return { Icon: ClockIcon, toneClass: styles.defaultTone };
@@ -84,4 +99,3 @@ export const ActivityItem = ({ activity }: { activity: ActivityRecord }) => {
     </article>
   );
 };
-

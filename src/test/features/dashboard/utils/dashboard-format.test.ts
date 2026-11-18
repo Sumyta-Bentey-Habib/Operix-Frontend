@@ -47,15 +47,15 @@ describe("dashboard-format", () => {
   });
 
   it("formats dual quantities joined by a separator", () => {
-    expect(
-      formatDashboardDualQuantity(1, "Admin", "Admins", 1, "Member", "Members"),
-    ).toBe("1 Admin · 1 Member");
-    expect(
-      formatDashboardDualQuantity(2, "Admin", "Admins", 5, "Member", "Members"),
-    ).toBe("2 Admins · 5 Members");
-    expect(
-      formatDashboardDualQuantity(0, "Admin", "Admins", 1, "Member", "Members", " / "),
-    ).toBe("0 Admins / 1 Member");
+    expect(formatDashboardDualQuantity(1, "Admin", "Admins", 1, "Member", "Members")).toBe(
+      "1 Admin · 1 Member",
+    );
+    expect(formatDashboardDualQuantity(2, "Admin", "Admins", 5, "Member", "Members")).toBe(
+      "2 Admins · 5 Members",
+    );
+    expect(formatDashboardDualQuantity(0, "Admin", "Admins", 1, "Member", "Members", " / ")).toBe(
+      "0 Admins / 1 Member",
+    );
   });
 
   it("formats date-only trend buckets without local timezone day shifts", () => {

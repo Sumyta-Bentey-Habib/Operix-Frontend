@@ -346,4 +346,3 @@ export const getRelativeDayLabel = (dateYmd?: string | null): string | null => {
 
   return null;
 };
-

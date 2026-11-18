@@ -674,7 +674,6 @@
   color: var(--destructive);
 }
 
-
 /* ==========================================================================
    Responsive Adaptations
    ========================================================================== */
@@ -889,10 +888,45 @@
 }
 
 .aiAppliedNote {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg, rgba(22, 163, 74, 0.08));
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--success);
+}
+
+.aiAppliedNote p {
+  margin: 0;
+  font-weight: 500;
+}
+
+.aiUndoButton {
+  padding: 4px 12px;
+  border: 1px solid var(--success);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--success);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.aiUndoButton:hover:not(:disabled) {
+  background: var(--success-bg, rgba(22, 163, 74, 0.12));
+}
+
+.aiUndoButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .aiDisclaimer {

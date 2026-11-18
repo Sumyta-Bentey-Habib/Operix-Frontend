@@ -1,6 +1,10 @@
 import { DASHBOARD_STRINGS } from "@/utils/dashboard-strings";
 import { DASHBOARD_METRIC_ITEM_COLORS } from "@/utils/dashboard-colors";
-import type { SuperAdminDashboardOverview, DashboardTrendsResponse, DashboardTrendDays } from "../../types/dashboard.types";
+import type {
+  SuperAdminDashboardOverview,
+  DashboardTrendsResponse,
+  DashboardTrendDays,
+} from "../../types/dashboard.types";
 import {
   formatDashboardAverageMinutes,
   formatDashboardNumber,
@@ -41,7 +45,8 @@ export const SuperAdminDashboard = ({
   days?: DashboardTrendDays;
   setDays?: (days: DashboardTrendDays) => void;
 }) => {
-  const overview = (normalizeDashboardOverview(rawOverview) ?? rawOverview) as SuperAdminDashboardOverview;
+  const overview = (normalizeDashboardOverview(rawOverview) ??
+    rawOverview) as SuperAdminDashboardOverview;
   const activePriorityCounts = extractActivePriorityCounts(overview, workload, tasks);
   const taskStatusCounts = extractTaskStatusCounts(overview, workload, tasks);
 

@@ -7,7 +7,7 @@ import type {
   DashboardWorkloadQuery,
   DashboardWorkloadResponse,
 } from "../types/dashboard.types";
-import type { DashboardAiBriefResponse } from "../types/dashboard-ai.types";
+import type { DashboardAiBriefResponse, DashboardAiPeriod } from "../types/dashboard-ai.types";
 
 export const dashboardApi = {
   getOverview: (options?: { signal?: AbortSignal }): Promise<DashboardOverviewResponse> =>
@@ -34,12 +34,12 @@ export const dashboardApi = {
     }),
 
   generateAiBrief: (
-    days: DashboardTrendQuery["days"],
+    period: DashboardAiPeriod,
     options?: { signal?: AbortSignal },
   ): Promise<DashboardAiBriefResponse> =>
     apiRequest("/dashboard/ai-brief", {
       method: "POST",
-      query: { days },
+      query: { period },
       signal: options?.signal,
     }),
 };

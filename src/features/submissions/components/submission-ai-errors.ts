@@ -10,6 +10,7 @@ const MESSAGES: Record<string, string> = {
     "AI review is turned off for this workspace. You can still review this Submission manually.",
   AI_PROVIDER_UNAVAILABLE:
     "The AI service is unavailable right now. You can still review this Submission manually.",
+  AI_TIMEOUT: "The AI request timed out. You can still review this Submission manually.",
   AI_GENERATION_FAILED:
     "The AI could not produce a usable analysis. You can still review this Submission manually.",
   AI_RESPONSE_INVALID:

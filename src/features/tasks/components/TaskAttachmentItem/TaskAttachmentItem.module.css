@@ -96,7 +96,6 @@
   opacity: 0.65;
 }
 
-
 @media (max-width: 760px) {
   .item {
     flex-direction: column;
@@ -135,4 +134,3 @@
     flex: 1 1 100%;
   }
 }
-

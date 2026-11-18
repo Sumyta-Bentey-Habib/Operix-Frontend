@@ -73,9 +73,7 @@ export const ReportForm = ({
             <div className={styles.field}>
               <span>Team *</span>
               {values.teamId && (
-                <p className={styles.hint}>
-                  Selected Team: {selectedTeamName || "Selected"}
-                </p>
+                <p className={styles.hint}>Selected Team: {selectedTeamName || "Selected"}</p>
               )}
               <ReportTeamPicker selectedTeamId={values.teamId} onSelect={handleTeamSelect} />
             </div>

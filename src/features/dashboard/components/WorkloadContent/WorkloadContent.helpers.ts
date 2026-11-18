@@ -3,11 +3,11 @@ import type { DashboardWorkloadLike } from "./WorkloadContent.types";
 
 export const getWorkloadStatusCount = (
   workload: DashboardWorkloadLike,
-  status: TaskStatus
+  status: TaskStatus,
 ): number => workload?.statusCounts?.[status] ?? 0;
 
 export const getWorkloadPriorityCounts = (
-  workload: DashboardWorkloadLike
+  workload: DashboardWorkloadLike,
 ): Record<TaskPriority, number> => ({
   LOW: workload?.activePriorityCounts?.LOW ?? 0,
   MEDIUM: workload?.activePriorityCounts?.MEDIUM ?? 0,
@@ -16,7 +16,7 @@ export const getWorkloadPriorityCounts = (
 });
 
 export const getFullWorkloadStatusCounts = (
-  workload: DashboardWorkloadLike
+  workload: DashboardWorkloadLike,
 ): Record<TaskStatus, number> => ({
   PENDING: getWorkloadStatusCount(workload, "PENDING"),
   ASSIGNED: getWorkloadStatusCount(workload, "ASSIGNED"),

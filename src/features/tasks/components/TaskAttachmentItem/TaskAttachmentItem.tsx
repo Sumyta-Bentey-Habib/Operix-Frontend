@@ -56,11 +56,7 @@ export const TaskAttachmentItem = ({
       </div>
       <div className={styles.actions}>
         {onView && (
-          <button
-            type="button"
-            className={styles.viewButton}
-            onClick={() => onView(attachment)}
-          >
+          <button type="button" className={styles.viewButton} onClick={() => onView(attachment)}>
             View
           </button>
         )}
@@ -86,4 +82,3 @@ export const TaskAttachmentItem = ({
     </article>
   );
 };
-

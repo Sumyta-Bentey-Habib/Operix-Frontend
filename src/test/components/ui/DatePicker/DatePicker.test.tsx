@@ -45,12 +45,7 @@ describe("DatePicker Component", () => {
   it("renders single date mode and calls onChangeDate on day click", () => {
     const handleChangeDate = vi.fn();
     render(
-      <DatePicker
-        mode="single"
-        value="2026-09-10"
-        onChangeDate={handleChangeDate}
-        closeOnSelect
-      />,
+      <DatePicker mode="single" value="2026-09-10" onChangeDate={handleChangeDate} closeOnSelect />,
     );
 
     expect(screen.getByText("10 Sep 2026")).toBeInTheDocument();

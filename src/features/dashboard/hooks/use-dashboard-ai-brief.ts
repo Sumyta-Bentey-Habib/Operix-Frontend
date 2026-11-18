@@ -2,21 +2,23 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { isAbortError } from "@/lib/api";
+import {
+  DASHBOARD_AI_UNAVAILABLE_MESSAGE,
+  getDashboardAiErrorMessage,
+} from "../dashboard-ai-errors";
 import { dashboardApi } from "../api/dashboard.api";
-import type { DashboardAiBriefResponse } from "../types/dashboard-ai.types";
-import type { DashboardTrendDays } from "../types/dashboard.types";
+import type { DashboardAiBriefResponse, DashboardAiPeriod } from "../types/dashboard-ai.types";
 
-export const DASHBOARD_AI_UNAVAILABLE_MESSAGE =
-  "AI Operations Brief is temporarily unavailable. Your Dashboard data remains available.";
+export { DASHBOARD_AI_UNAVAILABLE_MESSAGE };
 
-export const useDashboardAiBrief = (days: DashboardTrendDays, enabled: boolean) => {
+export const useDashboardAiBrief = (period: DashboardAiPeriod, enabled: boolean) => {
   const [briefState, setBriefState] = useState<{
-    days: DashboardTrendDays;
+    period: DashboardAiPeriod;
     value: DashboardAiBriefResponse;
   } | null>(null);
-  const [pendingState, setPendingState] = useState<DashboardTrendDays | null>(null);
+  const [pendingState, setPendingState] = useState<DashboardAiPeriod | null>(null);
   const [errorState, setErrorState] = useState<{
-    days: DashboardTrendDays;
+    period: DashboardAiPeriod;
     value: string;
   } | null>(null);
   const requestRef = useRef<{ id: number; controller: AbortController } | null>(null);
@@ -26,7 +28,7 @@ export const useDashboardAiBrief = (days: DashboardTrendDays, enabled: boolean) 
     requestSequenceRef.current += 1;
     requestRef.current?.controller.abort();
     requestRef.current = null;
-  }, [days, enabled]);
+  }, [period, enabled]);
 
   useEffect(
     () => () => {
@@ -36,24 +38,28 @@ export const useDashboardAiBrief = (days: DashboardTrendDays, enabled: boolean) 
   );
 
   const generate = useCallback(async () => {
-    if (!enabled || pendingState === days) return;
+    if (!enabled || pendingState === period) return;
 
     requestRef.current?.controller.abort();
     const controller = new AbortController();
     const id = requestSequenceRef.current + 1;
     requestSequenceRef.current = id;
     requestRef.current = { id, controller };
-    setPendingState(days);
+    setPendingState(period);
     setErrorState(null);
 
     try {
-      const result = await dashboardApi.generateAiBrief(days, {
+      const result = await dashboardApi.generateAiBrief(period, {
         signal: controller.signal,
       });
-      if (controller.signal.aborted || requestRef.current?.id !== id || result.meta.days !== days) {
+      if (
+        controller.signal.aborted ||
+        requestRef.current?.id !== id ||
+        result.meta.period !== period
+      ) {
         return;
       }
-      setBriefState({ days, value: result });
+      setBriefState({ period, value: result });
     } catch (generationError) {
       if (
         controller.signal.aborted ||
@@ -63,18 +69,21 @@ export const useDashboardAiBrief = (days: DashboardTrendDays, enabled: boolean) 
         return;
       }
       setBriefState(null);
-      setErrorState({ days, value: DASHBOARD_AI_UNAVAILABLE_MESSAGE });
+      setErrorState({
+        period,
+        value: getDashboardAiErrorMessage(generationError),
+      });
     } finally {
       if (requestRef.current?.id === id) {
         requestRef.current = null;
         setPendingState(null);
       }
     }
-  }, [days, enabled, pendingState]);
+  }, [period, enabled, pendingState]);
 
-  const brief = enabled && briefState?.days === days ? briefState.value : null;
-  const pending = enabled && pendingState === days;
-  const error = enabled && errorState?.days === days ? errorState.value : null;
+  const brief = enabled && briefState?.period === period ? briefState.value : null;
+  const pending = enabled && pendingState === period;
+  const error = enabled && errorState?.period === period ? errorState.value : null;
 
   return {
     brief,

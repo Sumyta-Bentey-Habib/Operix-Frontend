@@ -74,6 +74,13 @@ const superAdmin: OperixViewer = {
   scope: { type: "GLOBAL" },
 };
 
+const admin: OperixViewer = {
+  userId: "admin-1",
+  role: "ADMIN",
+  status: "ACTIVE",
+  scope: { type: "ADMIN", teamIds: ["team-1"] },
+};
+
 const draft: TaskAiDraft = {
   title: "Verify cold chain temperature logs",
   description: "Review last week's logs and flag every excursion above 8°C.",
@@ -86,21 +93,44 @@ const draft: TaskAiDraft = {
 
 const promptText = "Verify the cold chain temperature logs from last week";
 
-const renderForm = (onSubmit = vi.fn()) => {
-  render(
-    <TaskForm pending={false} error={null} viewer={superAdmin} onSubmit={onSubmit} />,
-  );
+const deferred = <TValue,>() => {
+  let resolve!: (value: TValue) => void;
+  let reject!: (reason?: unknown) => void;
+  const promise = new Promise<TValue>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+
+  return { promise, resolve, reject };
+};
+
+const renderForm = (viewer: OperixViewer = superAdmin, onSubmit = vi.fn()) => {
+  render(<TaskForm pending={false} error={null} viewer={viewer} onSubmit={onSubmit} />);
 
   return onSubmit;
 };
 
-const generateDraft = async () => {
+const typePrompt = (value = promptText) => {
   fireEvent.change(screen.getByLabelText(TASK_CREATE_STRINGS.ai.promptLabel), {
-    target: { value: promptText },
+    target: { value },
   });
-  fireEvent.click(screen.getByRole("button", { name: TASK_CREATE_STRINGS.ai.generate }));
+};
 
-  await screen.findByText(draft.title);
+const clickGenerate = () => {
+  fireEvent.click(screen.getByRole("button", { name: TASK_CREATE_STRINGS.ai.generate }));
+};
+
+const typeTitle = (value: string) => {
+  fireEvent.change(screen.getByLabelText(/task title/i), { target: { value } });
+};
+
+const toExpectedDueAt = (iso: string) => {
+  const instant = new Date(iso);
+  const pad = (value: number) => String(value).padStart(2, "0");
+
+  return `${instant.getFullYear()}-${pad(instant.getMonth() + 1)}-${pad(
+    instant.getDate(),
+  )}T${pad(instant.getHours())}:${pad(instant.getMinutes())}`;
 };
 
 beforeEach(() => {
@@ -108,55 +138,196 @@ beforeEach(() => {
   mocks.generateAiDraft.mockReset();
 });
 
-describe("TaskForm AI draft generation", () => {
-  it("generates a preview without creating or submitting a task", async () => {
+describe("TaskForm AI generate and fill", () => {
+  it("exposes the action to allowed roles and never calls the API on mount", () => {
+    renderForm(admin);
+
+    expect(
+      screen.getByRole("button", { name: TASK_CREATE_STRINGS.ai.generate }),
+    ).toBeInTheDocument();
+    expect(mocks.generateAiDraft).not.toHaveBeenCalled();
+    expect(mocks.create).not.toHaveBeenCalled();
+  });
+
+  it("hides AI assistance from Members", () => {
+    renderForm({
+      userId: "member-1",
+      role: "MEMBER",
+      status: "ACTIVE",
+      scope: { type: "MEMBER", teamId: "team-1" },
+    });
+
+    expect(
+      screen.queryByRole("button", { name: TASK_CREATE_STRINGS.ai.generate }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(TASK_CREATE_STRINGS.ai.promptLabel)).not.toBeInTheDocument();
+  });
+
+  it("posts the trimmed prompt to the AI draft endpoint with an abort signal", async () => {
+    mocks.generateAiDraft.mockResolvedValue(draft);
+    renderForm();
+
+    typePrompt(`   ${promptText}   `);
+    clickGenerate();
+
+    await waitFor(() =>
+      expect(mocks.generateAiDraft).toHaveBeenCalledWith(
+        { prompt: promptText },
+        { signal: expect.any(AbortSignal) as AbortSignal },
+      ),
+    );
+  });
+
+  it("fills the supported fields immediately without an apply step", async () => {
     mocks.generateAiDraft.mockResolvedValue(draft);
     const onSubmit = renderForm();
 
-    fireEvent.change(screen.getByLabelText(/task title/i), {
-      target: { value: "Human typed title" },
-    });
+    typePrompt();
+    clickGenerate();
 
-    await generateDraft();
+    await waitFor(() => expect(screen.getByLabelText(/task title/i)).toHaveValue(draft.title));
 
-    expect(mocks.generateAiDraft).toHaveBeenCalledWith({ prompt: promptText });
-    expect(mocks.create).not.toHaveBeenCalled();
+    expect(screen.getByLabelText(/^description$/i)).toHaveValue(draft.description);
+    expect(
+      screen.getByRole("radio", { name: TASK_CREATE_STRINGS.priorities.HIGH.label }),
+    ).toBeChecked();
+    expect(screen.getByLabelText(TASK_CREATE_STRINGS.fields.dueAtAriaLabel)).toHaveValue(
+      toExpectedDueAt(draft.suggestedDueAt as string),
+    );
+    expect(screen.getByRole("status")).toHaveTextContent(TASK_CREATE_STRINGS.ai.filled);
+
+    // Filling fields is not creating the Task.
     expect(onSubmit).not.toHaveBeenCalled();
+    expect(mocks.create).not.toHaveBeenCalled();
+  });
+
+  it("fills completion mode only when the form allows it", async () => {
+    mocks.generateAiDraft.mockResolvedValue(draft);
+
+    render(<TaskForm pending={false} error={null} viewer={superAdmin} onSubmit={vi.fn()} />);
+
+    // Recurring tasks hide the selector and are always DIRECT.
+    fireEvent.click(screen.getByRole("radio", { name: TASK_CREATE_STRINGS.recurrence.modeWeekly }));
+    typePrompt();
+    clickGenerate();
+
+    await waitFor(() => expect(screen.getByLabelText(/task title/i)).toHaveValue(draft.title));
+
+    expect(
+      screen.queryByRole("radiogroup", {
+        name: TASK_CREATE_STRINGS.completionMode.sectionLabel,
+      }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("preserves human assignment choices across a fill", async () => {
+    mocks.generateAiDraft.mockResolvedValue(draft);
+    const onBulkSubmit = vi.fn();
+    render(
+      <TaskForm
+        pending={false}
+        error={null}
+        viewer={superAdmin}
+        onSubmit={vi.fn()}
+        onBulkSubmit={onBulkSubmit}
+      />,
+    );
+
+    // Everyone + Team + team + monthly recurrence chosen before asking AI.
+    fireEvent.click(screen.getByRole("radio", { name: "Everyone" }));
+    fireEvent.click(screen.getByRole("button", { name: "Select Team One" }));
+    fireEvent.click(
+      screen.getByRole("radio", { name: TASK_CREATE_STRINGS.recurrence.modeMonthly }),
+    );
+
+    typePrompt();
+    clickGenerate();
+
+    await waitFor(() => expect(screen.getByLabelText(/task title/i)).toHaveValue(draft.title));
+
+    expect(screen.getByRole("radio", { name: "Everyone" })).toBeChecked();
+    expect(
+      screen.getByRole("radio", { name: TASK_CREATE_STRINGS.recurrence.modeMonthly }),
+    ).toBeChecked();
+
+    fireEvent.click(screen.getByRole("button", { name: TASK_CREATE_STRINGS.actions.submit }));
+
+    expect(onBulkSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: draft.title,
+        scope: "TEAM",
+        teamId: "team-1",
+        recurrence: expect.objectContaining({ frequency: "MONTHLY" }),
+      }),
+    );
+    expect(mocks.create).not.toHaveBeenCalled();
+  });
+
+  it("preserves a manually selected responsible member across a fill", async () => {
+    mocks.generateAiDraft.mockResolvedValue(draft);
+    const onSubmit = renderForm();
+
+    fireEvent.click(screen.getByRole("button", { name: "Select Team One" }));
+    // Recurring Team Tasks require a responsible member, which exposes the picker.
+    fireEvent.click(screen.getByRole("radio", { name: TASK_CREATE_STRINGS.recurrence.modeWeekly }));
+    fireEvent.click(screen.getByRole("button", { name: "Select Member One" }));
+    typePrompt();
+    clickGenerate();
+
+    await waitFor(() => expect(screen.getByLabelText(/task title/i)).toHaveValue(draft.title));
+
+    fireEvent.click(screen.getByRole("button", { name: TASK_CREATE_STRINGS.actions.submit }));
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({ responsibleUserId: "member-1" }),
+    );
+  });
+
+  it("restores the exact pre-AI values on undo", async () => {
+    mocks.generateAiDraft.mockResolvedValue(draft);
+    renderForm();
+
+    typeTitle("Human typed title");
+    fireEvent.click(screen.getByRole("radio", { name: TASK_CREATE_STRINGS.priorities.LOW.label }));
+
+    typePrompt();
+    clickGenerate();
+
+    await waitFor(() => expect(screen.getByLabelText(/task title/i)).toHaveValue(draft.title));
+
+    fireEvent.click(screen.getByRole("button", { name: TASK_CREATE_STRINGS.ai.undo }));
+
     expect(screen.getByLabelText(/task title/i)).toHaveValue("Human typed title");
+    expect(
+      screen.getByRole("radio", { name: TASK_CREATE_STRINGS.priorities.LOW.label }),
+    ).toBeChecked();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
   });
 
-  it("shows the advisory disclaimer and keeps the draft out of the form until applied", async () => {
-    mocks.generateAiDraft.mockResolvedValue(draft);
+  it("uses the latest generation and ignores a stale response", async () => {
+    const first = deferred<TaskAiDraft>();
+    const second = deferred<TaskAiDraft>();
+    mocks.generateAiDraft.mockReturnValueOnce(first.promise).mockReturnValueOnce(second.promise);
+
     renderForm();
 
-    await generateDraft();
+    typePrompt();
+    clickGenerate();
+    typePrompt("Create a monthly stock review task for the pharmacy team");
+    clickGenerate();
 
-    expect(screen.getByText(TASK_CREATE_STRINGS.ai.disclaimer)).toBeInTheDocument();
-    expect(screen.getByText(TASK_CREATE_STRINGS.ai.badge)).toBeInTheDocument();
-    expect(screen.getByText(draft.reasoning)).toBeInTheDocument();
-    expect(screen.getByLabelText(/task title/i)).toHaveValue("");
-    expect(screen.getByLabelText(/^description$/i)).toHaveValue("");
+    second.resolve({ ...draft, title: "Second generation title" });
+    await waitFor(() =>
+      expect(screen.getByLabelText(/task title/i)).toHaveValue("Second generation title"),
+    );
+
+    first.resolve({ ...draft, title: "Stale generation title" });
+    await Promise.resolve();
+
+    expect(screen.getByLabelText(/task title/i)).toHaveValue("Second generation title");
   });
 
-  it("does not call the AI endpoint before the prompt reaches the minimum length", () => {
-    mocks.generateAiDraft.mockResolvedValue(draft);
-    renderForm();
-
-    const generateButton = screen.getByRole("button", {
-      name: TASK_CREATE_STRINGS.ai.generate,
-    });
-
-    expect(generateButton).toBeDisabled();
-
-    fireEvent.change(screen.getByLabelText(TASK_CREATE_STRINGS.ai.promptLabel), {
-      target: { value: "   too short   " },
-    });
-
-    expect(generateButton).toBeDisabled();
-    expect(mocks.generateAiDraft).not.toHaveBeenCalled();
-  });
-
-  it("keeps manual task creation working when the AI provider fails", async () => {
+  it("keeps the form untouched when the AI request fails", async () => {
     mocks.generateAiDraft.mockRejectedValue(
       new OperixApiError("provider unavailable", {
         status: 503,
@@ -166,26 +337,14 @@ describe("TaskForm AI draft generation", () => {
     const onSubmit = renderForm();
 
     fireEvent.click(screen.getByRole("button", { name: "Select Team One" }));
-    fireEvent.change(screen.getByLabelText(/task title/i), {
-      target: { value: "Manual task" },
-    });
-    fireEvent.change(screen.getByLabelText(TASK_CREATE_STRINGS.ai.promptLabel), {
-      target: { value: promptText },
-    });
-    expect(screen.getByLabelText(TASK_CREATE_STRINGS.ai.promptLabel)).toHaveValue(
-      promptText,
-    );
-    expect(
-      screen.getByRole("button", { name: TASK_CREATE_STRINGS.ai.generate }),
-    ).toBeEnabled();
-    fireEvent.click(screen.getByRole("button", { name: TASK_CREATE_STRINGS.ai.generate }));
+    typeTitle("Manual task");
 
-    expect(await screen.findByRole("alert")).toHaveTextContent(
-      /the ai service is unavailable/i,
-    );
-    expect(
-      screen.queryByRole("region", { name: TASK_CREATE_STRINGS.ai.previewTitle }),
-    ).not.toBeInTheDocument();
+    typePrompt();
+    clickGenerate();
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(/ai service is unavailable/i);
+    expect(screen.getByLabelText(/task title/i)).toHaveValue("Manual task");
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: TASK_CREATE_STRINGS.actions.submit }));
 
@@ -194,50 +353,20 @@ describe("TaskForm AI draft generation", () => {
     );
     expect(mocks.create).not.toHaveBeenCalled();
   });
-});
 
-describe("TaskForm apply draft", () => {
-  it("copies the advisory draft into the form fields on demand", async () => {
-    mocks.generateAiDraft.mockResolvedValue(draft);
-    const onSubmit = renderForm();
-
-    await generateDraft();
-    fireEvent.click(screen.getByRole("button", { name: TASK_CREATE_STRINGS.ai.apply }));
-
-    const instant = new Date(draft.suggestedDueAt as string);
-    const pad = (value: number) => String(value).padStart(2, "0");
-    const expectedDueAt = `${instant.getFullYear()}-${pad(instant.getMonth() + 1)}-${pad(
-      instant.getDate(),
-    )}T${pad(instant.getHours())}:${pad(instant.getMinutes())}`;
-
-    expect(screen.getByLabelText(/task title/i)).toHaveValue(draft.title);
-    expect(screen.getByLabelText(/^description$/i)).toHaveValue(draft.description);
-    expect(
-      screen.getByRole("radio", { name: TASK_CREATE_STRINGS.priorities.HIGH.label }),
-    ).toBeChecked();
-    expect(screen.getByLabelText(TASK_CREATE_STRINGS.fields.dueAtAriaLabel)).toHaveValue(
-      expectedDueAt,
-    );
-    expect(screen.getByRole("status")).toHaveTextContent(
-      TASK_CREATE_STRINGS.ai.applied,
-    );
-    expect(onSubmit).not.toHaveBeenCalled();
-    expect(mocks.create).not.toHaveBeenCalled();
-  });
-
-  it("discards a preview without touching the form", async () => {
-    mocks.generateAiDraft.mockResolvedValue(draft);
+  it("does not call the AI endpoint before the prompt reaches the minimum length", () => {
     renderForm();
 
-    await generateDraft();
-    fireEvent.click(screen.getByRole("button", { name: TASK_CREATE_STRINGS.ai.discard }));
+    const generateButton = screen.getByRole("button", {
+      name: TASK_CREATE_STRINGS.ai.generate,
+    });
 
-    await waitFor(() =>
-      expect(
-        screen.queryByRole("region", { name: TASK_CREATE_STRINGS.ai.previewTitle }),
-      ).not.toBeInTheDocument(),
-    );
-    expect(screen.getByLabelText(/task title/i)).toHaveValue("");
+    expect(generateButton).toBeDisabled();
+
+    typePrompt("   too short   ");
+
+    expect(generateButton).toBeDisabled();
+    expect(mocks.generateAiDraft).not.toHaveBeenCalled();
   });
 });
 
@@ -246,9 +375,7 @@ describe("TaskForm completion mode", () => {
     const onSubmit = renderForm();
 
     fireEvent.click(screen.getByRole("button", { name: "Select Team One" }));
-    fireEvent.change(screen.getByLabelText(/task title/i), {
-      target: { value: "Prepare the monthly report" },
-    });
+    typeTitle("Prepare the monthly report");
     fireEvent.click(screen.getByRole("button", { name: TASK_CREATE_STRINGS.actions.submit }));
 
     expect(onSubmit).toHaveBeenCalledWith(
@@ -264,12 +391,8 @@ describe("TaskForm completion mode", () => {
     const onSubmit = renderForm();
 
     fireEvent.click(screen.getByRole("button", { name: "Select Team One" }));
-    fireEvent.change(screen.getByLabelText(/task title/i), {
-      target: { value: "Prepare the monthly report" },
-    });
-    fireEvent.click(
-      screen.getByRole("radio", { name: TASK_CREATE_STRINGS.completionMode.direct }),
-    );
+    typeTitle("Prepare the monthly report");
+    fireEvent.click(screen.getByRole("radio", { name: TASK_CREATE_STRINGS.completionMode.direct }));
     fireEvent.click(screen.getByRole("button", { name: TASK_CREATE_STRINGS.actions.submit }));
 
     expect(onSubmit).toHaveBeenCalledWith(
@@ -281,12 +404,8 @@ describe("TaskForm completion mode", () => {
     const onSubmit = renderForm();
 
     fireEvent.click(screen.getByRole("button", { name: "Select Team One" }));
-    fireEvent.change(screen.getByLabelText(/task title/i), {
-      target: { value: "Weekly stock audit" },
-    });
-    fireEvent.click(
-      screen.getByRole("radio", { name: TASK_CREATE_STRINGS.recurrence.modeWeekly }),
-    );
+    typeTitle("Weekly stock audit");
+    fireEvent.click(screen.getByRole("radio", { name: TASK_CREATE_STRINGS.recurrence.modeWeekly }));
 
     expect(
       screen.queryByRole("radiogroup", {

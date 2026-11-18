@@ -108,4 +108,3 @@ export const ModernKpiCard = ({ card }: ModernKpiCardProps) => {
     </article>
   );
 };
-

@@ -4,6 +4,7 @@ import {
   canClaimTask,
   canCreateGlobalTask,
   canCreateTask,
+  canEditTaskDefinition,
   canDeleteTaskAttachment,
   canDirectCompleteTask,
   canRequestSubmissionAiReview,
@@ -14,10 +15,12 @@ import {
   canUploadTaskAttachment,
   canViewTaskCore,
   getTaskAttachmentUploadState,
+  getSubmissionEditState,
   isTaskAttachmentLifecycleEditable,
 } from "@/lib/auth/permissions";
 import type { OperixViewer } from "@/types/auth";
 import type { Task } from "@/features/tasks/types/task.types";
+import type { Submission } from "@/features/submissions/types/submission.types";
 import type { AttachmentResponse } from "@/features/tasks/types/task-attachment.types";
 import { MAX_TASK_ATTACHMENTS } from "@/features/tasks/utils/task-attachment-validation";
 
@@ -48,6 +51,7 @@ const makeTask = (
   categoryId: null,
   createdById: "user-test",
   owner: { id: "user-test", name: "Task owner", role: "ADMIN" },
+  reviewer: { id: "user-test", name: "Task reviewer", role: "ADMIN" },
   createdAt: "2026-01-01T00:00:00.000Z",
   updatedAt: "2026-01-01T00:00:00.000Z",
   isOverdue: false,
@@ -87,6 +91,103 @@ describe("Task permissions", () => {
 
     it("blocks unauthenticated viewers from creating global tasks", () => {
       expect(canCreateGlobalTask(null)).toBe(false);
+    });
+  });
+
+  describe("canEditTaskDefinition", () => {
+    it("allows Super Admin and the owner Admin only before execution", () => {
+      const pending = makeTask("PENDING");
+      const assigned = makeTask("ASSIGNED");
+      expect(canEditTaskDefinition(makeViewer("SUPER_ADMIN"), pending)).toBe(true);
+      expect(canEditTaskDefinition(makeViewer("ADMIN"), assigned)).toBe(true);
+      expect(
+        canEditTaskDefinition(makeViewer("ADMIN"), {
+          ...assigned,
+          owner: { id: "other-admin", name: "Other", role: "ADMIN" },
+        }),
+      ).toBe(false);
+      expect(canEditTaskDefinition(makeViewer("MEMBER"), pending)).toBe(false);
+    });
+
+    it("locks started, active, terminal, and sent Global Tasks for every role", () => {
+      const superAdmin = makeViewer("SUPER_ADMIN");
+      expect(
+        canEditTaskDefinition(superAdmin, {
+          ...makeTask("ASSIGNED"),
+          startedAt: "2026-01-01T01:00:00.000Z",
+        }),
+      ).toBe(false);
+      expect(canEditTaskDefinition(superAdmin, makeTask("IN_PROGRESS"))).toBe(false);
+      expect(canEditTaskDefinition(superAdmin, makeTask("COMPLETED"))).toBe(false);
+      expect(
+        canEditTaskDefinition(superAdmin, {
+          ...makeTask("PENDING"),
+          scope: "GLOBAL",
+          distribution: {
+            status: "SENT",
+            scheduledAt: "2026-01-01T00:00:00.000Z",
+            sentAt: "2026-01-01T00:00:00.000Z",
+          },
+        }),
+      ).toBe(false);
+    });
+  });
+
+  describe("getSubmissionEditState", () => {
+    const submission: Submission = {
+      id: "submission-1",
+      taskId: "task-1",
+      submittedById: "user-test",
+      version: 2,
+      submissionText: "Done",
+      submittedAt: "2026-01-01T00:00:00.000Z",
+      createdAt: "2026-01-01T00:00:00.000Z",
+      updatedAt: "2026-01-01T00:00:00.000Z",
+      attachments: [],
+    };
+
+    it("allows the original current Responsible before the deadline and with no deadline", () => {
+      const member = makeViewer("MEMBER");
+      const submittedTask = {
+        ...makeTask("SUBMITTED"),
+        responsible: { id: member.userId, name: "Member", role: "MEMBER" },
+        dueAt: "2026-01-02T00:00:00.000Z",
+      };
+      expect(
+        getSubmissionEditState(member, submittedTask, submission, true, new Date("2026-01-01")),
+      ).toEqual({ canEdit: true, deadlineOverride: false });
+      expect(
+        getSubmissionEditState(member, { ...submittedTask, dueAt: null }, submission, true),
+      ).toEqual({ canEdit: true, deadlineOverride: false });
+    });
+
+    it("locks normal actors at the deadline and lets Super Admin override only that lock", () => {
+      const member = makeViewer("MEMBER");
+      const submittedTask = {
+        ...makeTask("SUBMITTED"),
+        responsible: { id: member.userId, name: "Member", role: "MEMBER" },
+        dueAt: "2026-01-01T00:00:00.000Z",
+      };
+      const now = new Date("2026-01-01T00:00:00.000Z");
+      expect(getSubmissionEditState(member, submittedTask, submission, true, now)).toEqual({
+        canEdit: false,
+        reason: "DEADLINE_PASSED",
+      });
+      expect(
+        getSubmissionEditState(makeViewer("SUPER_ADMIN"), submittedTask, submission, true, now),
+      ).toEqual({ canEdit: true, deadlineOverride: true });
+    });
+
+    it("never bypasses latest-version or reviewed workflow locks", () => {
+      const superAdmin = makeViewer("SUPER_ADMIN");
+      expect(getSubmissionEditState(superAdmin, makeTask("SUBMITTED"), submission, false)).toEqual({
+        canEdit: false,
+        reason: "NOT_LATEST",
+      });
+      expect(getSubmissionEditState(superAdmin, makeTask("COMPLETED"), submission, true)).toEqual({
+        canEdit: false,
+        reason: "WORKFLOW_LOCKED",
+      });
     });
   });
 
@@ -181,14 +282,14 @@ describe("Task permissions", () => {
       expect(canDirectCompleteTask(makeViewer("SUPER_ADMIN"), task)).toBe(true);
     });
 
-    it("blocks direct completion of GLOBAL tasks for ADMIN, but allows for SUPER_ADMIN and assigned MEMBER", () => {
+    it("allows the current Responsible User or Super Admin to complete a GLOBAL direct task", () => {
       const globalTask = {
         ...makeTask("IN_PROGRESS"),
         scope: "GLOBAL" as const,
         completionMode: "DIRECT" as const,
         responsible: { id: "user-test", name: "Assigned Member", role: "MEMBER" },
       };
-      expect(canDirectCompleteTask(makeViewer("ADMIN"), globalTask)).toBe(false);
+      expect(canDirectCompleteTask(makeViewer("ADMIN"), globalTask)).toBe(true);
       expect(canDirectCompleteTask(makeViewer("MEMBER"), globalTask)).toBe(true);
       expect(canDirectCompleteTask(makeViewer("SUPER_ADMIN"), globalTask)).toBe(true);
     });
@@ -611,13 +712,13 @@ describe("Task permissions", () => {
       expect(canStartTask(viewer, task)).toBe(false);
     });
 
-    it("blocks SUPER_ADMIN from starting a task", () => {
+    it("allows any current Responsible User to start an assigned task", () => {
       const viewer = makeViewer("SUPER_ADMIN");
       const task: Task = {
         ...makeTask("ASSIGNED"),
         responsible: { id: viewer.userId, name: "SA", role: "SUPER_ADMIN" },
       };
-      expect(canStartTask(viewer, task)).toBe(false);
+      expect(canStartTask(viewer, task)).toBe(true);
     });
 
     it("evaluates canSubmitTask correctly for roles and completion modes", () => {
@@ -644,8 +745,8 @@ describe("Task permissions", () => {
       // MEMBER + IN_PROGRESS + DIRECT cannot submit
       expect(canSubmitTask(memberViewer, directTask)).toBe(false);
 
-      // Non-member roles cannot submit
-      expect(canSubmitTask(makeViewer("ADMIN"), reviewTask)).toBe(false);
+      // A responsible Admin can submit their own individual review Task.
+      expect(canSubmitTask(makeViewer("ADMIN"), reviewTask)).toBe(true);
       expect(canSubmitTask(makeViewer("SUPER_ADMIN"), reviewTask)).toBe(false);
       expect(canSubmitTask(null, reviewTask)).toBe(false);
 
@@ -677,8 +778,8 @@ describe("Task permissions", () => {
       // MEMBER + REVISION_REQUIRED + DIRECT cannot resubmit
       expect(canResubmitTask(memberViewer, directTask)).toBe(false);
 
-      // Non-member roles cannot resubmit
-      expect(canResubmitTask(makeViewer("ADMIN"), reviewTask)).toBe(false);
+      // A responsible Admin can resubmit their own individual review Task.
+      expect(canResubmitTask(makeViewer("ADMIN"), reviewTask)).toBe(true);
       expect(canResubmitTask(makeViewer("SUPER_ADMIN"), reviewTask)).toBe(false);
       expect(canResubmitTask(null, reviewTask)).toBe(false);
 
@@ -709,17 +810,17 @@ describe("Task permissions", () => {
   });
 
   describe("canRequestSubmissionAiReview", () => {
-    it("allows the ADMIN of the Task's Team while the Task awaits review", () => {
+    it("allows the explicit reviewer while the Task awaits review", () => {
       expect(canRequestSubmissionAiReview(makeViewer("ADMIN"), makeTask("SUBMITTED"))).toBe(true);
       expect(canRequestSubmissionAiReview(makeViewer("ADMIN"), makeTask("RESUBMITTED"))).toBe(true);
     });
 
-    it("denies SUPER_ADMIN exactly like the review endpoint does", () => {
+    it("allows a Super Admin who is the explicit reviewer", () => {
       const submitted = makeTask("SUBMITTED");
 
       // Pre-existing review permission is broader than the review API.
       expect(canReviewTaskSubmission(makeViewer("SUPER_ADMIN"), submitted)).toBe(true);
-      expect(canRequestSubmissionAiReview(makeViewer("SUPER_ADMIN"), submitted)).toBe(false);
+      expect(canRequestSubmissionAiReview(makeViewer("SUPER_ADMIN"), submitted)).toBe(true);
     });
 
     it("denies MEMBER and unauthenticated viewers", () => {
@@ -727,18 +828,18 @@ describe("Task permissions", () => {
       expect(canRequestSubmissionAiReview(null, makeTask("SUBMITTED"))).toBe(false);
     });
 
-    it("denies Admins outside the Task's Team", () => {
+    it("denies an Admin who is not the explicit reviewer", () => {
       expect(
         canRequestSubmissionAiReview(makeViewer("ADMIN"), {
           ...makeTask("SUBMITTED"),
-          teamId: "team-other",
+          reviewer: { id: "other-admin", name: "Other Admin", role: "ADMIN" },
         }),
       ).toBe(false);
     });
 
-    it("denies an ADMIN viewer without an ADMIN scope", () => {
+    it("does not derive explicit review authority from viewer scope", () => {
       const globalAdmin: OperixViewer = { ...makeViewer("ADMIN"), scope: { type: "GLOBAL" } };
-      expect(canRequestSubmissionAiReview(globalAdmin, makeTask("SUBMITTED"))).toBe(false);
+      expect(canRequestSubmissionAiReview(globalAdmin, makeTask("SUBMITTED"))).toBe(true);
     });
 
     it("denies DIRECT completion Tasks, which never accept submissions", () => {

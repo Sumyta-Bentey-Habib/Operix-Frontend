@@ -10,6 +10,7 @@ import {
   canAssignTask,
   canClaimTask,
   canDirectCompleteTask,
+  canEditTaskDefinition,
   canManageDistribution,
   canStartTask,
 } from "@/lib/auth/permissions";
@@ -19,7 +20,13 @@ import { TASK_CREATE_STRINGS, TASK_DETAILS_STRINGS } from "@/utils/task-strings"
 import type { OperixViewer } from "@/types/auth";
 import { taskApi } from "../../api/task.api";
 import { useTask } from "../../hooks/use-task";
-import type { AssignTaskInput, Task, TaskStatus } from "../../types/task.types";
+import type {
+  AssignTaskInput,
+  Task,
+  TaskPriority,
+  TaskStatus,
+  UpdateTaskInput,
+} from "../../types/task.types";
 import {
   getDistributionErrorMessage,
   getTaskAssignmentErrorMessage,
@@ -91,6 +98,13 @@ interface WorkflowStep {
 
 const formatOptionalDate = (value: string | null) =>
   value ? formatDisplayDate(value) : TASK_DETAILS_STRINGS.metadata.notApplicable;
+
+const toLocalDateTimeInput = (value: string | null): string => {
+  if (!value) return "";
+  const date = new Date(value);
+  const offset = date.getTimezoneOffset() * 60_000;
+  return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+};
 
 const getSelfClaimPolicyLabel = (task: Task) => {
   if (task.scope === "GLOBAL") {
@@ -196,6 +210,17 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
   const [cancelConfirmOpen, setCancelConfirmOpen] = useState(false);
   const [rescheduleOpen, setRescheduleOpen] = useState(false);
   const [rescheduleDate, setRescheduleDate] = useState("");
+  const [editOpen, setEditOpen] = useState(false);
+  const [editPending, setEditPending] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
+  const [editValues, setEditValues] = useState({
+    title: "",
+    description: "",
+    remarks: "",
+    priority: "MEDIUM" as TaskPriority,
+    dueAt: "",
+    categoryId: "",
+  });
 
   useEffect(() => {
     if (tabInitializedRef.current || !viewer || !task) return;
@@ -336,6 +361,47 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
     }
   };
 
+  const openTaskEdit = () => {
+    if (!task) return;
+    setEditValues({
+      title: task.title,
+      description: task.description ?? "",
+      remarks: task.remarks ?? "",
+      priority: task.priority,
+      dueAt: toLocalDateTimeInput(task.dueAt),
+      categoryId: task.categoryId ?? "",
+    });
+    setEditError(null);
+    setEditOpen(true);
+  };
+
+  const handleTaskEdit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!task || editPending) return;
+    setEditPending(true);
+    setEditError(null);
+
+    const input: UpdateTaskInput = {
+      title: editValues.title.trim(),
+      description: editValues.description.trim() || null,
+      remarks: editValues.remarks.trim() || null,
+      priority: editValues.priority,
+      dueAt: editValues.dueAt ? new Date(editValues.dueAt).toISOString() : null,
+      categoryId: editValues.categoryId.trim() || null,
+    };
+
+    try {
+      const updatedTask = await taskApi.update(task.id, input);
+      setTask(updatedTask);
+      setEditOpen(false);
+      await refreshTaskAndHistory();
+    } catch (updateError) {
+      setEditError(getTaskErrorView(updateError).message);
+    } finally {
+      setEditPending(false);
+    }
+  };
+
   if (loading) {
     return <LoadingState message={TASK_DETAILS_STRINGS.loading} />;
   }
@@ -407,6 +473,11 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
         </div>
 
         <div className={styles.headerActions}>
+          {canEditTaskDefinition(viewer, task) && (
+            <button type="button" className={styles.primaryActionButton} onClick={openTaskEdit}>
+              Edit Task
+            </button>
+          )}
           {canAssignTask(viewer, task) &&
             (task.status === "PENDING" || task.status === "ASSIGNED") && (
               <button
@@ -702,14 +773,16 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
                 <dd className={styles.metaValue}>
                   {task.scope === "GLOBAL"
                     ? TASK_DETAILS_STRINGS.metadata.scopeGlobal
-                    : TASK_DETAILS_STRINGS.metadata.scopeTeam}
+                    : task.scope === "INDIVIDUAL"
+                      ? TASK_DETAILS_STRINGS.metadata.scopeIndividual
+                      : TASK_DETAILS_STRINGS.metadata.scopeTeam}
                 </dd>
               </div>
 
               <div className={styles.metaItem}>
                 <dt className={styles.metaLabel}>{TASK_DETAILS_STRINGS.metadata.team}</dt>
                 <dd className={`${styles.metaValue} ${task.team ? styles.mono : ""}`}>
-                  {task.scope === "GLOBAL" || (!task.team && !task.teamId)
+                  {task.scope === "GLOBAL" || task.scope === "INDIVIDUAL"
                     ? TASK_DETAILS_STRINGS.metadata.none
                     : (task.team?.name ?? TASK_DETAILS_STRINGS.metadata.none)}
                 </dd>
@@ -890,6 +963,104 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
         onSubmit={handleAssign}
         onClose={() => !assignmentPending && setAssignmentOpen(false)}
       />
+
+      <Modal
+        open={editOpen}
+        title="Edit Task"
+        description="Update the Task definition before execution begins. Workflow and assignment fields are not editable here."
+        onClose={() => !editPending && setEditOpen(false)}
+      >
+        <form className={styles.completeForm} onSubmit={handleTaskEdit}>
+          <label className={styles.completeField}>
+            <span>Title</span>
+            <input
+              required
+              maxLength={180}
+              value={editValues.title}
+              onChange={(event) =>
+                setEditValues((current) => ({ ...current, title: event.target.value }))
+              }
+            />
+          </label>
+          <label className={styles.completeField}>
+            <span>Description</span>
+            <textarea
+              rows={4}
+              maxLength={5000}
+              value={editValues.description}
+              onChange={(event) =>
+                setEditValues((current) => ({ ...current, description: event.target.value }))
+              }
+            />
+          </label>
+          <label className={styles.completeField}>
+            <span>Instructions &amp; remarks</span>
+            <textarea
+              rows={3}
+              maxLength={2000}
+              value={editValues.remarks}
+              onChange={(event) =>
+                setEditValues((current) => ({ ...current, remarks: event.target.value }))
+              }
+            />
+          </label>
+          <label className={styles.completeField}>
+            <span>Priority</span>
+            <select
+              value={editValues.priority}
+              onChange={(event) =>
+                setEditValues((current) => ({
+                  ...current,
+                  priority: event.target.value as TaskPriority,
+                }))
+              }
+            >
+              <option value="LOW">Low</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="HIGH">High</option>
+              <option value="URGENT">Urgent</option>
+            </select>
+          </label>
+          <label className={styles.completeField}>
+            <span>Due date</span>
+            <input
+              type="datetime-local"
+              value={editValues.dueAt}
+              onChange={(event) =>
+                setEditValues((current) => ({ ...current, dueAt: event.target.value }))
+              }
+            />
+          </label>
+          <label className={styles.completeField}>
+            <span>Category ID</span>
+            <input
+              value={editValues.categoryId}
+              onChange={(event) =>
+                setEditValues((current) => ({ ...current, categoryId: event.target.value }))
+              }
+              placeholder="Optional category public ID"
+            />
+          </label>
+          {editError && <p className={styles.distributionErrorText}>{editError}</p>}
+          <div className={styles.dialogActions}>
+            <button
+              type="button"
+              className={styles.dialogCancelButton}
+              disabled={editPending}
+              onClick={() => setEditOpen(false)}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className={styles.primaryActionButton}
+              disabled={editPending || editValues.title.trim().length === 0}
+            >
+              {editPending ? "Saving..." : "Save changes"}
+            </button>
+          </div>
+        </form>
+      </Modal>
 
       {/* Direct Completion Dialog */}
       <Modal

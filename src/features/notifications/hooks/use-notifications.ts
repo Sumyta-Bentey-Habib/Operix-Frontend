@@ -129,26 +129,23 @@ export const useNotifications = (initialPage = 1, limit = 20, enabled = true) =>
     [userId],
   );
 
-  const clearAllNotifications = useCallback(
-    async () => {
-      if (notifications.length === 0) return;
-      setClearingAll(true);
+  const clearAllNotifications = useCallback(async () => {
+    if (notifications.length === 0) return;
+    setClearingAll(true);
+    try {
+      const ids = notifications.map((item) => item.id);
+      addDeletedNotificationIds(userId, ids);
+      setNotifications([]);
       try {
-        const ids = notifications.map((item) => item.id);
-        addDeletedNotificationIds(userId, ids);
-        setNotifications([]);
-        try {
-          await notificationApi.markAllRead();
-        } catch {
-          // Best effort backend sync
-        }
-        dispatchNotificationChangedEvent();
-      } finally {
-        setClearingAll(false);
+        await notificationApi.markAllRead();
+      } catch {
+        // Best effort backend sync
       }
-    },
-    [notifications, userId],
-  );
+      dispatchNotificationChangedEvent();
+    } finally {
+      setClearingAll(false);
+    }
+  }, [notifications, userId]);
 
   const applyFilters = (nextFilters: NotificationFilterState) => {
     setFilters(nextFilters);

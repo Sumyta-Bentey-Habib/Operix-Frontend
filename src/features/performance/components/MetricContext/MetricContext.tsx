@@ -49,4 +49,3 @@ export const MetricContext = ({ context }: { context: PerformanceMetricContext |
     </div>
   );
 };
-

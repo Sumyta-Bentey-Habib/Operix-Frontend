@@ -5,19 +5,14 @@ import type { DashboardTrendDays } from "../types/dashboard.types";
  * Formats a metric quantity with comma grouping.
  * Defaults to "0" when null or undefined to provide user-friendly KPI counters.
  */
-export const formatDashboardNumber = (
-  value: number | null | undefined,
-  fallback = "0",
-): string => (value === null || value === undefined ? fallback : value.toLocaleString());
+export const formatDashboardNumber = (value: number | null | undefined, fallback = "0"): string =>
+  value === null || value === undefined ? fallback : value.toLocaleString();
 
 /**
  * Formats a metric percentage.
  * Defaults to "0%" when null or undefined to prevent unhelpful dash representations.
  */
-export const formatDashboardRate = (
-  value: number | null | undefined,
-  fallback = "0%",
-): string =>
+export const formatDashboardRate = (value: number | null | undefined, fallback = "0%"): string =>
   value === null || value === undefined ? fallback : `${Number(value.toFixed(2))}%`;
 
 /**

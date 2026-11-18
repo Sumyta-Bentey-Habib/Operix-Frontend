@@ -15,6 +15,19 @@ const MESSAGES: Record<string, Omit<SubmissionErrorView, "code">> = {
     title: "Submission unavailable",
     message: "This Task is not currently ready for submission.",
   },
+  SUBMISSION_NOT_EDITABLE: {
+    title: "Submission locked",
+    message:
+      "This Submission cannot be edited because it is reviewed, no longer latest, or the workflow changed.",
+  },
+  SUBMISSION_EDIT_DEADLINE_PASSED: {
+    title: "Submission locked",
+    message: "Submission editing is locked after the Task deadline.",
+  },
+  SUBMISSION_ATTACHMENT_LIMIT_REACHED: {
+    title: "Attachment limit reached",
+    message: "A Submission can contain at most five attachments.",
+  },
   TASK_DIRECT_COMPLETION_REQUIRED: {
     title: "Direct completion required",
     message: "This Task requires direct completion and does not accept submissions.",

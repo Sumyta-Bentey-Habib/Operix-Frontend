@@ -1,6 +1,7 @@
 import type { OperixViewer, UserRole } from "@/types/auth";
 import type { Task } from "@/features/tasks/types/task.types";
 import type { AttachmentResponse } from "@/features/tasks/types/task-attachment.types";
+import type { Submission } from "@/features/submissions/types/submission.types";
 import { MAX_TASK_ATTACHMENTS } from "@/features/tasks/utils/task-attachment-validation";
 
 const NAV_ROLES: Record<string, UserRole[]> = {
@@ -64,6 +65,20 @@ export const canCreateTask = (viewer: OperixViewer | null): boolean =>
 export const canCreateGlobalTask = (viewer: OperixViewer | null): boolean =>
   viewer?.role === "SUPER_ADMIN";
 
+export const canEditTaskDefinition = (viewer: OperixViewer | null, task: Task): boolean => {
+  if (!viewer) return false;
+
+  const ownerId = task.owner?.id ?? task.createdById;
+  const hasAuthority =
+    viewer.role === "SUPER_ADMIN" ||
+    (viewer.role === "ADMIN" && Boolean(ownerId && ownerId === viewer.userId));
+  const lifecycleEditable =
+    task.status === "PENDING" || (task.status === "ASSIGNED" && task.startedAt === null);
+  const distributionUnlocked = !(task.scope === "GLOBAL" && task.distribution?.status === "SENT");
+
+  return hasAuthority && lifecycleEditable && distributionUnlocked;
+};
+
 export const canAssignTask = (viewer: OperixViewer | null, task?: Task): boolean => {
   if (!viewer) return false;
   if (viewer.role === "SUPER_ADMIN") return true;
@@ -84,7 +99,7 @@ export const canClaimTask = (viewer: OperixViewer | null, task: Task): boolean =
   task.recurrence == null;
 
 export const canStartTask = (viewer: OperixViewer | null, task: Task): boolean =>
-  viewer?.role === "MEMBER" && task.status === "ASSIGNED" && task.responsible?.id === viewer.userId;
+  Boolean(viewer) && task.status === "ASSIGNED" && task.responsible?.id === viewer?.userId;
 
 export const canDirectCompleteTask = (viewer: OperixViewer | null, task: Task): boolean => {
   if (!viewer) return false;
@@ -92,9 +107,8 @@ export const canDirectCompleteTask = (viewer: OperixViewer | null, task: Task): 
     return false;
   }
 
-  // Assigned responsible member can direct-complete their assigned DIRECT task
-  if (viewer.role === "MEMBER") {
-    return Boolean(task.responsible?.id && task.responsible.id === viewer.userId);
+  if (task.responsible?.id === viewer.userId) {
+    return true;
   }
 
   // Super Admin can complete any task directly (both GLOBAL and TEAM)
@@ -102,8 +116,7 @@ export const canDirectCompleteTask = (viewer: OperixViewer | null, task: Task): 
     return true;
   }
 
-  // Global tasks cannot be completed by Admins (only Super Admin or assigned Member)
-  if (task.scope === "GLOBAL") {
+  if (task.scope !== "TEAM") {
     return false;
   }
 
@@ -113,7 +126,7 @@ export const canDirectCompleteTask = (viewer: OperixViewer | null, task: Task): 
     if (viewer.scope.type === "ADMIN" && teamId) {
       return viewer.scope.teamIds.includes(teamId);
     }
-    return true;
+    return false;
   }
 
   return false;
@@ -150,11 +163,11 @@ export const canUploadTaskAttachment = (viewer: OperixViewer | null, task: Task)
   const isSuperAdmin = viewer.role === "SUPER_ADMIN";
   const ownerId = task.owner?.id ?? task.createdById;
   const isOwnerAdmin = viewer.role === "ADMIN" && Boolean(ownerId && ownerId === viewer.userId);
-  const isResponsibleMember =
-    viewer.role === "MEMBER" &&
+  const isResponsibleUser =
+    (viewer.role === "MEMBER" || (viewer.role === "ADMIN" && task.scope === "INDIVIDUAL")) &&
     Boolean(task.responsible?.id && task.responsible.id === viewer.userId);
 
-  if (isResponsibleMember) {
+  if (isResponsibleUser) {
     return true;
   }
 
@@ -177,11 +190,11 @@ export const canDeleteTaskAttachment = (
   const isSuperAdmin = viewer.role === "SUPER_ADMIN";
   const ownerId = task.owner?.id ?? task.createdById;
   const isOwnerAdmin = viewer.role === "ADMIN" && Boolean(ownerId && ownerId === viewer.userId);
-  const isResponsibleMember =
-    viewer.role === "MEMBER" &&
+  const isResponsibleUser =
+    (viewer.role === "MEMBER" || (viewer.role === "ADMIN" && task.scope === "INDIVIDUAL")) &&
     Boolean(task.responsible?.id && task.responsible.id === viewer.userId);
 
-  if (isResponsibleMember) {
+  if (isResponsibleUser) {
     const uploaderId = attachment.file.uploadedBy?.id ?? attachment.file.uploadedById;
     return Boolean(uploaderId && uploaderId === viewer.userId);
   }
@@ -214,11 +227,11 @@ export const getTaskAttachmentUploadState = (
   const ownerId = task.owner?.id ?? task.createdById;
   const isSuperAdmin = viewer.role === "SUPER_ADMIN";
   const isOwnerAdmin = viewer.role === "ADMIN" && Boolean(ownerId && ownerId === viewer.userId);
-  const isResponsibleMember =
-    viewer.role === "MEMBER" &&
+  const isResponsibleUser =
+    (viewer.role === "MEMBER" || (viewer.role === "ADMIN" && task.scope === "INDIVIDUAL")) &&
     Boolean(task.responsible?.id && task.responsible.id === viewer.userId);
 
-  if (!isSuperAdmin && !isOwnerAdmin && !isResponsibleMember) {
+  if (!isSuperAdmin && !isOwnerAdmin && !isResponsibleUser) {
     return {
       canUpload: false,
       reason: viewer.role === "MEMBER" ? "NOT_RESPONSIBLE" : "NOT_AUTHORIZED",
@@ -229,7 +242,7 @@ export const getTaskAttachmentUploadState = (
     return { canUpload: false, reason: "LIFECYCLE_LOCKED" };
   }
 
-  if (!isResponsibleMember && task.distribution?.status === "SENT") {
+  if (!isResponsibleUser && task.distribution?.status === "SENT") {
     return { canUpload: false, reason: "DISTRIBUTION_LOCKED" };
   }
 
@@ -241,37 +254,76 @@ export const getTaskAttachmentUploadState = (
 };
 
 export const canSubmitTask = (viewer: OperixViewer | null, task: Task): boolean =>
-  viewer?.role === "MEMBER" &&
+  (viewer?.role === "MEMBER" || viewer?.role === "ADMIN") &&
   task.responsible?.id === viewer.userId &&
   task.status === "IN_PROGRESS" &&
   task.completionMode === "REVIEW_REQUIRED";
 
 export const canResubmitTask = (viewer: OperixViewer | null, task: Task): boolean =>
-  viewer?.role === "MEMBER" &&
+  (viewer?.role === "MEMBER" || viewer?.role === "ADMIN") &&
   task.responsible?.id === viewer.userId &&
   task.status === "REVISION_REQUIRED" &&
   task.completionMode === "REVIEW_REQUIRED";
 
 export const canReviewTaskSubmission = (viewer: OperixViewer | null, task: Task): boolean =>
   (viewer?.role === "SUPER_ADMIN" || viewer?.role === "ADMIN") &&
+  task.reviewer?.id === viewer.userId &&
   (task.status === "SUBMITTED" || task.status === "RESUBMITTED");
 
+export type SubmissionEditState =
+  | { canEdit: true; deadlineOverride: boolean }
+  | {
+      canEdit: false;
+      reason: "NOT_AUTHORIZED" | "NOT_LATEST" | "WORKFLOW_LOCKED" | "DEADLINE_PASSED";
+    };
+
+export const getSubmissionEditState = (
+  viewer: OperixViewer | null,
+  task: Task,
+  submission: Submission,
+  isLatest: boolean,
+  now = new Date(),
+): SubmissionEditState => {
+  if (!viewer) return { canEdit: false, reason: "NOT_AUTHORIZED" };
+  if (!isLatest) return { canEdit: false, reason: "NOT_LATEST" };
+  if (task.status !== "SUBMITTED" && task.status !== "RESUBMITTED") {
+    return { canEdit: false, reason: "WORKFLOW_LOCKED" };
+  }
+
+  const dueAt = task.dueAt ? new Date(task.dueAt) : null;
+  const deadlinePassed = Boolean(dueAt && now.getTime() >= dueAt.getTime());
+
+  if (viewer.role === "SUPER_ADMIN") {
+    return { canEdit: true, deadlineOverride: deadlinePassed };
+  }
+
+  const isOriginalSubmitter = submission.submittedById === viewer.userId;
+  const isCurrentResponsible = task.responsible?.id === viewer.userId;
+  const isEligibleRole = viewer.role === "MEMBER" || viewer.role === "ADMIN";
+  if (!isEligibleRole || !isOriginalSubmitter || !isCurrentResponsible) {
+    return { canEdit: false, reason: "NOT_AUTHORIZED" };
+  }
+
+  if (deadlinePassed) {
+    return { canEdit: false, reason: "DEADLINE_PASSED" };
+  }
+
+  return { canEdit: true, deadlineOverride: false };
+};
+
 /**
- * Step 30 advisory AI review mirrors real review authority:
- * an Admin of the Task's Team, on a review-required Task that is awaiting a
- * review decision. Super Admin is excluded because the backend review endpoint
- * denies Super Admin, and the AI endpoint denies it for the same reason.
+ * Step 30 advisory AI review mirrors real review authority: the explicit named
+ * reviewer (Admin or Super Admin) on a review-required Task that is awaiting a
+ * review decision. The backend gates on `Task.reviewerUserId`, so this check
+ * uses the same rule rather than the viewer's Team role alone.
  */
 export const canRequestSubmissionAiReview = (viewer: OperixViewer | null, task: Task): boolean => {
-  if (viewer?.role !== "ADMIN") return false;
-  if (viewer.scope.type !== "ADMIN") return false;
+  if (viewer?.role !== "ADMIN" && viewer?.role !== "SUPER_ADMIN") return false;
+  if (task.reviewer?.id !== viewer.userId) return false;
   if (task.completionMode !== "REVIEW_REQUIRED") return false;
   if (task.status !== "SUBMITTED" && task.status !== "RESUBMITTED") return false;
 
-  const teamId = task.teamId ?? task.team?.id;
-  if (!teamId) return false;
-
-  return viewer.scope.teamIds.includes(teamId);
+  return true;
 };
 
 export const canFilterTasksByTeam = (viewer: OperixViewer | null): boolean =>

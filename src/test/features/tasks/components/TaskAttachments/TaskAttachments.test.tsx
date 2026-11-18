@@ -156,11 +156,14 @@ describe("TaskAttachments", () => {
 
   it("explains locked and capacity upload states", () => {
     mocks.useAuth.mockReturnValue({ viewer: viewer("ADMIN") });
-    const { rerender } = render(<TaskAttachments task={task("SUBMITTED")} onTaskRefresh={vi.fn()} />);
+    const { rerender } = render(
+      <TaskAttachments task={task("SUBMITTED")} onTaskRefresh={vi.fn()} />,
+    );
 
     expect(screen.queryByLabelText("Add attachments")).not.toBeInTheDocument();
-    expect(screen.getByText("Task attachments are locked for the current Task state."))
-      .toBeInTheDocument();
+    expect(
+      screen.getByText("Task attachments are locked for the current Task state."),
+    ).toBeInTheDocument();
 
     const globalSentTask: Task = {
       ...task("IN_PROGRESS"),
@@ -174,8 +177,9 @@ describe("TaskAttachments", () => {
       },
     };
     rerender(<TaskAttachments task={globalSentTask} onTaskRefresh={vi.fn()} />);
-    expect(screen.getByText("Attachments are locked after this Global Task was distributed."))
-      .toBeInTheDocument();
+    expect(
+      screen.getByText("Attachments are locked after this Global Task was distributed."),
+    ).toBeInTheDocument();
 
     mocks.useTaskAttachments.mockReturnValue({
       ...hookValue,

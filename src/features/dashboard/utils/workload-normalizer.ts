@@ -1,6 +1,13 @@
 import { obfuscateId } from "@/utils/id-obfuscator";
 import type { MemberWorkloadRow } from "../types/dashboard.types";
 
+export interface NormalizedMonthlyThroughput {
+  assigned: number;
+  completed: number;
+  onTime: number;
+  overdueCreated: number;
+}
+
 export interface NormalizedMemberWorkload {
   id: string;
   displayName: string;
@@ -15,6 +22,7 @@ export interface NormalizedMemberWorkload {
   inProgressTasks: number;
   capacityTier: "available" | "moderate" | "high" | "overloaded";
   capacityPercentage: number;
+  monthly: NormalizedMonthlyThroughput;
 }
 
 export const getInitials = (name: string): string => {
@@ -62,9 +70,7 @@ export const normalizeMemberWorkloadRow = (
 
   // Resolve Employee ID
   const rawEmpId =
-    (memberObj.employeeId as string | undefined) ??
-    (raw.employeeId as string | undefined) ??
-    null;
+    (memberObj.employeeId as string | undefined) ?? (raw.employeeId as string | undefined) ?? null;
   const employeeId = rawEmpId && String(rawEmpId).trim() ? String(rawEmpId).trim() : null;
 
   // Resolve Designation
@@ -127,6 +133,11 @@ export const normalizeMemberWorkloadRow = (
     capacityTier = "moderate";
   }
 
+  // Monthly throughput is reported flat by the API and resets naturally through
+  // the current-month query window. Current workload above never resets.
+  const monthlyObj = (raw.monthly ?? workloadObj.monthly ?? {}) as Record<string, unknown>;
+  const toCount = (value: unknown) => Math.max(0, Number(value) || 0);
+
   return {
     id,
     displayName,
@@ -141,5 +152,11 @@ export const normalizeMemberWorkloadRow = (
     inProgressTasks,
     capacityTier,
     capacityPercentage,
+    monthly: {
+      assigned: toCount(monthlyObj.assigned),
+      completed: toCount(monthlyObj.completed),
+      onTime: toCount(monthlyObj.onTime),
+      overdueCreated: toCount(monthlyObj.overdueCreated),
+    },
   };
 };

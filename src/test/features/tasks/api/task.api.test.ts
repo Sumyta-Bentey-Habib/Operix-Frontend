@@ -111,6 +111,58 @@ describe("taskApi", () => {
     expect(String(request.body)).not.toContain("isOverdue");
   });
 
+  it("updates only the Task definition through PATCH /tasks/:taskId", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse({ id: "task-1", title: "Updated" }));
+
+    await taskApi.update("task-1", {
+      title: "Updated",
+      description: null,
+      priority: "HIGH",
+      dueAt: null,
+      categoryId: "category-public-1",
+    });
+
+    const request = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe("http://localhost:5000/api/v1/tasks/task-1");
+    expect(request.method).toBe("PATCH");
+    expect(JSON.parse(String(request.body))).toEqual({
+      title: "Updated",
+      description: null,
+      priority: "HIGH",
+      dueAt: null,
+      categoryId: "category-public-1",
+    });
+  });
+
+  it("creates a bulk Task batch through the dedicated endpoint", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      jsonResponse({
+        batchId: "batch-1",
+        recipients: { total: 3, admins: 1, members: 2 },
+        createdTasks: 3,
+      }),
+    );
+
+    await taskApi.createBulk({
+      title: "Annual compliance review",
+      priority: "HIGH",
+      dueAt: "2026-12-01T09:00:00.000Z",
+      scope: "GLOBAL",
+    });
+
+    const request = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe("http://localhost:5000/api/v1/tasks/bulk");
+    expect(request.method).toBe("POST");
+    expect(JSON.parse(String(request.body))).toEqual({
+      title: "Annual compliance review",
+      priority: "HIGH",
+      dueAt: "2026-12-01T09:00:00.000Z",
+      scope: "GLOBAL",
+    });
+  });
+
   it("creates a Global Task with distribution.scheduledAt", async () => {
     const fetchMock = vi
       .spyOn(globalThis, "fetch")

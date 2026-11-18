@@ -5,6 +5,13 @@ export interface NotificationActor {
   name: string;
 }
 
+/**
+ * `read` and `resolved` are independent. A resolved notification that was never
+ * opened still counts as unread; an unread notification whose job is finished
+ * must no longer look actionable.
+ */
+export type NotificationActionState = "ACTIONABLE" | "RESOLVED" | "UNAVAILABLE";
+
 export interface OperixNotification {
   id: string;
   actorId: string | null;
@@ -14,6 +21,9 @@ export interface OperixNotification {
   targetType: string | null;
   targetId: string | null;
   readAt: string | null;
+  resolvedAt: string | null;
+  resolution: string | null;
+  actionState: NotificationActionState;
   createdAt: string;
   isRead: boolean;
   actor: NotificationActor | null;

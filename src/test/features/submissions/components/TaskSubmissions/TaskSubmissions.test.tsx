@@ -51,6 +51,7 @@ const task = (
   teamId: "team-1",
   categoryId: null,
   createdById: "admin-1",
+  reviewer: { id: "admin-1", name: "Admin One", role: "ADMIN" },
   responsible: { id: "member-1", name: "Member One", role: "MEMBER" },
   createdAt: "2026-08-23T00:00:00.000Z",
   updatedAt: "2026-08-23T00:00:00.000Z",
@@ -65,6 +66,7 @@ const submission = (id: string, version: number): Submission => ({
   submissionText: `Submission ${version}`,
   submittedAt: "2026-08-23T00:00:00.000Z",
   createdAt: "2026-08-23T00:00:00.000Z",
+  updatedAt: "2026-08-23T00:00:00.000Z",
   attachments: [],
 });
 

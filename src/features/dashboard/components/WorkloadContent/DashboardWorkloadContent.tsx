@@ -55,9 +55,7 @@ export const DashboardWorkloadContent = ({
               </div>
             </div>
             <WorkloadTiles workload={workload.teamSummary.workload} />
-            <ActivePriorityBreakdown
-              counts={extractActivePriorityCounts(null, workload, tasks)}
-            />
+            <ActivePriorityBreakdown counts={extractActivePriorityCounts(null, workload, tasks)} />
           </div>
           <div className={styles.workloadSection}>
             <MemberWorkloadTable

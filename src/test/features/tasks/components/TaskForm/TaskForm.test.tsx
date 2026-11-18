@@ -10,11 +10,7 @@ vi.mock("@/features/tasks/components/TaskTeamPicker", () => ({
 }));
 
 vi.mock("@/features/tasks/components/TaskAssigneePicker", () => ({
-  TaskAssigneePicker: ({
-    onSelect,
-  }: {
-    onSelect: (member: Member) => void;
-  }) => (
+  TaskAssigneePicker: ({ onSelect }: { onSelect: (member: Member) => void }) => (
     <button
       type="button"
       onClick={() =>
@@ -37,7 +33,13 @@ vi.mock("@/features/tasks/components/TaskAssigneePicker", () => ({
 }));
 
 vi.mock("@/components/ui/DateTimePicker", () => ({
-  DateTimePicker: () => <input aria-label="mock date" />,
+  DateTimePicker: ({ value, onChange }: { value: string; onChange: (value: string) => void }) => (
+    <input
+      aria-label="mock date"
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+    />
+  ),
 }));
 
 const superAdmin: OperixViewer = {
@@ -89,6 +91,76 @@ describe("TaskForm self claim policy", () => {
         scope: "GLOBAL",
         responsibleUserId: "member-1",
         allowSelfClaim: false,
+      }),
+    );
+  });
+});
+
+describe("TaskForm bulk assignment", () => {
+  it("submits one everyone batch and hides single Task configuration", () => {
+    const onSubmit = vi.fn();
+    const onBulkSubmit = vi.fn();
+    render(
+      <TaskForm
+        pending={false}
+        error={null}
+        viewer={superAdmin}
+        onSubmit={onSubmit}
+        onBulkSubmit={onBulkSubmit}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("radio", { name: "Everyone" }));
+    fireEvent.click(screen.getByRole("radio", { name: "Global" }));
+    fireEvent.change(screen.getByLabelText(/task title/i), {
+      target: { value: "Annual compliance review" },
+    });
+    fireEvent.change(screen.getByLabelText("mock date"), {
+      target: { value: "2099-01-01T09:00" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: TASK_CREATE_STRINGS.actions.submit }));
+
+    expect(onSubmit).not.toHaveBeenCalled();
+    expect(onBulkSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: "Annual compliance review",
+        priority: "MEDIUM",
+        scope: "GLOBAL",
+      }),
+    );
+  });
+
+  it("submits a recurring Global everyone batch with reminder lead", () => {
+    const onBulkSubmit = vi.fn();
+    render(
+      <TaskForm
+        pending={false}
+        error={null}
+        viewer={superAdmin}
+        onSubmit={vi.fn()}
+        onBulkSubmit={onBulkSubmit}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("radio", { name: "Everyone" }));
+    fireEvent.click(screen.getByRole("radio", { name: "Global" }));
+    fireEvent.click(screen.getByRole("radio", { name: TASK_CREATE_STRINGS.recurrence.modeWeekly }));
+    fireEvent.click(screen.getByText(TASK_CREATE_STRINGS.reminder.enableLabel));
+    fireEvent.change(screen.getByLabelText(/task title/i), {
+      target: { value: "Weekly compliance review" },
+    });
+    fireEvent.change(screen.getByLabelText("mock date"), {
+      target: { value: "2099-01-01T09:00" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: TASK_CREATE_STRINGS.actions.submit }));
+
+    expect(onBulkSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        scope: "GLOBAL",
+        recurrence: {
+          frequency: "WEEKLY",
+          reminderLeadMinutes: 1440,
+        },
       }),
     );
   });

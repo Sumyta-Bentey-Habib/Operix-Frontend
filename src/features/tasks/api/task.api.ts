@@ -4,6 +4,8 @@ import type {
   AssignTaskInput,
   CancelDistributionResponse,
   CompleteTaskInput,
+  CreateBulkTaskInput,
+  CreateBulkTaskResponse,
   CreateTaskInput,
   GenerateTaskAiDraftInput,
   RescheduleDistributionInput,
@@ -13,6 +15,7 @@ import type {
   TaskListQuery,
   TaskRecurrenceSummary,
   TaskStatusHistoryEntry,
+  UpdateTaskInput,
   UpdateTaskRecurrenceInput,
   UpdateTaskSelfClaimInput,
 } from "../types/task.types";
@@ -47,6 +50,18 @@ export const taskApi = {
 
   create: (input: CreateTaskInput): Promise<Task> =>
     apiRequest("/tasks", {
+      method: "POST",
+      json: input,
+    }),
+
+  update: (taskId: string, input: UpdateTaskInput): Promise<Task> =>
+    apiRequest(`/tasks/${taskId}`, {
+      method: "PATCH",
+      json: input,
+    }),
+
+  createBulk: (input: CreateBulkTaskInput): Promise<CreateBulkTaskResponse> =>
+    apiRequest("/tasks/bulk", {
       method: "POST",
       json: input,
     }),

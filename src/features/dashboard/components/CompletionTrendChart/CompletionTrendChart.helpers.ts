@@ -11,7 +11,7 @@ export const calculateTrendMetrics = (points: readonly CompletionTrendPoint[]) =
 export const calculateBarHeight = (
   completedTasks: number,
   maxValue: number,
-  maxBarHeight = 130
+  maxBarHeight = 130,
 ): number => {
   const ratio = maxValue === 0 ? 0 : completedTasks / maxValue;
   return Math.max(4, Math.round(ratio * maxBarHeight));

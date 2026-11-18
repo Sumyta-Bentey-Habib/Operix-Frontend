@@ -1,9 +1,5 @@
 import { dateToYmd } from "@/utils/calendar";
-import type {
-  TaskAiDraft,
-  TaskCompletionMode,
-  TaskPriority,
-} from "../types/task.types";
+import type { TaskAiDraft, TaskCompletionMode, TaskPriority } from "../types/task.types";
 
 /** Mirrors the backend `GenerateTaskAiDraftDto` prompt bounds. */
 export const AI_DRAFT_PROMPT_MIN_LENGTH = 10;
@@ -21,8 +17,7 @@ export const isAiDraftPromptReady = (prompt: string): boolean => {
   const trimmed = prompt.trim();
 
   return (
-    trimmed.length >= AI_DRAFT_PROMPT_MIN_LENGTH &&
-    trimmed.length <= AI_DRAFT_PROMPT_MAX_LENGTH
+    trimmed.length >= AI_DRAFT_PROMPT_MIN_LENGTH && trimmed.length <= AI_DRAFT_PROMPT_MAX_LENGTH
   );
 };
 

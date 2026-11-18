@@ -33,6 +33,28 @@ export const authApi = {
       json: input,
     }),
 
+  /**
+   * Requests a self-service password reset link.
+   *
+   * Better Auth answers generically for known and unknown addresses alike, so
+   * the caller must never branch its copy on the response.
+   */
+  requestPasswordReset: (email: string, redirectTo: string): Promise<unknown> =>
+    apiRequest("/auth/request-password-reset", {
+      method: "POST",
+      json: { email, redirectTo },
+    }),
+
+  /** Completes a password reset or first-time setup with a Better Auth token. */
+  resetPassword: (input: { token: string; password: string }): Promise<unknown> =>
+    apiRequest("/auth/reset-password", {
+      method: "POST",
+      json: {
+        token: input.token,
+        newPassword: input.password,
+      },
+    }),
+
   getSession: async (): Promise<AuthProfile | null> => {
     const response = await apiRequest<unknown>("/auth/get-session");
     return toAuthProfile(response);

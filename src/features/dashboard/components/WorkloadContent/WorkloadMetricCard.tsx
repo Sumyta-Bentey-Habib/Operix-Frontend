@@ -9,11 +9,7 @@ export const WorkloadMetricCard = ({
   icon,
 }: DashboardMetricCardProps) => {
   const variantClass =
-    variant === "active"
-      ? styles.metricActive
-      : variant === "overdue"
-      ? styles.metricOverdue
-      : "";
+    variant === "active" ? styles.metricActive : variant === "overdue" ? styles.metricOverdue : "";
 
   return (
     <article className={`${styles.modernMetricCard} ${variantClass}`}>
@@ -33,4 +29,3 @@ export const WorkloadMetricCard = ({
 
 // Backward-compatible alias
 export { WorkloadMetricCard as DashboardMetricCard };
-

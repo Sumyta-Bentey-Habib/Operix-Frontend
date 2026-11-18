@@ -12,6 +12,7 @@ const MESSAGES: Record<string, string> = {
   RATE_LIMITED:
     "You have reached the AI document analysis limit. Wait a minute and try again. You can still preview or download this document.",
   AI_PROVIDER_UNAVAILABLE: TEMPORARY_UNAVAILABLE,
+  AI_TIMEOUT: "AI document analysis timed out. You can still preview or download this document.",
   AI_GENERATION_FAILED: TEMPORARY_UNAVAILABLE,
   AI_RESPONSE_INVALID: TEMPORARY_UNAVAILABLE,
   DOCUMENT_TEXT_EXTRACTION_FAILED: EXTRACTION_UNAVAILABLE,
