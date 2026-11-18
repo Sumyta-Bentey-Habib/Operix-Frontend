@@ -24,10 +24,13 @@ export const NotificationItem = ({
   const href = resolveNotificationTargetHref(notification);
   const isMarking = markingNotificationId === notification.id;
   const isDeleting = deletingNotificationId === notification.id;
+  const isBusy = isMarking || isDeleting;
+  const { actionState } = notification;
+  const hasTarget = notification.targetType !== null;
   const itemClassName = notification.isRead ? styles.item : `${styles.item} ${styles.unread}`;
 
   return (
-    <article className={itemClassName}>
+    <article className={itemClassName} aria-busy={isBusy || undefined}>
       <div className={styles.header}>
         <div>
           <h3 className={styles.title}>{notification.title}</h3>
@@ -39,10 +42,24 @@ export const NotificationItem = ({
       </div>
       <p className={styles.body}>{notification.body}</p>
       <div className={styles.actions}>
-        {href && (
-          <Link className={styles.link} href={href}>
+        {href && actionState === "ACTIONABLE" && (
+          <Link
+            className={`${styles.link} ${isBusy ? styles.linkDisabled : ""}`}
+            href={href}
+            aria-disabled={isBusy || undefined}
+            tabIndex={isBusy ? -1 : undefined}
+            onClick={isBusy ? (event) => event.preventDefault() : undefined}
+          >
             {NOTIFICATION_STRINGS.actions.openTarget}
           </Link>
+        )}
+        {hasTarget && actionState === "RESOLVED" && (
+          <span className={styles.statusChip}>{NOTIFICATION_STRINGS.actions.completed}</span>
+        )}
+        {hasTarget && actionState === "UNAVAILABLE" && (
+          <span className={styles.statusUnavailable}>
+            {NOTIFICATION_STRINGS.actions.targetUnavailable}
+          </span>
         )}
         {!notification.isRead && onMarkRead && (
           <button

@@ -156,6 +156,7 @@ export const MemberWorkloadTable: React.FC<MemberWorkloadTableProps> = ({
                 <th className={styles.numCell}>{WORKLOAD_TABLE_STRINGS.columns.assigned}</th>
                 <th className={styles.numCell}>{WORKLOAD_TABLE_STRINGS.columns.inProgress}</th>
                 <th>{WORKLOAD_TABLE_STRINGS.columns.capacity}</th>
+                <th className={styles.numCell}>{WORKLOAD_TABLE_STRINGS.columns.monthly}</th>
               </tr>
             </thead>
             <tbody>

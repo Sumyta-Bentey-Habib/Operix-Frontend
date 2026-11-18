@@ -63,9 +63,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
       const dialogRect = dialog.getBoundingClientRect();
       const spaceBelowInDialog = dialogRect.bottom - rect.bottom;
       const spaceAboveInDialog = rect.top - dialogRect.top;
-      return spaceBelowInDialog < 340 && spaceAboveInDialog > spaceBelowInDialog
-        ? "top"
-        : "bottom";
+      return spaceBelowInDialog < 340 && spaceAboveInDialog > spaceBelowInDialog ? "top" : "bottom";
     }
 
     const spaceBelow = window.innerHeight - rect.bottom;
@@ -115,10 +113,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, closeDropdown]);
 
-  const hasValue =
-    mode === "single"
-      ? Boolean(activeDate)
-      : Boolean(activeRange?.startDate);
+  const hasValue = mode === "single" ? Boolean(activeDate) : Boolean(activeRange?.startDate);
 
   const displayLabel = (() => {
     if (mode === "single") {

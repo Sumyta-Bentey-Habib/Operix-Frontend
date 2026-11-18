@@ -19,7 +19,8 @@
   justify-content: space-between;
   gap: 20px;
   padding: 24px 28px;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(15, 23, 42, 0.6) 100%), var(--bg-card);
+  background:
+    linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(15, 23, 42, 0.6) 100%), var(--bg-card);
 }
 
 .hero h1,
@@ -262,7 +263,9 @@
   background: var(--bg-card-hover);
   border-color: var(--primary-emerald);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18), 0 0 0 1px var(--primary-emerald-glow);
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.18),
+    0 0 0 1px var(--primary-emerald-glow);
 }
 
 .teamCardLeft {
@@ -435,4 +438,3 @@
     grid-template-columns: 1fr;
   }
 }
-

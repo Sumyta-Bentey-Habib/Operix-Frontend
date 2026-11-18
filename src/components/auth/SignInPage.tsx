@@ -14,7 +14,6 @@ import {
   EyeIcon,
   EyeOffIcon,
   ArrowRightIcon,
-  ShieldCheckIcon,
 } from "@/components/icons";
 
 export const SignInPage: React.FC = () => {
@@ -35,12 +34,10 @@ export const SignInPage: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [infoMessage, setInfoMessage] = useState<string | null>(null);
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
-    setInfoMessage(null);
     setIsSubmitting(true);
 
     try {
@@ -55,11 +52,6 @@ export const SignInPage: React.FC = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleForgotPassword = () => {
-    setErrorMessage(null);
-    setInfoMessage(AUTH_STRINGS.signIn.forgotPasswordNotice);
   };
 
   return (
@@ -100,27 +92,6 @@ export const SignInPage: React.FC = () => {
             <h2 className={styles.authCardTitle}>{AUTH_STRINGS.signIn.title}</h2>
             <p className={styles.authCardSubtitle}>{AUTH_STRINGS.signIn.subtitle}</p>
           </div>
-
-          {/* In-Screen Info Notice (e.g. Forgot Password) */}
-          {infoMessage && (
-            <div className={styles.infoBanner} role="status">
-              <div className={styles.infoBannerLeft}>
-                <span className={styles.infoBannerIcon}>
-                  <ShieldCheckIcon size={18} />
-                </span>
-                <span className={styles.infoBannerText}>{infoMessage}</span>
-              </div>
-              <button
-                type="button"
-                className={styles.infoBannerCloseBtn}
-                onClick={() => setInfoMessage(null)}
-                aria-label="Dismiss notice"
-                title="Dismiss"
-              >
-                ×
-              </button>
-            </div>
-          )}
 
           {/* In-Screen Error Notice */}
           {errorMessage && (
@@ -193,13 +164,9 @@ export const SignInPage: React.FC = () => {
                 <span>{AUTH_STRINGS.signIn.rememberMe}</span>
               </label>
 
-              <button
-                type="button"
-                className={styles.forgotPasswordLink}
-                onClick={handleForgotPassword}
-              >
+              <Link href="/forgot-password" className={styles.forgotPasswordLink}>
                 {AUTH_STRINGS.signIn.forgotPassword}
-              </button>
+              </Link>
             </div>
 
             <button type="submit" disabled={isSubmitting} className={styles.submitBtn}>

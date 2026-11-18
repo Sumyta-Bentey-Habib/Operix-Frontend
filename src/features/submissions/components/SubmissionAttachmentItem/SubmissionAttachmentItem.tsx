@@ -9,6 +9,8 @@ export interface SubmissionAttachmentItemProps {
   downloading: boolean;
   onDownload: (attachment: SubmissionAttachmentResponse) => void;
   onView?: (attachment: SubmissionAttachmentResponse) => void;
+  deleting?: boolean;
+  onDelete?: (attachment: SubmissionAttachmentResponse) => void;
 }
 
 const ACTION_BUTTON_CLASS =
@@ -22,6 +24,8 @@ export const SubmissionAttachmentItem = ({
   downloading,
   onDownload,
   onView,
+  deleting = false,
+  onDelete,
 }: SubmissionAttachmentItemProps) => {
   const { file } = attachment;
   const displayName = cleanFilename(file.originalName);
@@ -68,6 +72,17 @@ export const SubmissionAttachmentItem = ({
         >
           {downloading ? "Downloading..." : "Download"}
         </button>
+        {onDelete && (
+          <button
+            type="button"
+            className={ACTION_BUTTON_CLASS}
+            aria-label={`Remove ${displayName}`}
+            onClick={() => onDelete(attachment)}
+            disabled={deleting}
+          >
+            {deleting ? "Removing..." : "Remove"}
+          </button>
+        )}
       </div>
     </article>
   );

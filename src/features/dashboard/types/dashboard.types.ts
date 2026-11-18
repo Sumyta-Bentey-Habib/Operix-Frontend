@@ -103,11 +103,33 @@ export interface MemberDashboardOverview extends DashboardOverviewBase {
 export type DashboardOverviewResponse =
   SuperAdminDashboardOverview | AdminDashboardOverview | MemberDashboardOverview;
 
+export interface MemberMonthlyThroughput {
+  assigned: number;
+  completed: number;
+  onTime: number;
+  overdueCreated: number;
+}
+
+export interface TeamMonthlyThroughput {
+  assigned: number;
+  completed: number;
+  reviewsCompleted: number;
+}
+
 export interface TeamWorkloadRow {
   teamId: string;
   teamName: string;
   adminId: string;
-  workload: WorkloadMetrics;
+  memberCount?: number;
+  activeMemberCount?: number;
+  activeTasks: number;
+  overdueTasks: number;
+  reviewQueueTasks?: number;
+  revisionRequiredTasks?: number;
+  statusCounts?: Record<string, number>;
+  monthly?: TeamMonthlyThroughput;
+  /** Legacy normalized shape still read by the breakdown helpers. */
+  workload?: WorkloadMetrics;
 }
 
 export interface MemberWorkloadIdentity {
@@ -123,6 +145,7 @@ export interface MemberWorkloadRow {
   member: MemberWorkloadIdentity;
   workload: WorkloadMetrics;
   performance?: PerformanceMetrics;
+  monthly?: MemberMonthlyThroughput;
 }
 
 export interface PaginatedMemberWorkload {

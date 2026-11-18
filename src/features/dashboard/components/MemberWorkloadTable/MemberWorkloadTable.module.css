@@ -632,3 +632,47 @@
     font-size: 0.75rem;
   }
 }
+
+/* This Month throughput column */
+.monthlyCell {
+  min-width: 132px;
+  vertical-align: middle;
+}
+
+.monthlyGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.monthlyPrimary {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.monthlyUnit {
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.monthlyDetail {
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.monthlyOverdue {
+  color: var(--badge-negative-text);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.3;
+}

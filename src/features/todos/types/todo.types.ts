@@ -3,12 +3,7 @@ import type { PaginationMeta } from "@/types/pagination";
 export type TodoPriority = "LOW" | "MEDIUM" | "HIGH" | "URGENT";
 
 export type TodoCategory =
-  | "OPERATIONS"
-  | "SECURITY"
-  | "FINANCE"
-  | "TEAM"
-  | "COMPLIANCE"
-  | "GENERAL";
+  "OPERATIONS" | "SECURITY" | "FINANCE" | "TEAM" | "COMPLIANCE" | "GENERAL";
 
 export type TodoStatusFilter = "ALL" | "ACTIVE" | "COMPLETED";
 

@@ -674,7 +674,6 @@
   color: var(--destructive);
 }
 
-
 /* ==========================================================================
    Responsive Adaptations
    ========================================================================== */
@@ -701,5 +700,252 @@
 
   .prioritySelector {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   AI Task Copilot — advisory draft panel
+   ========================================================================== */
+.aiCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-left: 3px solid var(--primary-emerald);
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.aiPromptArea {
+  min-height: 88px;
+  resize: vertical;
+}
+
+.aiActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.aiGenerateButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  min-height: 44px;
+  border-radius: 10px;
+  border: 1px solid var(--primary-emerald);
+  background: var(--primary-emerald-light);
+  color: var(--primary-emerald-dark);
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.aiGenerateButton:hover:not(:disabled) {
+  background: var(--primary-emerald);
+  border-color: var(--primary-emerald);
+  color: var(--text-on-primary);
+}
+
+.aiGenerateButton:focus-visible {
+  outline: 2px solid var(--primary-emerald);
+  outline-offset: 2px;
+}
+
+.aiGenerateButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.aiApplyButton {
+  padding: 10px 18px;
+  min-height: 44px;
+  border-radius: 10px;
+  border: 1px solid var(--primary-emerald);
+  background: var(--primary-emerald);
+  color: var(--text-on-primary);
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.aiApplyButton:hover {
+  background: var(--primary-emerald-hover);
+  border-color: var(--primary-emerald-hover);
+}
+
+.aiApplyButton:focus-visible {
+  outline: 2px solid var(--primary-emerald);
+  outline-offset: 2px;
+}
+
+.aiError {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: var(--danger-bg);
+  border: 1px solid var(--destructive);
+  color: var(--danger-text);
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.aiPreview {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px;
+  border-radius: 12px;
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-subtle);
+}
+
+.aiPreviewHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.aiBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--primary-emerald-light);
+  border: 1px solid var(--primary-emerald);
+  color: var(--primary-emerald-dark);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.aiPreviewGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin: 0;
+}
+
+.aiPreviewField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.aiPreviewLabel {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.aiPreviewValue {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+.aiPreviewDescription {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.aiReasoning {
+  border-left: 2px solid var(--border-default);
+  padding-left: 12px;
+}
+
+.aiReasoningText {
+  margin: 4px 0 0;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.aiAppliedNote {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg, rgba(22, 163, 74, 0.08));
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--success);
+}
+
+.aiAppliedNote p {
+  margin: 0;
+  font-weight: 500;
+}
+
+.aiUndoButton {
+  padding: 4px 12px;
+  border: 1px solid var(--success);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--success);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.aiUndoButton:hover:not(:disabled) {
+  background: var(--success-bg, rgba(22, 163, 74, 0.12));
+}
+
+.aiUndoButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.aiDisclaimer {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.completionModeSelector {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (max-width: 640px) {
+  .aiCard {
+    padding: 20px;
+  }
+
+  .aiActions > button {
+    width: 100%;
   }
 }

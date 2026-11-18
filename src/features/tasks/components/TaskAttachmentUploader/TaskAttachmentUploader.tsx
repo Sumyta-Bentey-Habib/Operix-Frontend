@@ -45,7 +45,6 @@ export const TaskAttachmentUploader = ({
     setCapacityError(validation.capacityError);
   };
 
-
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     updateSelection(Array.from(event.target.files ?? []));
   };

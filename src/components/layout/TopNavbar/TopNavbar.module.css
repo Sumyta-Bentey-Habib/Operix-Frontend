@@ -15,7 +15,10 @@
   position: relative;
   z-index: 50;
   gap: 1.25rem;
-  transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 /* --------------------------------------------------------------------------
@@ -220,7 +223,9 @@
 
 .dropdownChevron {
   color: var(--text-muted);
-  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
+  transition:
+    transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.2s ease;
   flex-shrink: 0;
 }
 
@@ -243,7 +248,9 @@
   background-color: var(--bg-card);
   border: 1px solid var(--border-default);
   border-radius: 18px;
-  box-shadow: var(--card-shadow), 0 12px 32px rgba(0, 0, 0, 0.35);
+  box-shadow:
+    var(--card-shadow),
+    0 12px 32px rgba(0, 0, 0, 0.35);
   padding: 10px;
   z-index: 60;
   backdrop-filter: blur(16px);
@@ -399,6 +406,30 @@
   text-decoration: none;
 }
 
+.askOperixButton {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 13px;
+  border-radius: 12px;
+  background: var(--primary-emerald-light);
+  border: 1px solid var(--primary-emerald);
+  color: var(--primary-emerald);
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.askOperixButton:hover {
+  background: var(--primary-emerald-muted);
+}
+.askOperixButton:focus-visible {
+  outline: 2px solid var(--primary-emerald);
+  outline-offset: 2px;
+}
+
 .iconButton:hover {
   background-color: var(--bg-card-hover);
   border-color: var(--primary-emerald);
@@ -518,7 +549,9 @@
   background-color: var(--bg-card);
   border: 1px solid var(--border-default);
   border-radius: 18px;
-  box-shadow: var(--card-shadow), 0 12px 32px rgba(0, 0, 0, 0.35);
+  box-shadow:
+    var(--card-shadow),
+    0 12px 32px rgba(0, 0, 0, 0.35);
   padding: 10px;
   z-index: 60;
   backdrop-filter: blur(16px);

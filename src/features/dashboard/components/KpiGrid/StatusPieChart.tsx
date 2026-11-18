@@ -23,11 +23,7 @@ const DonutHeaderIcon = () => (
   </svg>
 );
 
-export const StatusPieChart = ({
-  items,
-  title,
-  subtitle,
-}: StatusPieChartProps) => {
+export const StatusPieChart = ({ items, title, subtitle }: StatusPieChartProps) => {
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const total = calculatePieTotal(items);
 
@@ -72,8 +68,7 @@ export const StatusPieChart = ({
       <div className={styles.pieVerticalList}>
         {items.map((item) => {
           const slice = slices.find((s) => s.key === item.key);
-          const pct =
-            slice?.percentage ?? (total > 0 ? Math.round((item.count / total) * 100) : 0);
+          const pct = slice?.percentage ?? (total > 0 ? Math.round((item.count / total) * 100) : 0);
           const isHovered = hoveredKey === item.key;
 
           return (

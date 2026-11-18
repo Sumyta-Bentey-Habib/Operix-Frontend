@@ -52,6 +52,7 @@ export const useSubmission = (submissionId: string) => {
 
   return {
     submission,
+    setSubmission,
     loading,
     error,
     refresh,

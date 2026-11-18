@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { LoadingState } from "@/components/ui/LoadingState";
@@ -13,8 +13,12 @@ import {
   triggerBrowserDownload,
   type FilePreviewTarget,
 } from "@/features/files";
+import { isAbortError } from "@/lib/api";
+import { documentApi } from "../../api/document.api";
+import { getDocumentAiErrorMessage } from "../../document-ai-errors";
 import { getDocumentErrorMessage } from "../../document-errors";
 import { useDocuments } from "../../hooks/use-documents";
+import type { DocumentAiAnalysis } from "../../types/document-ai.types";
 import { DEFAULT_DOCUMENT_FILTERS, type DocumentListItem } from "../../types/document.types";
 import { DocumentFilters } from "../DocumentFilters/DocumentFilters";
 import { DocumentScopeOptions } from "../DocumentScopeOptions/DocumentScopeOptions";
@@ -64,11 +68,43 @@ export const DocumentsPage = () => {
   const [downloadingFileId, setDownloadingFileId] = useState<string | null>(null);
   const [downloadError, setDownloadError] = useState<string | null>(null);
   const [previewDocument, setPreviewDocument] = useState<DocumentListItem | null>(null);
+  const [activeAnalysisDocumentId, setActiveAnalysisDocumentId] = useState<string | null>(null);
+  const [analyzingDocumentId, setAnalyzingDocumentId] = useState<string | null>(null);
+  const [analysis, setAnalysis] = useState<DocumentAiAnalysis | null>(null);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const analysisRequestRef = useRef<{
+    documentId: string;
+    controller: AbortController;
+  } | null>(null);
+
+  useEffect(
+    () => () => {
+      analysisRequestRef.current?.controller.abort();
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (
+      activeAnalysisDocumentId &&
+      !documents.some((document) => document.id === activeAnalysisDocumentId)
+    ) {
+      analysisRequestRef.current?.controller.abort();
+      analysisRequestRef.current = null;
+    }
+  }, [activeAnalysisDocumentId, documents]);
 
   if (!viewer) return null;
 
   const hasActiveFilters =
     JSON.stringify(appliedFilters) !== JSON.stringify(DEFAULT_DOCUMENT_FILTERS);
+  const activeAnalysisDocumentExists = documents.some(
+    (document) => document.id === activeAnalysisDocumentId,
+  );
+  const visibleActiveAnalysisDocumentId = activeAnalysisDocumentExists
+    ? activeAnalysisDocumentId
+    : null;
+  const visibleAnalyzingDocumentId = activeAnalysisDocumentExists ? analyzingDocumentId : null;
 
   const handleDownload = async (document: DocumentListItem) => {
     if (downloadingFileId) return;
@@ -86,6 +122,49 @@ export const DocumentsPage = () => {
       setDownloadError("Unable to download this document. Try again.");
     } finally {
       setDownloadingFileId(null);
+    }
+  };
+
+  const handleAnalyze = async (document: DocumentListItem) => {
+    analysisRequestRef.current?.controller.abort();
+
+    const request = {
+      documentId: document.id,
+      controller: new AbortController(),
+    };
+    analysisRequestRef.current = request;
+    setActiveAnalysisDocumentId(document.id);
+    setAnalyzingDocumentId(document.id);
+    setAnalysis(null);
+    setAnalysisError(null);
+
+    try {
+      const result = await documentApi.analyze(document.id, request.controller.signal);
+
+      if (
+        request.controller.signal.aborted ||
+        analysisRequestRef.current !== request ||
+        result.documentId !== document.id
+      ) {
+        return;
+      }
+
+      setAnalysis(result);
+    } catch (analysisFailure) {
+      if (
+        request.controller.signal.aborted ||
+        isAbortError(analysisFailure) ||
+        analysisRequestRef.current !== request
+      ) {
+        return;
+      }
+
+      setAnalysisError(getDocumentAiErrorMessage(analysisFailure));
+    } finally {
+      if (analysisRequestRef.current === request) {
+        analysisRequestRef.current = null;
+        setAnalyzingDocumentId(null);
+      }
     }
   };
 
@@ -136,8 +215,13 @@ export const DocumentsPage = () => {
           <DocumentList
             documents={documents}
             downloadingFileId={downloadingFileId}
+            analyzingDocumentId={visibleAnalyzingDocumentId}
+            activeAnalysisDocumentId={visibleActiveAnalysisDocumentId}
+            analysis={activeAnalysisDocumentExists ? analysis : null}
+            analysisError={activeAnalysisDocumentExists ? analysisError : null}
             onDownload={(document) => void handleDownload(document)}
             onPreview={setPreviewDocument}
+            onAnalyze={(document) => void handleAnalyze(document)}
           />
           <Pagination meta={meta} onPageChange={setPage} disabled={loading} />
         </>

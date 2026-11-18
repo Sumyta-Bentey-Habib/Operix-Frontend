@@ -22,6 +22,7 @@ import {
   TodoIcon,
   HistoryIcon,
   FileDocIcon,
+  SparklesIcon,
 } from "@/components/icons";
 import { ThemeToggle } from "../ThemeToggle";
 import {
@@ -43,6 +44,7 @@ export interface TopNavbarProps {
   onTabChange?: (tabId: string) => void;
   onSearchClick?: () => void;
   onNotificationClick?: () => void;
+  onAskOperix?: () => void;
 }
 
 const getNavIcon = (id: string, size = 16) => {
@@ -81,6 +83,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
   activeTabId,
   className,
   onTabChange,
+  onAskOperix,
 }) => {
   const { viewer, profile, signOut } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -320,6 +323,16 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
 
       {/* Right Controls Section */}
       <div className={styles.rightSection}>
+        <button
+          type="button"
+          className={styles.askOperixButton}
+          onClick={onAskOperix}
+          aria-label="Ask Operix"
+          title="Ask Operix"
+        >
+          <SparklesIcon size={17} />
+          <span>Ask Operix</span>
+        </button>
         <Link
           href="/guide"
           className={styles.iconButton}

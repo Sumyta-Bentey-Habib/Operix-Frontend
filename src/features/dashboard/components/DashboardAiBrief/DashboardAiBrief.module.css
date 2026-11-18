@@ -1,0 +1,368 @@
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: 20px;
+  box-shadow: var(--card-shadow);
+  display: grid;
+  gap: 18px;
+  padding: 24px;
+}
+
+.header,
+.titleRow,
+.itemHeader,
+.badges,
+.controls {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.header,
+.itemHeader {
+  justify-content: space-between;
+}
+
+.header {
+  gap: 16px;
+}
+
+.controls {
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.periodControl {
+  color: var(--text-muted);
+  display: grid;
+  font-size: 0.7rem;
+  font-weight: 700;
+  gap: 4px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.periodSelector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.periodSelector button {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 700;
+  min-height: 40px;
+  padding: 7px 10px;
+}
+
+.periodSelector button:hover:not(:disabled),
+.periodSelector button:focus-visible {
+  border-color: var(--primary-emerald);
+}
+
+.periodSelector .periodSelected {
+  background: var(--primary-emerald);
+  border-color: var(--primary-emerald);
+  color: var(--text-inverse);
+}
+
+.headingGroup {
+  display: grid;
+  gap: 5px;
+}
+
+.titleRow,
+.badges {
+  align-items: center;
+  gap: 8px;
+}
+
+.title,
+.summary h3,
+.section h3,
+.mutedSection h3 {
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.title {
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.subtitle,
+.period,
+.summary p,
+.section p,
+.mutedSection p,
+.priority p,
+.observation p,
+.empty,
+.meta {
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 0.86rem;
+}
+
+.period,
+.meta {
+  color: var(--text-muted);
+  font-size: 0.74rem;
+}
+
+.advisory,
+.category,
+.severity,
+.subjectType {
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  text-transform: uppercase;
+}
+
+.advisory,
+.category {
+  background: var(--badge-pending-bg);
+  color: var(--badge-pending-text);
+}
+
+.subjectType {
+  background: var(--bg-muted);
+  color: var(--text-secondary);
+  justify-self: start;
+}
+
+.severity[data-severity="HIGH"] {
+  background: var(--badge-negative-bg);
+  color: var(--badge-negative-text);
+}
+
+.severity[data-severity="MEDIUM"] {
+  background: var(--badge-pending-bg);
+  color: var(--warning-text);
+}
+
+.severity[data-severity="LOW"] {
+  background: var(--badge-positive-bg);
+  color: var(--success);
+}
+
+.generateButton {
+  background: var(--primary-emerald);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--text-inverse);
+  cursor: pointer;
+  font-size: 0.84rem;
+  font-weight: 700;
+  min-height: 40px;
+  padding: 9px 16px;
+}
+
+.generateButton:hover:not(:disabled) {
+  background: var(--primary-emerald-hover);
+}
+
+.generateButton:focus-visible {
+  outline: 2px solid var(--primary-emerald);
+  outline-offset: 2px;
+}
+
+.generateButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.error,
+.empty {
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.error {
+  background: var(--danger-bg);
+  border: 1px solid var(--border-default);
+  color: var(--badge-negative-text);
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.empty {
+  background: var(--bg-card-subtle);
+  border: 1px dashed var(--border-default);
+  display: grid;
+  font-size: 0.84rem;
+  gap: 4px;
+}
+
+.empty strong,
+.priority strong,
+.observation strong {
+  color: var(--text-primary);
+}
+
+.result {
+  border-top: 1px solid var(--border-subtle);
+  display: grid;
+  gap: 18px;
+  padding-top: 18px;
+}
+
+.snapshot {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.snapshotMetric {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  display: grid;
+  gap: 2px;
+  padding: 10px;
+}
+
+.snapshotMetric strong {
+  color: var(--text-primary);
+  font-size: 1.05rem;
+}
+
+.snapshotMetric span {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+}
+
+.summary,
+.section,
+.mutedSection {
+  display: grid;
+  gap: 9px;
+}
+
+.summary h3 {
+  font-size: 1rem;
+}
+
+.summary p,
+.section p,
+.priority p,
+.observation p {
+  font-size: 0.86rem;
+}
+
+.section summary,
+.mutedSection summary {
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.73rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.sectionBody {
+  margin-top: 9px;
+}
+
+.mutedSection {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.gridList,
+.numberedList,
+.limitations {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.gridList {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  list-style: none;
+  padding: 0;
+}
+
+.priority,
+.observation {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  display: grid;
+  gap: 7px;
+  padding: 12px;
+}
+
+.priority strong,
+.observation strong {
+  font-size: 0.88rem;
+}
+
+.priority[data-severity="HIGH"] {
+  border-left: 3px solid var(--danger);
+}
+
+.priority[data-severity="MEDIUM"] {
+  border-left: 3px solid var(--warning-text);
+}
+
+.priority[data-severity="LOW"] {
+  border-left: 3px solid var(--text-muted);
+}
+
+.action,
+.evidence {
+  color: var(--text-primary) !important;
+  font-weight: 600;
+}
+
+.twoColumn {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.numberedList,
+.limitations {
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  line-height: 1.5;
+  padding-left: 20px;
+}
+
+@media (max-width: 720px) {
+  .gridList,
+  .twoColumn,
+  .snapshot {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 18px;
+  }
+
+  .generateButton {
+    width: 100%;
+  }
+
+  .controls,
+  .periodControl {
+    width: 100%;
+  }
+}

@@ -1,0 +1,37 @@
+/*
+ * Additive helpers layered on top of the shared Setup Password auth shell.
+ * The recovery pages import `SetupPasswordPage.module.css` for the shell and
+ * only these few extra classes for stacked actions.
+ */
+
+.actionsStack {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.secondaryLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  color: #9ca3af;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.secondaryLink:hover {
+  color: #ffffff;
+}
+
+.helperText {
+  margin: 0 0 18px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: #9ca3af;
+}

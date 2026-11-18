@@ -4,12 +4,18 @@ import type {
   AssignTaskInput,
   CancelDistributionResponse,
   CompleteTaskInput,
+  CreateBulkTaskInput,
+  CreateBulkTaskResponse,
   CreateTaskInput,
+  GenerateTaskAiDraftInput,
   RescheduleDistributionInput,
+  TaskAiDraft,
+  TaskAssignmentRecommendationResponse,
   Task,
   TaskListQuery,
   TaskRecurrenceSummary,
   TaskStatusHistoryEntry,
+  UpdateTaskInput,
   UpdateTaskRecurrenceInput,
   UpdateTaskSelfClaimInput,
 } from "../types/task.types";
@@ -48,6 +54,41 @@ export const taskApi = {
       json: input,
     }),
 
+  update: (taskId: string, input: UpdateTaskInput): Promise<Task> =>
+    apiRequest(`/tasks/${taskId}`, {
+      method: "PATCH",
+      json: input,
+    }),
+
+  createBulk: (input: CreateBulkTaskInput): Promise<CreateBulkTaskResponse> =>
+    apiRequest("/tasks/bulk", {
+      method: "POST",
+      json: input,
+    }),
+
+  /**
+   * Produces an advisory draft only. The backend persists nothing here; task
+   * creation still goes through `create` above.
+   */
+  generateAiDraft: (
+    input: GenerateTaskAiDraftInput,
+    options?: { signal?: AbortSignal },
+  ): Promise<TaskAiDraft> =>
+    apiRequest("/tasks/ai/draft", {
+      method: "POST",
+      json: input,
+      signal: options?.signal,
+    }),
+
+  generateAssignmentRecommendations: (
+    taskId: string,
+    options?: { signal?: AbortSignal },
+  ): Promise<TaskAssignmentRecommendationResponse> =>
+    apiRequest(`/tasks/${taskId}/ai-assignment-recommendations`, {
+      method: "POST",
+      signal: options?.signal,
+    }),
+
   assign: (taskId: string, input: AssignTaskInput): Promise<Task> =>
     apiRequest(`/tasks/${taskId}/assignments`, {
       method: "POST",
@@ -62,10 +103,7 @@ export const taskApi = {
       method: "POST",
     }),
 
-  updateSelfClaim: (
-    taskId: string,
-    input: UpdateTaskSelfClaimInput,
-  ): Promise<Task> =>
+  updateSelfClaim: (taskId: string, input: UpdateTaskSelfClaimInput): Promise<Task> =>
     apiRequest(`/tasks/${taskId}/self-claim`, {
       method: "PATCH",
       json: input,
@@ -82,10 +120,7 @@ export const taskApi = {
       ...(input ? { json: input } : {}),
     }),
 
-  rescheduleDistribution: (
-    taskId: string,
-    input: RescheduleDistributionInput,
-  ): Promise<Task> =>
+  rescheduleDistribution: (taskId: string, input: RescheduleDistributionInput): Promise<Task> =>
     apiRequest(`/tasks/${taskId}/distribution`, {
       method: "PATCH",
       json: input,
@@ -113,4 +148,3 @@ export const taskApi = {
       json: input,
     }),
 };
-

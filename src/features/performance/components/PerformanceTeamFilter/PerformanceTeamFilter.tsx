@@ -79,4 +79,3 @@ export const PerformanceTeamFilter = ({ selectedTeamId, onChange }: PerformanceT
     </section>
   );
 };
-

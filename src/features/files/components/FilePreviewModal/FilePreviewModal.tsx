@@ -205,23 +205,13 @@ const ActivePreviewDialog = ({ file, onClose, onDownload }: ActivePreviewProps) 
       return (
         <div className={styles.imageWrapper}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={blobUrl}
-            alt={displayName}
-            className={styles.previewImage}
-          />
+          <img src={blobUrl} alt={displayName} className={styles.previewImage} />
         </div>
       );
     }
 
     if (isPdfFile(file.mimeType, file.originalName)) {
-      return (
-        <iframe
-          src={blobUrl}
-          title={displayName}
-          className={styles.previewIframe}
-        />
-      );
+      return <iframe src={blobUrl} title={displayName} className={styles.previewIframe} />;
     }
 
     if (isVideoFile(file.mimeType, file.originalName)) {
@@ -250,28 +240,19 @@ const ActivePreviewDialog = ({ file, onClose, onDownload }: ActivePreviewProps) 
 
     return (
       <div className={styles.docFallback}>
-        <div className={styles.docBadge}>
-          {typeDisplay.slice(0, 3).toUpperCase()}
-        </div>
+        <div className={styles.docBadge}>{typeDisplay.slice(0, 3).toUpperCase()}</div>
         <div>
           <h3 className={styles.docTitle}>{displayName}</h3>
           <p className={styles.docDesc}>
-            Inline browser preview is not supported for {typeDisplay} files. You can open or download the file to inspect it.
+            Inline browser preview is not supported for {typeDisplay} files. You can open or
+            download the file to inspect it.
           </p>
         </div>
         <div className={styles.docActions}>
-          <button
-            type="button"
-            className={styles.downloadButton}
-            onClick={handleDownloadClick}
-          >
+          <button type="button" className={styles.downloadButton} onClick={handleDownloadClick}>
             Download File
           </button>
-          <button
-            type="button"
-            className={styles.actionButton}
-            onClick={handleOpenNewTab}
-          >
+          <button type="button" className={styles.actionButton} onClick={handleOpenNewTab}>
             Open in New Tab
           </button>
         </div>
@@ -319,11 +300,7 @@ const ActivePreviewDialog = ({ file, onClose, onDownload }: ActivePreviewProps) 
                 Open in New Tab
               </button>
             )}
-            <button
-              type="button"
-              className={styles.downloadButton}
-              onClick={handleDownloadClick}
-            >
+            <button type="button" className={styles.downloadButton} onClick={handleDownloadClick}>
               Download
             </button>
             <button
@@ -342,20 +319,10 @@ const ActivePreviewDialog = ({ file, onClose, onDownload }: ActivePreviewProps) 
   );
 };
 
-export const FilePreviewModal = ({
-  open,
-  file,
-  onClose,
-  onDownload,
-}: FilePreviewModalProps) => {
+export const FilePreviewModal = ({ open, file, onClose, onDownload }: FilePreviewModalProps) => {
   if (!open || !file) return null;
 
   return (
-    <ActivePreviewDialog
-      key={file.id}
-      file={file}
-      onClose={onClose}
-      onDownload={onDownload}
-    />
+    <ActivePreviewDialog key={file.id} file={file} onClose={onClose} onDownload={onDownload} />
   );
 };

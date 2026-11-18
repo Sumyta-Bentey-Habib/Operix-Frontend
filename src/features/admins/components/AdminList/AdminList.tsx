@@ -115,10 +115,7 @@ export const AdminList = () => {
             <ErrorState message={getAdminErrorView(error).message} onRetry={() => void refresh()} />
           )}
           {!loading && !error && admins.length === 0 && (
-            <EmptyState
-              title="No Admins found"
-              message="No Admin accounts are available yet."
-            />
+            <EmptyState title="No Admins found" message="No Admin accounts are available yet." />
           )}
           {!loading && !error && admins.length > 0 && (
             <>

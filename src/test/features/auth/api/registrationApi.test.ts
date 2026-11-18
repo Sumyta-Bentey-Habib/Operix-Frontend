@@ -61,11 +61,25 @@ describe("registrationApi", () => {
 
   it("approves a registration request with assigned role and details", async () => {
     const spy = vi.spyOn(apiModule, "apiRequest").mockResolvedValueOnce({
-      success: true,
-      message: "Approved",
+      id: "req-1",
+      name: "Dr. Sarah",
+      email: "sarah@operix.test",
+      status: "APPROVED",
+      selectedRole: "ADMIN",
+      selectedEmployeeId: "ADM-100",
+      selectedDesignation: "Lead Specialist",
+      selectedTeam: null,
+      reviewer: null,
+      rejectionReason: null,
+      reviewedAt: "2026-09-01T00:00:00Z",
+      approvedAt: "2026-09-01T00:00:00Z",
+      passwordConfiguredAt: null,
+      createdAt: "2026-09-01T00:00:00Z",
+      updatedAt: "2026-09-01T00:00:00Z",
+      setupEmail: { status: "ACCEPTED" },
     });
 
-    await registrationApi.approveRequest("req-1", {
+    const result = await registrationApi.approveRequest("req-1", {
       role: "ADMIN",
       employeeId: "ADM-100",
       designation: "Lead Specialist",
@@ -80,6 +94,22 @@ describe("registrationApi", () => {
       },
       signal: undefined,
     });
+    expect(result.setupEmail.status).toBe("ACCEPTED");
+  });
+
+  it("resends a setup email for a single approved request", async () => {
+    const spy = vi.spyOn(apiModule, "apiRequest").mockResolvedValueOnce({
+      message: "A new account setup link was requested.",
+      setupEmail: { status: "ACCEPTED" },
+    });
+
+    const result = await registrationApi.resendSetup("req-1");
+
+    expect(spy).toHaveBeenCalledWith("/registration-requests/req-1/resend-setup", {
+      method: "POST",
+      signal: undefined,
+    });
+    expect(result.setupEmail.status).toBe("ACCEPTED");
   });
 
   it("rejects a registration request", async () => {

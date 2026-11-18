@@ -42,7 +42,6 @@ export const cleanFilename = (filename: string | null | undefined): string => {
   return cleaned;
 };
 
-
 /**
  * Sanitizes a File object before upload so its name only uses standard spaces and clean characters,
  * preventing backend parsers like Multer/Busboy from mangling multipart header filenames.

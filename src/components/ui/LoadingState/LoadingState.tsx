@@ -16,11 +16,7 @@ export const LoadingState = ({
   fullPage = false,
   className,
 }: LoadingStateProps) => {
-  const containerClassName = [
-    styles.state,
-    fullPage ? styles.fullPage : "",
-    className ?? "",
-  ]
+  const containerClassName = [styles.state, fullPage ? styles.fullPage : "", className ?? ""]
     .filter(Boolean)
     .join(" ");
 

@@ -158,4 +158,3 @@ export const DashboardRecentNotifications = ({
     )}
   </div>
 );
-

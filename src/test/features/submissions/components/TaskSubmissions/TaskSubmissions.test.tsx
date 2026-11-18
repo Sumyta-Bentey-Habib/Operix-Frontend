@@ -51,6 +51,7 @@ const task = (
   teamId: "team-1",
   categoryId: null,
   createdById: "admin-1",
+  reviewer: { id: "admin-1", name: "Admin One", role: "ADMIN" },
   responsible: { id: "member-1", name: "Member One", role: "MEMBER" },
   createdAt: "2026-08-23T00:00:00.000Z",
   updatedAt: "2026-08-23T00:00:00.000Z",
@@ -65,6 +66,7 @@ const submission = (id: string, version: number): Submission => ({
   submissionText: `Submission ${version}`,
   submittedAt: "2026-08-23T00:00:00.000Z",
   createdAt: "2026-08-23T00:00:00.000Z",
+  updatedAt: "2026-08-23T00:00:00.000Z",
   attachments: [],
 });
 
@@ -225,19 +227,11 @@ describe("TaskSubmissions", () => {
   it("shows Submit Work for REVIEW_REQUIRED IN_PROGRESS and hides for DIRECT IN_PROGRESS", () => {
     mocks.useAuth.mockReturnValue({ viewer: viewer("MEMBER") });
     const { rerender } = render(
-      <TaskSubmissions
-        task={task("IN_PROGRESS", "REVIEW_REQUIRED")}
-        onWorkflowRefresh={vi.fn()}
-      />,
+      <TaskSubmissions task={task("IN_PROGRESS", "REVIEW_REQUIRED")} onWorkflowRefresh={vi.fn()} />,
     );
     expect(screen.getByRole("button", { name: "Submit Work" })).toBeInTheDocument();
 
-    rerender(
-      <TaskSubmissions
-        task={task("IN_PROGRESS", "DIRECT")}
-        onWorkflowRefresh={vi.fn()}
-      />,
-    );
+    rerender(<TaskSubmissions task={task("IN_PROGRESS", "DIRECT")} onWorkflowRefresh={vi.fn()} />);
     expect(screen.queryByRole("button", { name: "Submit Work" })).not.toBeInTheDocument();
   });
 
@@ -252,10 +246,7 @@ describe("TaskSubmissions", () => {
     expect(screen.getByRole("button", { name: "Resubmit Work" })).toBeInTheDocument();
 
     rerender(
-      <TaskSubmissions
-        task={task("REVISION_REQUIRED", "DIRECT")}
-        onWorkflowRefresh={vi.fn()}
-      />,
+      <TaskSubmissions task={task("REVISION_REQUIRED", "DIRECT")} onWorkflowRefresh={vi.fn()} />,
     );
     expect(screen.queryByRole("button", { name: "Resubmit Work" })).not.toBeInTheDocument();
   });
@@ -279,10 +270,7 @@ describe("TaskSubmissions", () => {
 
     // Task becomes DIRECT before clicking submit
     rerender(
-      <TaskSubmissions
-        task={task("IN_PROGRESS", "DIRECT")}
-        onWorkflowRefresh={refreshWorkflow}
-      />,
+      <TaskSubmissions task={task("IN_PROGRESS", "DIRECT")} onWorkflowRefresh={refreshWorkflow} />,
     );
 
     // The header Submit Work button is now gone, so only the modal submit button remains
@@ -358,5 +346,25 @@ describe("TaskSubmissions", () => {
     expect(screen.getByRole("alert")).toHaveTextContent(
       "This Task requires direct completion and does not accept submissions.",
     );
+  });
+
+  it("offers AI analysis only to the Team Admin of a review-required Task", () => {
+    mocks.useAuth.mockReturnValue({ viewer: viewer("ADMIN") });
+    const { rerender } = render(
+      <TaskSubmissions task={task("SUBMITTED")} onWorkflowRefresh={vi.fn()} />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Review" }));
+    expect(screen.getByRole("button", { name: "Analyze Submission" })).toBeInTheDocument();
+
+    // Super Admin still opens the dialog (pre-existing review permission) but never sees AI.
+    mocks.useAuth.mockReturnValue({ viewer: viewer("SUPER_ADMIN") });
+    rerender(<TaskSubmissions task={task("SUBMITTED")} onWorkflowRefresh={vi.fn()} />);
+    expect(screen.queryByRole("button", { name: "Analyze Submission" })).not.toBeInTheDocument();
+
+    // DIRECT Tasks never accept submissions, so the advisory action is hidden too.
+    mocks.useAuth.mockReturnValue({ viewer: viewer("ADMIN") });
+    rerender(<TaskSubmissions task={task("SUBMITTED", "DIRECT")} onWorkflowRefresh={vi.fn()} />);
+    expect(screen.queryByRole("button", { name: "Analyze Submission" })).not.toBeInTheDocument();
   });
 });

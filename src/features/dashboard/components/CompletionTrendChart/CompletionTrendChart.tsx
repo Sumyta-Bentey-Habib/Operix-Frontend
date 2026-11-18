@@ -48,11 +48,7 @@ export interface CompletionTrendChartProps {
   onDaysChange?: (days: DashboardTrendDays) => void;
 }
 
-export const CompletionTrendChart = ({
-  points,
-  days,
-  onDaysChange,
-}: CompletionTrendChartProps) => {
+export const CompletionTrendChart = ({ points, days, onDaysChange }: CompletionTrendChartProps) => {
   const { maxValue, totalCompleted } = calculateTrendMetrics(points);
 
   return (

@@ -2,12 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import {
-  CalendarIcon,
-  PlusIcon,
-  TodoIcon,
-  ArrowRightIcon,
-} from "@/components/icons";
+import { CalendarIcon, PlusIcon, TodoIcon, ArrowRightIcon } from "@/components/icons";
 import { PRIORITY_OPTIONS, TODO_STRINGS } from "../../constants/todo-strings";
 import { useAdminTodos } from "../../hooks/use-admin-todos";
 import type { TodoPriority } from "../../types/todo.types";
@@ -151,11 +146,7 @@ export const TodoFloatingButton: React.FC = () => {
           </div>
 
           <div className={styles.panelFooter}>
-            <Link
-              href="/todos"
-              className={styles.viewMoreBtn}
-              onClick={() => setIsOpen(false)}
-            >
+            <Link href="/todos" className={styles.viewMoreBtn} onClick={() => setIsOpen(false)}>
               <span>{TODO_STRINGS.floatingButton.viewMore}</span>
               <ArrowRightIcon size={14} />
             </Link>

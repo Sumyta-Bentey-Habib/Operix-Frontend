@@ -28,11 +28,7 @@ const PriorityHeaderIcon = () => (
   </svg>
 );
 
-export const ActivePriorityBreakdown = ({
-  counts,
-}: {
-  counts: Record<TaskPriority, number>;
-}) => {
+export const ActivePriorityBreakdown = ({ counts }: { counts: Record<TaskPriority, number> }) => {
   const total = calculateTotal(TASK_PRIORITIES, counts);
 
   return (
@@ -67,4 +63,3 @@ export const ActivePriorityBreakdown = ({
     </div>
   );
 };
-

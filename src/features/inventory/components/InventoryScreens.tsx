@@ -1351,10 +1351,7 @@ export const InventoryItemDetails = ({ itemId }: { itemId: string }) => {
           <section className={styles.card}>
             <div className={styles.detailGrid}>
               <Detail label="SKU" value={item.sku} />
-              <Detail
-                label="Team"
-                value={item.team.name}
-              />
+              <Detail label="Team" value={item.team.name} />
               <Detail
                 label="Category"
                 value={

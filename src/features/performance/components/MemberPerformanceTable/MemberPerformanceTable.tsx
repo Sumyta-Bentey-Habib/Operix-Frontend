@@ -28,7 +28,10 @@ export interface MemberPerformanceTableProps {
 
 export const MemberPerformanceTable: React.FC<MemberPerformanceTableProps> = ({ members }) => (
   <div className={styles.tableWrap}>
-    <table className={styles.table} aria-label={PERFORMANCE_TABLE_STRINGS.aria.memberPerformanceTable}>
+    <table
+      className={styles.table}
+      aria-label={PERFORMANCE_TABLE_STRINGS.aria.memberPerformanceTable}
+    >
       <thead className={styles.thead}>
         <tr>
           <th>{PERFORMANCE_TABLE_STRINGS.columns.member}</th>
@@ -146,7 +149,6 @@ export const MemberPerformanceTable: React.FC<MemberPerformanceTableProps> = ({ 
               >
                 {onTimeRateText}
               </td>
-
 
               {/* Avg Completion (Desktop) */}
               <td className={`${styles.td} ${styles.numCell} ${styles.desktopCell}`}>

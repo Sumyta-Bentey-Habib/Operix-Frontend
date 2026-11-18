@@ -40,11 +40,7 @@ export interface TaskTeamPickerProps {
   onClear?: () => void;
 }
 
-export const TaskTeamPicker = ({
-  selectedTeamId,
-  onSelect,
-  onClear,
-}: TaskTeamPickerProps) => {
+export const TaskTeamPicker = ({ selectedTeamId, onSelect, onClear }: TaskTeamPickerProps) => {
   const { teams, meta, loading, error, setPage, refresh } = useTeams();
 
   return (
@@ -85,9 +81,7 @@ export const TaskTeamPicker = ({
                     >
                       <TeamIcon />
                     </span>
-                    <strong className="text-sm font-bold text-(--text-primary)">
-                      {team.name}
-                    </strong>
+                    <strong className="text-sm font-bold text-(--text-primary)">{team.name}</strong>
                   </div>
                   {active && (
                     <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-(--primary-emerald) text-[0.7rem] font-black text-(--text-on-primary)">

@@ -1,8 +1,8 @@
 import { EmptyState } from "@/components/ui/EmptyState";
 import { formatDashboardNumber } from "../../utils/dashboard-format";
 import { DASHBOARD_STRINGS } from "@/utils/dashboard-strings";
+import { WORKLOAD_TABLE_STRINGS } from "@/utils/workload-strings";
 import type { TeamWorkloadTableProps } from "./WorkloadContent.types";
-import { getWorkloadStatusCount } from "./WorkloadContent.helpers";
 import styles from "./WorkloadContent.module.css";
 
 const TeamRowIcon = () => (
@@ -47,15 +47,20 @@ export const TeamWorkloadTable = ({ teams }: TeamWorkloadTableProps) => {
             <th className={styles.numCellHeader}>{t.pending}</th>
             <th className={styles.numCellHeader}>{t.inProgress}</th>
             <th className={styles.numCellHeader}>{t.completed}</th>
+            <th className={styles.numCellHeader}>{WORKLOAD_TABLE_STRINGS.columns.monthly}</th>
           </tr>
         </thead>
         <tbody>
           {teams.map((team) => {
-            const active = team.workload?.activeTasks ?? 0;
-            const overdue = team.workload?.overdueTasks ?? 0;
-            const pending = getWorkloadStatusCount(team.workload, "PENDING");
-            const inProgress = getWorkloadStatusCount(team.workload, "IN_PROGRESS");
-            const completed = getWorkloadStatusCount(team.workload, "COMPLETED");
+            // The API reports Team workload flat; `workload` remains supported for
+            // any normalized caller that still nests it.
+            const statusCounts = team.statusCounts ?? team.workload?.statusCounts;
+            const active = team.activeTasks ?? team.workload?.activeTasks ?? 0;
+            const overdue = team.overdueTasks ?? team.workload?.overdueTasks ?? 0;
+            const pending = statusCounts?.PENDING ?? 0;
+            const inProgress = statusCounts?.IN_PROGRESS ?? 0;
+            const completed = statusCounts?.COMPLETED ?? 0;
+            const monthly = team.monthly;
 
             return (
               <tr key={team.teamId}>
@@ -76,31 +81,59 @@ export const TeamWorkloadTable = ({ teams }: TeamWorkloadTableProps) => {
                 </td>
                 <td className={styles.numCell}>
                   {overdue > 0 ? (
-                    <span className={styles.teamOverdueBadge}>{formatDashboardNumber(overdue)}</span>
+                    <span className={styles.teamOverdueBadge}>
+                      {formatDashboardNumber(overdue)}
+                    </span>
                   ) : (
                     <span className={styles.tableDimmed}>0</span>
                   )}
                 </td>
                 <td className={styles.numCell}>
                   {pending > 0 ? (
-                    <span className={styles.teamPendingBadge}>{formatDashboardNumber(pending)}</span>
+                    <span className={styles.teamPendingBadge}>
+                      {formatDashboardNumber(pending)}
+                    </span>
                   ) : (
                     <span className={styles.tableDimmed}>0</span>
                   )}
                 </td>
                 <td className={styles.numCell}>
                   {inProgress > 0 ? (
-                    <span className={styles.teamProgressBadge}>{formatDashboardNumber(inProgress)}</span>
+                    <span className={styles.teamProgressBadge}>
+                      {formatDashboardNumber(inProgress)}
+                    </span>
                   ) : (
                     <span className={styles.tableDimmed}>0</span>
                   )}
                 </td>
                 <td className={styles.numCell}>
                   {completed > 0 ? (
-                    <span className={styles.teamCompletedBadge}>{formatDashboardNumber(completed)}</span>
+                    <span className={styles.teamCompletedBadge}>
+                      {formatDashboardNumber(completed)}
+                    </span>
                   ) : (
                     <span className={styles.tableDimmed}>0</span>
                   )}
+                </td>
+                <td className={styles.numCell}>
+                  <div
+                    className={styles.teamMonthly}
+                    title={WORKLOAD_TABLE_STRINGS.monthly.tooltip}
+                    aria-label={WORKLOAD_TABLE_STRINGS.monthly.ariaLabel}
+                  >
+                    <span className={styles.teamMonthlyPrimary}>
+                      {formatDashboardNumber(monthly?.assigned ?? 0)}
+                      <span className={styles.teamMonthlyUnit}>
+                        {WORKLOAD_TABLE_STRINGS.monthly.assigned}
+                      </span>
+                    </span>
+                    <span className={styles.teamMonthlyDetail}>
+                      {formatDashboardNumber(monthly?.completed ?? 0)}{" "}
+                      {WORKLOAD_TABLE_STRINGS.monthly.completed} ·{" "}
+                      {formatDashboardNumber(monthly?.reviewsCompleted ?? 0)}{" "}
+                      {WORKLOAD_TABLE_STRINGS.monthly.reviews}
+                    </span>
+                  </div>
                 </td>
               </tr>
             );
@@ -110,4 +143,3 @@ export const TeamWorkloadTable = ({ teams }: TeamWorkloadTableProps) => {
     </div>
   );
 };
-

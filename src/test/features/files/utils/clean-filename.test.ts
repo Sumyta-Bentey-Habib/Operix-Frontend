@@ -17,7 +17,6 @@ describe("cleanFilename", () => {
     expect(cleanFilename(noSpace)).toBe("Screenshot 2026-09-07 at 9.50.11 PM.png");
   });
 
-
   it("cleans non-breaking space (U+00A0)", () => {
     const withNbsp = "Quarterly\u00A0Report\u00A02026.pdf";
     expect(cleanFilename(withNbsp)).toBe("Quarterly Report 2026.pdf");

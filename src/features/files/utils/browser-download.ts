@@ -19,7 +19,6 @@ export const resolveBrowserDownloadFilename = (
   return "download";
 };
 
-
 export const triggerBrowserDownload = ({
   blob,
   filename,

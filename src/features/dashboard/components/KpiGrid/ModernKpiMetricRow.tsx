@@ -25,4 +25,3 @@ export const ModernKpiMetricRow = ({ metric }: ModernKpiMetricRowProps) => {
     </div>
   );
 };
-

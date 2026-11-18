@@ -1,6 +1,10 @@
 import { DASHBOARD_STRINGS } from "@/utils/dashboard-strings";
 import { DASHBOARD_METRIC_COLORS, DASHBOARD_METRIC_ITEM_COLORS } from "@/utils/dashboard-colors";
-import type { MemberDashboardOverview, DashboardTrendsResponse, DashboardTrendDays } from "../../types/dashboard.types";
+import type {
+  MemberDashboardOverview,
+  DashboardTrendsResponse,
+  DashboardTrendDays,
+} from "../../types/dashboard.types";
 import {
   formatDashboardAverageMinutes,
   formatDashboardNumber,
@@ -11,10 +15,7 @@ import { normalizeDashboardOverview } from "../../utils/overview-normalizer";
 import { ModernKpiGrid } from "../KpiGrid/KpiGrid";
 import type { ModernKpiCardData } from "../KpiGrid/KpiGrid";
 import { CompletionTrendChart } from "../CompletionTrendChart/CompletionTrendChart";
-import {
-  TaskStatusBreakdown,
-  ActivePriorityBreakdown,
-} from "../BreakdownCards/BreakdownCards";
+import { TaskStatusBreakdown, ActivePriorityBreakdown } from "../BreakdownCards/BreakdownCards";
 import { DashboardRecentNotifications } from "../RecentFeed/RecentFeed";
 import styles from "../DashboardAnalytics.module.css";
 
@@ -40,7 +41,8 @@ export const MemberDashboard = ({
   days?: DashboardTrendDays;
   setDays?: (days: DashboardTrendDays) => void;
 }) => {
-  const overview = (normalizeDashboardOverview(rawOverview) ?? rawOverview) as MemberDashboardOverview;
+  const overview = (normalizeDashboardOverview(rawOverview) ??
+    rawOverview) as MemberDashboardOverview;
   const activePriorityCounts = extractActivePriorityCounts(overview, workload, tasks);
   const taskStatusCounts = extractTaskStatusCounts(overview, workload, tasks);
 

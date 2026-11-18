@@ -59,6 +59,7 @@ const mockTask: Task = {
   teamId: "team-alpha-id",
   categoryId: "cat-engineering-id",
   createdById: "admin-super-id",
+  owner: { id: "admin-1", name: "Admin One", role: "ADMIN" },
   responsible: { id: "member-1", name: "Member One", role: "MEMBER" },
   createdAt: "2026-09-01T09:00:00.000Z",
   updatedAt: "2026-09-05T12:00:00.000Z",
@@ -360,8 +361,9 @@ describe("TaskDetails", () => {
     mocks.claim.mockResolvedValueOnce(claimedTask);
 
     const { rerender } = render(<TaskDetails taskId="task-test-id" />);
-    expect(screen.getByRole("button", { name: TASK_DETAILS_STRINGS.actions.claimTask }))
-      .toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: TASK_DETAILS_STRINGS.actions.claimTask }),
+    ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: TASK_DETAILS_STRINGS.actions.claimTask }));
 

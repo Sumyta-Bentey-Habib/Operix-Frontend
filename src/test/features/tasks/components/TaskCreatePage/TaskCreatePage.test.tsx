@@ -149,6 +149,7 @@ describe("TaskCreatePage", () => {
         priority: "HIGH",
         scope: "TEAM",
         teamId: "team-123",
+        completionMode: "REVIEW_REQUIRED",
       });
       expect(mockReplace).toHaveBeenCalledWith("/tasks/task-999");
     });

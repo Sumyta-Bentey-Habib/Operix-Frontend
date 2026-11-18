@@ -144,5 +144,4 @@ describe("MemberList", () => {
     fireEvent.click(screen.getByRole("button", { name: "Next" }));
     expect(setPage).toHaveBeenCalledWith(2);
   });
-
 });

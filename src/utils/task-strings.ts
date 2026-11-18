@@ -68,6 +68,7 @@ export const TASK_DETAILS_STRINGS = {
     scope: "Task Scope",
     scopeGlobal: "Global",
     scopeTeam: "Team",
+    scopeIndividual: "Individual",
     distribution: "Distribution",
     distributionSent: "Sent to organization",
     distributionPending: "Scheduled broadcast",
@@ -158,6 +159,7 @@ export const TASK_TABLE_STRINGS = {
     notOverdue: "No",
     unassigned: "Unassigned",
     globalScope: "Global",
+    individualScope: "Individual",
     recurring: "Recurring",
     recurringWeekly: "Weekly Recurring",
     recurringMonthly: "Monthly Recurring",
@@ -261,7 +263,8 @@ export const TASK_CREATE_STRINGS = {
     enableHelper:
       "When enabled, active members can directly pick up and assign this task to themselves from the task list.",
     disabledForRecurring: "Self-claim cannot be combined with recurring task schedules.",
-    globalOpen: "Open to all active Members. The first eligible Member to claim becomes Responsible.",
+    globalOpen:
+      "Open to all active Members. The first eligible Member to claim becomes Responsible.",
     globalAssigned: "Disabled because this Global Task already has a Responsible user.",
     globalRecurring: "Unavailable for recurring Global Tasks. A Responsible user is required.",
     globalResponsibleHelper:
@@ -353,6 +356,30 @@ export const TASK_CREATE_STRINGS = {
     submit: "Create Task",
     submitting: "Creating Task...",
     cancel: "Cancel",
+  },
+  ai: {
+    sectionTitle: "AI Task Copilot",
+    sectionSubtitle:
+      "Describe the work in plain language and AI fills the supported Task fields. You still create the Task.",
+    promptLabel: "What needs to be done?",
+    promptPlaceholder:
+      "e.g., Verify last week's cold chain temperature logs and flag every excursion above the allowed range.",
+    promptHelper: "At least 10 characters. Only this prompt is sent to the AI.",
+    generate: "Generate & Fill",
+    generating: "Generating...",
+    filled: "Task fields filled with AI. Review the details before creating the Task.",
+    undo: "Undo AI Fill",
+    disclaimer:
+      "AI suggestions may need review. The Task is created only when you click Create Task.",
+    promptTooShort: "Write at least 10 characters before using AI.",
+  },
+  completionMode: {
+    sectionLabel: "Completion Mode",
+    reviewRequired: "Review Required",
+    direct: "Direct Complete",
+    reviewRequiredDescription:
+      "A reviewer must approve the submission before the Task is completed.",
+    directDescription: "The Task completes as soon as the assignee submits it.",
   },
   validation: {
     titleRequired: "Task title is required.",

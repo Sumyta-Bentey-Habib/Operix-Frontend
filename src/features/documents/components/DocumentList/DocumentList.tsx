@@ -2,7 +2,10 @@
 
 import { cleanFilename, formatFileSize, formatFileType } from "@/features/files";
 import { formatDisplayDate } from "@/utils/date";
+import type { DocumentAiAnalysis as DocumentAiAnalysisResult } from "../../types/document-ai.types";
+import { isDocumentAiSupportedMimeType } from "../../types/document-ai.types";
 import type { DocumentListItem } from "../../types/document.types";
+import { DocumentAiAnalysis } from "../DocumentAiAnalysis/DocumentAiAnalysis";
 
 const ACTION_BUTTON_CLASS =
   "inline-flex min-h-10 cursor-pointer items-center justify-center rounded-xl border border-[var(--border-default)] bg-[var(--bg-card-subtle)] px-4 py-2 text-sm font-bold text-[var(--text-primary)] transition-all duration-200 hover:border-[var(--border-hover)] hover:bg-[var(--bg-card-hover)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary-emerald)] disabled:cursor-not-allowed disabled:opacity-60";
@@ -13,8 +16,13 @@ const DD_CLASS = "mt-0.5 break-words text-[0.82rem] text-[var(--text-primary)]";
 export interface DocumentListProps {
   documents: DocumentListItem[];
   downloadingFileId: string | null;
+  analyzingDocumentId: string | null;
+  activeAnalysisDocumentId: string | null;
+  analysis: DocumentAiAnalysisResult | null;
+  analysisError: string | null;
   onDownload: (document: DocumentListItem) => void;
   onPreview: (document: DocumentListItem) => void;
+  onAnalyze: (document: DocumentListItem) => void;
 }
 
 const formatSource = (document: DocumentListItem): string => {
@@ -28,13 +36,21 @@ const formatSource = (document: DocumentListItem): string => {
 export const DocumentList = ({
   documents,
   downloadingFileId,
+  analyzingDocumentId,
+  activeAnalysisDocumentId,
+  analysis,
+  analysisError,
   onDownload,
   onPreview,
+  onAnalyze,
 }: DocumentListProps) => (
   <div className="grid gap-3">
     {documents.map((document) => {
       const displayName = cleanFilename(document.name);
       const downloading = downloadingFileId === document.id;
+      const analyzing = analyzingDocumentId === document.id;
+      const analysisActive = activeAnalysisDocumentId === document.id;
+      const analysisSupported = isDocumentAiSupportedMimeType(document.mimeType);
       const meta: Array<[string, string]> = [
         ["Source", formatSource(document)],
         ["Task", document.source.task?.title ?? "—"],
@@ -79,10 +95,32 @@ export const DocumentList = ({
             >
               {downloading ? "Downloading..." : "Download"}
             </button>
+            {analysisSupported ? (
+              <button
+                type="button"
+                className={ACTION_BUTTON_CLASS}
+                aria-label={`Analyze ${displayName} with AI`}
+                onClick={() => onAnalyze(document)}
+                disabled={analyzing}
+              >
+                {analyzing ? "Analyzing document..." : "Analyze with AI"}
+              </button>
+            ) : (
+              <p className="m-0 self-center text-[0.78rem] font-semibold text-(--text-muted)">
+                AI text analysis is not available for this file type.
+              </p>
+            )}
           </div>
+          {analysisActive && (
+            <DocumentAiAnalysis
+              documentName={displayName}
+              analysis={analysis?.documentId === document.id ? analysis : null}
+              pending={analyzing}
+              error={analysisError}
+            />
+          )}
         </article>
       );
     })}
   </div>
 );
-

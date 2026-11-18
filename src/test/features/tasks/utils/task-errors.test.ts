@@ -27,9 +27,7 @@ describe("getTaskErrorView", () => {
     });
     const view = getTaskErrorView(error);
     expect(view.code).toBe("DISTRIBUTION_ALREADY_SENT");
-    expect(view.message).toBe(
-      "Distribution has already been sent and cannot be modified.",
-    );
+    expect(view.message).toBe("Distribution has already been sent and cannot be modified.");
   });
 
   it("maps DISTRIBUTION_ALREADY_CANCELLED to user-friendly message", () => {
@@ -79,9 +77,7 @@ describe("getDistributionErrorMessage", () => {
       code: "DISTRIBUTION_ALREADY_CANCELLED",
       details: null,
     });
-    expect(getDistributionErrorMessage(error)).toBe(
-      "This distribution was already cancelled.",
-    );
+    expect(getDistributionErrorMessage(error)).toBe("This distribution was already cancelled.");
   });
 
   it("falls back to the standard mapped message for other codes", () => {
@@ -90,18 +86,18 @@ describe("getDistributionErrorMessage", () => {
       code: "DISTRIBUTION_NOT_FOUND",
       details: null,
     });
-    expect(getDistributionErrorMessage(error)).toBe(
-      "No distribution found for this task.",
-    );
+    expect(getDistributionErrorMessage(error)).toBe("No distribution found for this task.");
   });
 
-  it("falls back to API message for unknown error codes", () => {
+  it("reports a migration-aware message for backend 500 errors", () => {
     const error = new OperixApiError("Something broke", {
       status: 500,
       code: "INTERNAL_ERROR",
       details: null,
     });
-    expect(getDistributionErrorMessage(error)).toBe("Something broke");
+    expect(getDistributionErrorMessage(error)).toBe(
+      "Unable to load tasks from server (Backend 500 Internal Server Error). Please run production database migrations or check backend server logs.",
+    );
   });
 });
 
@@ -125,9 +121,6 @@ describe("getTaskCompleteErrorMessage", () => {
       code: "TASK_ALREADY_COMPLETED",
       details: null,
     });
-    expect(getTaskCompleteErrorMessage(error)).toBe(
-      "This task has already been completed.",
-    );
+    expect(getTaskCompleteErrorMessage(error)).toBe("This task has already been completed.");
   });
 });
-

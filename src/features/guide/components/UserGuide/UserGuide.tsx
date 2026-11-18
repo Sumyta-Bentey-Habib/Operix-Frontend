@@ -54,10 +54,8 @@ export const UserGuide = () => {
       const titleMatch = mod.title[language].toLowerCase().includes(query);
       const overviewMatch = mod.overview?.[language]?.toLowerCase().includes(query);
       const itemsMatch = (
-        (mod.steps ??
-          mod.features ??
-          mod.metrics ??
-          mod.instructions) as GuideModuleItem[] | undefined
+        (mod.steps ?? mod.features ?? mod.metrics ?? mod.instructions) as
+          GuideModuleItem[] | undefined
       )?.some(
         (item) =>
           item.title?.[language]?.toLowerCase().includes(query) ||
@@ -115,18 +113,12 @@ export const UserGuide = () => {
             </div>
           )}
 
-          <div
-            className={styles.langToggle}
-            role="radiogroup"
-            aria-label="Language selection"
-          >
+          <div className={styles.langToggle} role="radiogroup" aria-label="Language selection">
             <button
               type="button"
               role="radio"
               aria-checked={language === "en"}
-              className={`${styles.langButton} ${
-                language === "en" ? styles.langButtonActive : ""
-              }`}
+              className={`${styles.langButton} ${language === "en" ? styles.langButtonActive : ""}`}
               onClick={() => setLanguage("en")}
             >
               English
@@ -135,9 +127,7 @@ export const UserGuide = () => {
               type="button"
               role="radio"
               aria-checked={language === "bn"}
-              className={`${styles.langButton} ${
-                language === "bn" ? styles.langButtonActive : ""
-              }`}
+              className={`${styles.langButton} ${language === "bn" ? styles.langButtonActive : ""}`}
               onClick={() => setLanguage("bn")}
             >
               বাংলা
@@ -150,9 +140,7 @@ export const UserGuide = () => {
       <header className={styles.headerCard}>
         <div className={styles.headerBadgeRow}>
           <span className={styles.roleBadge}>{guide.role}</span>
-          <span className={styles.audienceBadge}>
-            {guide.metadata.targetAudience[language]}
-          </span>
+          <span className={styles.audienceBadge}>{guide.metadata.targetAudience[language]}</span>
           <span className={styles.versionBadge}>
             v{guide.metadata.version} ({guide.metadata.lastUpdated})
           </span>
@@ -164,11 +152,7 @@ export const UserGuide = () => {
         <div className={styles.scopeBox}>
           <ShieldCheckIcon size={18} className={styles.scopeIcon} />
           <div>
-            <strong>
-              {language === "en"
-                ? "Operational Scope: "
-                : "কার্যক্রমের পরিধি: "}
-            </strong>
+            <strong>{language === "en" ? "Operational Scope: " : "কার্যক্রমের পরিধি: "}</strong>
             <span>{guide.scope[language]}</span>
           </div>
         </div>
@@ -208,14 +192,10 @@ export const UserGuide = () => {
             {filteredPages.map((page) => (
               <div key={page.route} className={styles.pageItem}>
                 <div className={styles.pageItemHeader}>
-                  <span className={styles.pageItemName}>
-                    {page.name[language]}
-                  </span>
+                  <span className={styles.pageItemName}>{page.name[language]}</span>
                   <span className={styles.pageItemRoute}>{page.route}</span>
                 </div>
-                <p className={styles.pageItemDescription}>
-                  {page.description[language]}
-                </p>
+                <p className={styles.pageItemDescription}>{page.description[language]}</p>
               </div>
             ))}
           </div>
@@ -229,12 +209,8 @@ export const UserGuide = () => {
               </strong>
               {guide.navigation.restrictedPages.map((restricted) => (
                 <div key={restricted.route} className={styles.restrictedItem}>
-                  <span className={styles.restrictedRoute}>
-                    {restricted.route}
-                  </span>
-                  <span className={styles.restrictedReason}>
-                    {restricted.reason[language]}
-                  </span>
+                  <span className={styles.restrictedRoute}>{restricted.route}</span>
+                  <span className={styles.restrictedReason}>{restricted.reason[language]}</span>
                 </div>
               ))}
             </div>
@@ -256,17 +232,9 @@ export const UserGuide = () => {
                 <h2 className={styles.cardTitle}>{mod.title[language]}</h2>
               </div>
 
-              {mod.overview && (
-                <p className={styles.moduleSubtitle}>
-                  {mod.overview[language]}
-                </p>
-              )}
-              {mod.rules && (
-                <p className={styles.moduleSubtitle}>{mod.rules[language]}</p>
-              )}
-              {mod.details && (
-                <p className={styles.moduleSubtitle}>{mod.details[language]}</p>
-              )}
+              {mod.overview && <p className={styles.moduleSubtitle}>{mod.overview[language]}</p>}
+              {mod.rules && <p className={styles.moduleSubtitle}>{mod.rules[language]}</p>}
+              {mod.details && <p className={styles.moduleSubtitle}>{mod.details[language]}</p>}
 
               {rawItems && rawItems.length > 0 && (
                 <div className={styles.moduleItemsList}>
@@ -287,21 +255,12 @@ export const UserGuide = () => {
                       (item as { steps?: { [key: string]: string } }).steps?.[language];
 
                     return (
-                      <div
-                        key={idx}
-                        className={styles.moduleItemCard}
-                      >
+                      <div key={idx} className={styles.moduleItemCard}>
                         <div className={styles.itemHeaderRow}>
-                          <span className={styles.itemNumberNode}>
-                            {item.step ?? idx + 1}
-                          </span>
-                          {itemTitle && (
-                            <h3 className={styles.itemTitle}>{itemTitle}</h3>
-                          )}
+                          <span className={styles.itemNumberNode}>{item.step ?? idx + 1}</span>
+                          {itemTitle && <h3 className={styles.itemTitle}>{itemTitle}</h3>}
                         </div>
-                        {itemContent && (
-                          <p className={styles.itemText}>{itemContent}</p>
-                        )}
+                        {itemContent && <p className={styles.itemText}>{itemContent}</p>}
 
                         {/* If module step has options (like Approve vs Request Revision) */}
                         {item.options && (

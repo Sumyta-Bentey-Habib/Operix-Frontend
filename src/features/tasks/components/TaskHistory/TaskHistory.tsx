@@ -41,7 +41,8 @@ export const TaskHistory = ({ taskId, refreshKey = 0 }: TaskHistoryProps) => {
         <>
           <div className={styles.timeline}>
             {entries.map((entry, index) => {
-              const itemKey = entry.id ?? `${entry.taskId}-${entry.changedAt}-${entry.toStatus}-${index}`;
+              const itemKey =
+                entry.id ?? `${entry.taskId}-${entry.changedAt}-${entry.toStatus}-${index}`;
               const changedByName =
                 entry.changedBy?.name ??
                 (entry.changedBy?.id

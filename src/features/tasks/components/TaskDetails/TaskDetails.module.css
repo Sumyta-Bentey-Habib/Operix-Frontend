@@ -714,6 +714,8 @@
   color: var(--text-primary);
 }
 
+.completeField input,
+.completeField select,
 .completeField textarea {
   width: 100%;
   padding: 10px 12px;
@@ -726,6 +728,8 @@
   resize: vertical;
 }
 
+.completeField input:focus,
+.completeField select:focus,
 .completeField textarea:focus {
   outline: none;
   border-color: var(--primary-emerald);

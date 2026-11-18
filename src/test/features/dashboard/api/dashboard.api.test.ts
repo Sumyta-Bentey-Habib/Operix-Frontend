@@ -64,4 +64,19 @@ describe("dashboardApi", () => {
       "http://localhost:5000/api/v1/dashboard/trends?days=90",
     );
   });
+
+  it("generates an on-demand AI brief for its independent period", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(jsonResponse({}));
+    const controller = new AbortController();
+
+    await dashboardApi.generateAiBrief("LAST_30_DAYS", { signal: controller.signal });
+
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe(
+      "http://localhost:5000/api/v1/dashboard/ai-brief?period=LAST_30_DAYS",
+    );
+    expect(fetchMock.mock.calls[0]?.[1]).toMatchObject({
+      method: "POST",
+      signal: controller.signal,
+    });
+  });
 });

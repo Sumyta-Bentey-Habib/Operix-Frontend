@@ -6,19 +6,38 @@
   gap: 10px;
   padding: 14px 16px;
   background: var(--bg-card-subtle);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
   box-sizing: border-box;
 }
 
-.item:hover {
-  border-color: var(--border-hover);
+.item:hover,
+.item:focus-within {
+  border-color: var(--primary-emerald);
   background: var(--bg-card-hover);
+  box-shadow:
+    0 0 0 1px var(--primary-emerald-muted),
+    0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .unread {
   background: var(--bg-card);
   border-color: var(--primary-emerald);
-  box-shadow: inset 3px 0 0 var(--primary-emerald), 0 2px 10px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    inset 3px 0 0 var(--primary-emerald),
+    0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.unread:hover,
+.unread:focus-within {
+  border-color: var(--primary-emerald);
+  background: var(--bg-card-hover);
+  box-shadow:
+    inset 3px 0 0 var(--primary-emerald),
+    0 0 0 1px var(--primary-emerald-muted),
+    0 4px 16px rgba(0, 0, 0, 0.32);
 }
 
 .header {
@@ -96,14 +115,75 @@
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    color 0.18s ease;
 }
 
-.link:hover {
-  background: var(--primary-emerald);
-  color: var(--text-on-primary);
-  box-shadow: 0 4px 12px var(--primary-emerald-glow);
-  transform: translateY(-1px);
+.link,
+.link:link,
+.link:visited,
+.link:hover,
+.link:focus,
+.link:focus-visible,
+.link:active {
+  color: var(--primary-emerald);
+}
+
+.link:hover,
+.link:focus,
+.link:focus-visible,
+.link:active {
+  /* Solid accent fill needs a darker shade so white text clears 4.5:1. */
+  background: var(--primary-emerald-hover);
+  border-color: var(--primary-emerald-hover);
+  color: #ffffff;
+  box-shadow: 0 2px 10px var(--primary-emerald-glow);
+}
+
+/* Any nested markup must inherit the button text color, not the anchor default. */
+.link > * {
+  color: inherit;
+}
+
+.linkDisabled,
+.linkDisabled:hover,
+.linkDisabled:focus,
+.linkDisabled:focus-visible,
+.linkDisabled:active {
+  background: var(--bg-card-subtle);
+  border-color: var(--border-default);
+  color: var(--text-muted);
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.statusChip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-card-subtle);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: default;
+}
+
+.statusUnavailable {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 6px 2px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
 .button {
@@ -119,14 +199,18 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    opacity 0.18s ease;
 }
 
 .button:hover:not(:disabled) {
   background: var(--bg-card-hover);
   border-color: var(--border-hover);
   color: var(--text-primary);
-  transform: translateY(-1px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
 }
 
 .button:focus-visible,
@@ -137,7 +221,10 @@
 
 .button:disabled {
   cursor: not-allowed;
-  opacity: 0.55;
+  opacity: 0.5;
+  background: var(--bg-card-subtle);
+  border-color: var(--border-subtle);
+  box-shadow: none;
 }
 
 .deleteButton {
@@ -146,11 +233,19 @@
   border-color: var(--border-default);
 }
 
-.deleteButton:hover:not(:disabled) {
-  background: rgba(239, 68, 68, 0.2);
-  border-color: rgba(239, 68, 68, 0.4);
-  color: var(--badge-negative-text);
-  transform: translateY(-1px);
+.deleteButton:hover:not(:disabled),
+.deleteButton:focus,
+.deleteButton:focus-visible,
+.deleteButton:active:not(:disabled) {
+  /* Deeper destructive shade keeps white text legible in both themes. */
+  background: var(--primary-emerald-dark);
+  border-color: var(--primary-emerald-dark);
+  color: #ffffff;
+  box-shadow: 0 2px 10px var(--primary-emerald-glow);
+}
+
+.deleteButton > * {
+  color: inherit;
 }
 
 .deleteButton:focus-visible {

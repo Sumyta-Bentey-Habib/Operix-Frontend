@@ -11,11 +11,7 @@ import {
 } from "./breakdown-cards.helpers";
 import styles from "./BreakdownCards.module.css";
 
-export const ManagementReportStatusBreakdown = ({
-  counts,
-}: {
-  counts: ReportStatusCounts;
-}) => {
+export const ManagementReportStatusBreakdown = ({ counts }: { counts: ReportStatusCounts }) => {
   const total = calculateTotal(REPORT_STATUSES, counts);
 
   return (

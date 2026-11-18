@@ -1,6 +1,5 @@
 import {
   UserProfile,
-  DateFilterRange,
   PaymentGoal,
   EngagementRateData,
   TotalBalanceData,
@@ -13,12 +12,6 @@ export const USER_PROFILE_DATA: UserProfile = {
   name: "Sujon",
   greeting: "Welcome Back,",
   role: "Super Admin",
-};
-
-export const DATE_FILTER_DATA: DateFilterRange = {
-  startDate: "29 Jun, 2025",
-  endDate: "29 August, 2025",
-  label: "29 Jun, 2025 - 29 August, 2025",
 };
 
 export const PAYMENT_GOAL_DATA: PaymentGoal = {

@@ -3,11 +3,7 @@ import { formatDashboardStatusLabel } from "../../utils/dashboard-format";
 import { DASHBOARD_STRINGS } from "@/utils/dashboard-strings";
 import { StatusPieChart } from "../KpiGrid/KpiGrid";
 import type { PieSliceData } from "../KpiGrid/KpiGrid";
-import {
-  TASK_STATUSES,
-  STATUS_COLOR_MAP,
-  DEFAULT_FALLBACK_COLOR,
-} from "./breakdown-cards.helpers";
+import { TASK_STATUSES, STATUS_COLOR_MAP, DEFAULT_FALLBACK_COLOR } from "./breakdown-cards.helpers";
 
 export const TaskStatusBreakdown = ({ counts }: { counts: Record<TaskStatus, number> }) => {
   const pieItems: PieSliceData[] = TASK_STATUSES.map((status) => ({

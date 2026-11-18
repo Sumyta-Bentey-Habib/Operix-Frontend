@@ -54,4 +54,3 @@ export const WorkloadTiles = ({ workload }: WorkloadTilesProps) => (
     />
   </div>
 );
-

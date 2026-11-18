@@ -1,12 +1,7 @@
 "use client";
 
 import type { Dispatch, SetStateAction } from "react";
-import {
-  CalendarIcon,
-  ContactsIcon,
-  FilterEditIcon,
-  SearchIcon,
-} from "@/components/icons";
+import { CalendarIcon, ContactsIcon, FilterEditIcon, SearchIcon } from "@/components/icons";
 import type { OperixViewer } from "@/types/auth";
 import { ACTIVITY_ENTITY_TYPE_OPTIONS, type ActivityFilterState } from "../../types/activity.types";
 import styles from "./ActivityFilters.module.css";
@@ -44,7 +39,9 @@ export const ActivityFilters = ({
             className={styles.input}
             placeholder="e.g. TASK_SUBMITTED"
             value={filters.action}
-            onChange={(event) => onChange((current) => ({ ...current, action: event.target.value }))}
+            onChange={(event) =>
+              onChange((current) => ({ ...current, action: event.target.value }))
+            }
           />
         </div>
       </label>
@@ -79,7 +76,9 @@ export const ActivityFilters = ({
               className={styles.input}
               placeholder="e.g. User ID or Ref"
               value={filters.actorId}
-              onChange={(event) => onChange((current) => ({ ...current, actorId: event.target.value }))}
+              onChange={(event) =>
+                onChange((current) => ({ ...current, actorId: event.target.value }))
+              }
             />
           </div>
         </label>
@@ -129,4 +128,3 @@ export const ActivityFilters = ({
     )}
   </form>
 );
-

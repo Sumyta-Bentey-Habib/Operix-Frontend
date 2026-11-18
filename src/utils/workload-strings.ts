@@ -27,6 +27,16 @@ export const WORKLOAD_TABLE_STRINGS = {
     assigned: "Assigned",
     inProgress: "In Progress",
     capacity: "Capacity",
+    monthly: "This Month",
+  },
+  monthly: {
+    tooltip: "Activity in the current business month. Current workload never resets.",
+    assigned: "assigned",
+    completed: "completed",
+    onTime: "on time",
+    overdue: "overdue",
+    reviews: "reviews",
+    ariaLabel: "Current month throughput",
   },
   badges: {
     unassigned: "Unassigned",

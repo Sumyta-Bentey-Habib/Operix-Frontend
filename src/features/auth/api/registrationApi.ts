@@ -2,8 +2,11 @@ import { apiRequest } from "@/lib/api";
 import type { PaginatedResponse } from "@/types/pagination";
 import type {
   ApproveRegistrationInput,
+  ApproveRegistrationResult,
   RegistrationRequest,
+  RegistrationRequestStatus,
   RejectRegistrationInput,
+  ResendSetupResult,
   SetupPasswordInput,
   SignupRequestInput,
 } from "../types/registration.types";
@@ -23,7 +26,12 @@ export const registrationApi = {
     }),
 
   listRequests: (
-    params?: { page?: number; limit?: number; status?: string; q?: string },
+    params?: {
+      page?: number;
+      limit?: number;
+      status?: RegistrationRequestStatus;
+      q?: string;
+    },
     options?: { signal?: AbortSignal },
   ): Promise<PaginatedResponse<RegistrationRequest>> =>
     apiRequest("/registration-requests", {
@@ -49,7 +57,7 @@ export const registrationApi = {
     requestId: string,
     input: ApproveRegistrationInput,
     options?: { signal?: AbortSignal },
-  ): Promise<{ success?: boolean; message?: string }> =>
+  ): Promise<ApproveRegistrationResult> =>
     apiRequest(`/registration-requests/${encodeURIComponent(requestId)}/approve`, {
       method: "POST",
       json: {
@@ -58,6 +66,15 @@ export const registrationApi = {
         designation: input.designation || undefined,
         teamId: input.teamId || undefined,
       },
+      signal: options?.signal,
+    }),
+
+  resendSetup: (
+    requestId: string,
+    options?: { signal?: AbortSignal },
+  ): Promise<ResendSetupResult> =>
+    apiRequest(`/registration-requests/${encodeURIComponent(requestId)}/resend-setup`, {
+      method: "POST",
       signal: options?.signal,
     }),
 

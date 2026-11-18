@@ -442,3 +442,37 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* This Month team throughput */
+.teamMonthly {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: right;
+}
+
+.teamMonthlyPrimary {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 5px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.teamMonthlyUnit {
+  color: var(--text-muted);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.teamMonthlyDetail {
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1.3;
+}

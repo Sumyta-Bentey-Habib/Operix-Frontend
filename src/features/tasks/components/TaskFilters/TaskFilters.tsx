@@ -32,7 +32,7 @@ const STATUS_OPTIONS: TaskStatusFilter[] = [
 ];
 
 const PRIORITY_OPTIONS: TaskPriorityFilter[] = ["ALL", "LOW", "MEDIUM", "HIGH", "URGENT"];
-const SCOPE_OPTIONS: TaskScopeFilter[] = ["ALL", "TEAM", "GLOBAL"];
+const SCOPE_OPTIONS: TaskScopeFilter[] = ["ALL", "TEAM", "GLOBAL", "INDIVIDUAL"];
 const OVERDUE_OPTIONS: TaskOverdueFilter[] = ["ALL", "OVERDUE", "NOT_OVERDUE"];
 const SORT_OPTIONS: TaskSort[] = [
   "CREATED_AT_DESC",
@@ -202,7 +202,9 @@ export const TaskFilters = ({ viewer, filters, onApply, onClear }: TaskFiltersPr
                     ? "All scopes"
                     : scopeOption === "GLOBAL"
                       ? "Global tasks"
-                      : "Team tasks"}
+                      : scopeOption === "INDIVIDUAL"
+                        ? "Individual tasks"
+                        : "Team tasks"}
                 </option>
               ))}
             </select>
@@ -346,9 +348,7 @@ export const TaskFilters = ({ viewer, filters, onApply, onClear }: TaskFiltersPr
                   <span className={styles.scopedDot} />
                   <span className={styles.scopedLabel}>Assigned Member filter</span>
                 </div>
-                {draft.assignedMemberId && (
-                  <span className={styles.activeIndicator}>Active</span>
-                )}
+                {draft.assignedMemberId && <span className={styles.activeIndicator}>Active</span>}
               </div>
               <TaskAssigneePicker
                 selectedMemberId={draft.assignedMemberId}

@@ -7,7 +7,7 @@ import { useOptionalAuth } from "@/context/AuthContext";
 import { ChevronLeftIcon, ChevronRightIcon } from "@/components/icons";
 import { TASK_CREATE_STRINGS } from "@/utils/task-strings";
 import { taskApi } from "../../api/task.api";
-import type { CreateTaskInput } from "../../types/task.types";
+import type { CreateBulkTaskInput, CreateTaskInput } from "../../types/task.types";
 import { getTaskErrorView } from "../task-errors";
 import { TaskForm } from "../TaskForm";
 import styles from "./TaskCreatePage.module.css";
@@ -36,6 +36,21 @@ export const TaskCreatePage = () => {
 
   const handleCancel = () => {
     router.push("/tasks");
+  };
+
+  const handleBulkSubmit = async (input: CreateBulkTaskInput) => {
+    if (pending) return;
+    setPending(true);
+    setError(null);
+
+    try {
+      await taskApi.createBulk(input);
+      router.replace("/tasks");
+    } catch (createError) {
+      setError(getTaskErrorView(createError).message);
+    } finally {
+      setPending(false);
+    }
   };
 
   return (
@@ -76,6 +91,7 @@ export const TaskCreatePage = () => {
         pending={pending}
         error={error}
         onSubmit={handleSubmit}
+        onBulkSubmit={handleBulkSubmit}
         onCancel={handleCancel}
       />
     </section>
